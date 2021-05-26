@@ -1,2 +1,2 @@
-export {default} from './MyBoardGame'
-export {MyBoardGameOptionsDescription} from './MyBoardGameOptions'
+export {default} from './AFistfulOfMeeples'
+export {AFistfulOfMeeplesOptionsDescription} from './AFistfulOfMeeplesOptions'

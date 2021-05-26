@@ -1,12 +1,12 @@
 import {css, Global} from '@emotion/react'
-import MyBoardGame from '@gamepark/board-game-template/MyBoardGame'
-import {MyBoardGameOptionsDescription} from '@gamepark/board-game-template/MyBoardGameOptions'
+import AFistfulOfMeeples from '@gamepark/a-fistful-of-meeples/AFistfulOfMeeples'
+import {AFistfulOfMeeplesOptionsDescription} from '@gamepark/a-fistful-of-meeples/AFistfulOfMeeplesOptions'
 import {GameProvider, setupTranslation} from '@gamepark/react-client'
 import normalize from 'emotion-normalize'
 import {StrictMode} from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
-import MyBoardGameView from './MyBoardGameView'
+import AFistfulOfMeeplesView from './AFistfulOfMeeplesView'
 import translations from './translations.json'
 
 setupTranslation(translations)
@@ -59,7 +59,7 @@ const style = css`
 
 ReactDOM.render(
   <StrictMode>
-    <GameProvider game="my-board-game" Rules={MyBoardGame} RulesView={MyBoardGameView} optionsDescription={MyBoardGameOptionsDescription}>
+    <GameProvider game="a-fistful-of-meeples" Rules={AFistfulOfMeeples} RulesView={AFistfulOfMeeplesView} optionsDescription={AFistfulOfMeeplesOptionsDescription}>
       <App/>
     </GameProvider>
     <Global styles={[normalize, style]}/>
