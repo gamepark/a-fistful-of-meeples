@@ -1,13 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import {css, keyframes} from '@emotion/react'
-import GameView from '@gamepark/a-fistful-of-meeples/GameView'
+import GameState from '@gamepark/a-fistful-of-meeples/GameState'
 import {Letterbox} from '@gamepark/react-components'
 
 type Props = {
-  game: GameView
+  game: GameState
 }
 
-export default function GameDisplay({game}: Props) {
+export default function GameDisplay({ game }: Props) {
   return (
     <Letterbox css={letterBoxStyle} top={0}>
       <div css={css`position: absolute;

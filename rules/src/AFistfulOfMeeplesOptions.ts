@@ -6,7 +6,7 @@ import PlayerColor, {playerColors} from './PlayerColor'
 /**
  * This is the options for each players in the game.
  */
-type AFistfulOfMeeplesPlayerOptions = { id: PlayerColor }
+export type AFistfulOfMeeplesPlayerOptions = { id: PlayerColor }
 
 /**
  * This is the type of object that the game receives when a new game is started.
@@ -20,7 +20,7 @@ export type AFistfulOfMeeplesOptions = GameOptions<{}, AFistfulOfMeeplesPlayerOp
  * @return true if arg is a Game options
  */
 export function isGameOptions(arg: GameState | AFistfulOfMeeplesOptions): arg is AFistfulOfMeeplesOptions {
-  return typeof (arg as GameState).deck === 'undefined'
+    return typeof (arg as GameState).goldBarsInBank === 'undefined'
 }
 
 /**
@@ -40,13 +40,13 @@ export const AFistfulOfMeeplesOptionsDescription: OptionsDescription<{}, AFistfu
 
 export function getPlayerName(playerId: PlayerColor, t: TFunction) {
   switch (playerId) {
-    case PlayerColor.Red:
-      return t('Red player')
-    case PlayerColor.Blue:
-      return t('Blue player')
-    case PlayerColor.Green:
-      return t('Green player')
-    case PlayerColor.Yellow:
-      return t('Yellow player')
+      case PlayerColor.Orange:
+          return t('Orange player')
+      case PlayerColor.Green:
+          return t('Green player')
+      case PlayerColor.Grey:
+          return t('Grey player')
+      case PlayerColor.Black:
+          return t('Black player')
   }
 }

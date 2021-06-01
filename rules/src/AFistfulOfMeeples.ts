@@ -1,13 +1,15 @@
-import {SecretInformation, SequentialGame} from '@gamepark/rules-api'
-import GameState from './GameState'
-import GameView from './GameView'
-import {drawCard} from './moves/DrawCard'
+import { SequentialGame } from '@gamepark/rules-api'
+import GameState, { initialiseGameState, Location_Saloon, Location_Jail, Space_None, Space_Showdown1, Space_Showdown2, Direction, getNextSpace, getPreviousSpace } from './GameState'
 import Move from './moves/Move'
 import MoveType from './moves/MoveType'
-import MoveView from './moves/MoveView'
-import {spendGold} from './moves/SpendGold'
+import { placeInitialMarqueeTile } from './moves/PlaceInitialMarqueeTile'
+import { selectSourceLocation } from './moves/SelectSourceLocation'
+import { placeMeeple } from './moves/PlaceMeeple'
+import { resolveMeeple } from './moves/ResolveMeeple'
 import {isGameOptions, AFistfulOfMeeplesOptions} from './AFistfulOfMeeplesOptions'
 import PlayerColor from './PlayerColor'
+import Phase from './Phase'
+import Meeple from './Meeple'
 
 /**
  * Your Board Game rules must extend either "SequentialGame" or "SimultaneousGame".
@@ -16,8 +18,7 @@ import PlayerColor from './PlayerColor'
  * If the game contains information that some players know, but the other players does not, it must implement "SecretInformation" instead.
  * Later on, you can also implement "Competitive", "Undo", "TimeLimit" and "Eliminations" to add further features to the game.
  */
-export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, PlayerColor>
-  implements SecretInformation<GameState, GameView, Move, MoveView, PlayerColor> {
+export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, PlayerColor> {
   /**
    * This constructor is called when the game "restarts" from a previously saved state.
    * @param state The state of the game
@@ -34,7 +35,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    */
   constructor(arg: GameState | AFistfulOfMeeplesOptions) {
     if (isGameOptions(arg)) {
-      super({players: arg.players.map(player => ({color: player.id})), round: 1, deck: []})
+      super(initialiseGameState(arg))
     } else {
       super(arg)
     }
@@ -44,7 +45,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    * @return True when game is over
    */
   isOver(): boolean {
-    return false
+    return this.state.activePlayer == PlayerColor.None;
   }
 
   /**
@@ -53,7 +54,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    * @return The identifier of the player whose turn it is
    */
   getActivePlayer(): PlayerColor | undefined {
-    return undefined // You must return undefined only when game is over, otherwise the game will be blocked.
+    return this.state.activePlayer; // You must return undefined only when game is over, otherwise the game will be blocked.
   }
 
   /**
@@ -67,10 +68,85 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    * - A class that implements "Dummy" to provide a custom Dummy player.
    */
   getLegalMoves(): Move[] {
-    return [
-      {type: MoveType.SpendGold, playerId: this.getActivePlayer()!, quantity: 5},
-      {type: MoveType.DrawCard, playerId: this.getActivePlayer()!}
-    ]
+    const moves: Move[] = []
+    let i: number;
+
+    switch (this.state.currentPhase) {
+      case Phase.PlaceInitialMarqueeTiles:
+        [1, 6, 7, 12].forEach(i => {
+          if (this.state.marquees[i].owner === PlayerColor.None) {
+            moves.push({ type: MoveType.PlaceInitialMarqueeTile, playerId: this.state.activePlayer, location: i })
+          }
+        })
+        break;
+      case Phase.SelectSourceLocation:
+        for (i = 1; i <= 12; ++i) {
+          if (this.state.buildings[i].length > 0) {
+            moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: i })
+          }
+        }
+        if (this.state.saloon.length > 0) {
+          moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: Location_Saloon })
+        }
+        if (this.state.jail.length > 0) {
+          moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: Location_Jail })
+        }
+        break;
+      case Phase.PlaceMeeples:
+        if (this.state.previousMeeplePlacingSpace == Space_None) {
+          // first meeple to be placed : must be placed next to building they were taken from (or any space if taken from jail or saloon)
+          switch (this.state.meeplesSourceLocation) {
+            case Location_Saloon:
+            case Location_Jail:
+              for (i = 1; i <= 12; ++i) {
+                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: i, meeple: meeple }))
+              }
+              if (this.state.showdowns[0].meeple == Meeple.None) {
+                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Space_Showdown1, meeple: meeple }))
+              }
+              if (this.state.showdowns[1].meeple == Meeple.None) {
+                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Space_Showdown2, meeple: meeple }))
+              }
+              break;
+            default:
+              this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: this.state.meeplesSourceLocation, meeple: meeple }))
+              if ((this.state.meeplesSourceLocation == 1 || this.state.meeplesSourceLocation == 12) && this.state.showdowns[0].meeple == Meeple.None) {
+                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Space_Showdown1, meeple: meeple }))
+              }
+              if ((this.state.meeplesSourceLocation == 6 || this.state.meeplesSourceLocation == 7) && this.state.showdowns[1].meeple == Meeple.None) {
+                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Space_Showdown2, meeple: meeple }))
+              }
+              break;
+          }
+        } else {
+          this.state.meeplesInHand.forEach(meeple => {
+            if (this.state.meeplePlacingDirection != Direction.Clockwise) {
+              moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: getPreviousSpace(this.state.previousMeeplePlacingSpace, this.state), meeple: meeple })
+            }
+            if (this.state.meeplePlacingDirection != Direction.CounterClockwise) {
+              moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: getNextSpace(this.state.previousMeeplePlacingSpace, this.state), meeple: meeple })
+            }
+          })
+        }
+        break;
+      case Phase.ChooseAnotherPlayerShowdownToken:
+        TODO
+        break;
+      case Phase.ResolveMeeples:
+        break;
+      case Phase.BuildMarquee:
+        break;
+      case Phase.UpgradeMarquee:
+        break;
+      case Phase.ChooseToRerollShowdownDice:
+        break;
+      default: {
+        const n: never = this.state.currentPhase;
+        return n;
+      }
+    }
+
+    return moves;
   }
 
   /**
@@ -80,10 +156,24 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    */
   play(move: Move): void {
     switch (move.type) {
-      case MoveType.SpendGold:
-        return spendGold(this.state, move)
-      case MoveType.DrawCard:
-        return drawCard(this.state, move)
+      case MoveType.PlaceInitialMarqueeTile:
+        return placeInitialMarqueeTile(this.state, move);
+      case MoveType.SelectSourceLocation:
+        return selectSourceLocation(this.state, move);
+      case MoveType.PlaceMeeple:
+        return placeMeeple(this.state, move);
+      case MoveType.ResolveMeeple:
+        return resolveMeeple(this.state, move);
+      /*
+      case MoveType.BuildMarquee:
+        break;
+      case MoveType.UpgradeMarquee:
+        break;
+      case MoveType.ChooseAnotherPlayerToPlaceShowdownToken:
+        break;
+      case MoveType.RerollShodownDice:
+        break;
+        */
     }
   }
 
@@ -112,51 +202,8 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
     return
   }
 
-  /**
-   * If you game has incomplete information, you must hide some of the game's state to the players and spectators.
-   * @return What a person can see from the game state
-   */
-  getView(): GameView {
-    return {...this.state, deck: this.state.deck.length}
+  endOfGameTriggered(): boolean {
+    return this.state.goldBarsInBank == 0 || this.state.graveyard.length >= 6 || (this.state.dynamitesInJail == 0 && this.state.dynamitesInMiningBag == 0);
   }
 
-  /**
-   * If you game has "SecretInformation", you must also implement "getPlayerView", returning the information visible by a specific player.
-   * @param playerId Identifier of the player
-   * @return what the player can see
-   */
-  getPlayerView(playerId: PlayerColor): GameView {
-    console.log(playerId)
-    // Here we could, for example, return a "playerView" with only the number of cards in hand for the other player only.
-    return {...this.state, deck: this.state.deck.length}
-  }
-
-  /**
-   * If you game has incomplete information, sometime you need to alter a Move before it is sent to the players and spectator.
-   * For example, if a card is revealed, the id of the revealed card should be ADDED to the Move in the MoveView
-   * Sometime, you will hide information: for example if a player secretly choose a card, you will hide the card to the other players or spectators.
-   *
-   * @param move The move that has been played
-   * @return What a person should know about the move that was played
-   */
-  getMoveView(move: Move): MoveView {
-    return move
-  }
-
-  /**
-   * If you game has secret information, sometime you need to alter a Move depending on which player it is.
-   * For example, if a card is drawn, the id of the revealed card should be ADDED to the Move in the MoveView, but only for the played that draws!
-   * Sometime, you will hide information: for example if a player secretly choose a card, you will hide the card to the other players or spectators.
-   *
-   * @param move The move that has been played
-   * @param playerId Identifier of the player seeing the move
-   * @return What a person should know about the move that was played
-   */
-  getPlayerMoveView(move: Move, playerId: PlayerColor): MoveView {
-    console.log(playerId)
-    if (move.type === MoveType.DrawCard && move.playerId === playerId) {
-      return {...move, card: this.state.deck[0]}
-    }
-    return move
-  }
 }

@@ -3,7 +3,15 @@
  * Even though it is not strictly required to use a type like that, it helps a lot in practice!
  */
 enum MoveType {
-  SpendGold, DrawCard
+  PlaceInitialMarqueeTile,
+  SelectSourceLocation,
+  PlaceMeeple,
+  ResolveMeeple,
+  BuildMarquee,
+  UpgradeMarquee,
+  ChooseAnotherPlayerToPlaceShowdownToken,
+  RerollShodownDice
 }
+
 
 export default MoveType

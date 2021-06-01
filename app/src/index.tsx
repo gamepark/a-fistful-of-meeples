@@ -6,7 +6,6 @@ import normalize from 'emotion-normalize'
 import {StrictMode} from 'react'
 import ReactDOM from 'react-dom'
 import App from './App'
-import AFistfulOfMeeplesView from './AFistfulOfMeeplesView'
 import translations from './translations.json'
 
 setupTranslation(translations)
@@ -59,7 +58,7 @@ const style = css`
 
 ReactDOM.render(
   <StrictMode>
-    <GameProvider game="a-fistful-of-meeples" Rules={AFistfulOfMeeples} RulesView={AFistfulOfMeeplesView} optionsDescription={AFistfulOfMeeplesOptionsDescription}>
+    <GameProvider game="a-fistful-of-meeples" Rules={AFistfulOfMeeples} optionsDescription={AFistfulOfMeeplesOptionsDescription}>
       <App/>
     </GameProvider>
     <Global styles={[normalize, style]}/>
