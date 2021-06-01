@@ -1,5 +1,4 @@
 import PlayerColor from './PlayerColor'
-import Meeple from './Meeple'
 import { AFistfulOfMeeplesPlayerOptions } from './AFistfulOfMeeplesOptions'
 
 type PlayerState = {

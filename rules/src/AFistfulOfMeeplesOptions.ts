@@ -40,13 +40,15 @@ export const AFistfulOfMeeplesOptionsDescription: OptionsDescription<{}, AFistfu
 
 export function getPlayerName(playerId: PlayerColor, t: TFunction) {
   switch (playerId) {
-      case PlayerColor.Orange:
-          return t('Orange player')
-      case PlayerColor.Green:
-          return t('Green player')
-      case PlayerColor.Grey:
-          return t('Grey player')
-      case PlayerColor.Black:
-          return t('Black player')
+    case PlayerColor.None:
+      return t('No such player')
+    case PlayerColor.Orange:
+      return t('Orange player')
+    case PlayerColor.Green:
+      return t('Green player')
+    case PlayerColor.Grey:
+      return t('Grey player')
+    case PlayerColor.Black:
+      return t('Black player')
   }
 }

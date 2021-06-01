@@ -1,15 +1,14 @@
-import GameState, { Direction, Location_None, Space_None, Space_Showdown1, Space_Showdown2, getNextSpace, getPreviousSpace } from '../GameState'
+import GameState, { Direction, Location_None, Space_None, Space_Showdown1, Space_Showdown2 } from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
 import Phase from '../Phase'
-import Meeple from '../Meeple'
 
 /**
  * Here is a example a of move involving hidden information
  * On the backend side, there is no need to put the card inside the move. We know what it will be (first card on top of the deck)
  */
 type ChooseAnotherPlayerShowdownToken = {
-  type: MoveType.PlaceMeeple
+  type: MoveType.ChooseAnotherPlayerShowdownToken
   playerId: PlayerColor
 }
 

@@ -10,6 +10,7 @@ import {isGameOptions, AFistfulOfMeeplesOptions} from './AFistfulOfMeeplesOption
 import PlayerColor from './PlayerColor'
 import Phase from './Phase'
 import Meeple from './Meeple'
+import { chooseAnotherPlayerToPlaceShowdownToken } from './moves/ChooseAnotherPlayerShowdownToken'
 
 /**
  * Your Board Game rules must extend either "SequentialGame" or "SimultaneousGame".
@@ -130,7 +131,10 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
         }
         break;
       case Phase.ChooseAnotherPlayerShowdownToken:
-        TODO
+        this.state.players.forEach(player => {
+          if (player.color !== this.state.activePlayer)
+            moves.push({ type: MoveType.ChooseAnotherPlayerShowdownToken, playerId: player.color })
+        })
         break;
       case Phase.ResolveMeeples:
         break;
@@ -162,6 +166,8 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
         return selectSourceLocation(this.state, move);
       case MoveType.PlaceMeeple:
         return placeMeeple(this.state, move);
+      case MoveType.ChooseAnotherPlayerShowdownToken:
+        return chooseAnotherPlayerToPlaceShowdownToken(this.state, move);
       case MoveType.ResolveMeeple:
         return resolveMeeple(this.state, move);
       /*

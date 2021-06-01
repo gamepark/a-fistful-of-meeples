@@ -6,10 +6,10 @@ enum MoveType {
   PlaceInitialMarqueeTile,
   SelectSourceLocation,
   PlaceMeeple,
+  ChooseAnotherPlayerShowdownToken,
   ResolveMeeple,
   BuildMarquee,
   UpgradeMarquee,
-  ChooseAnotherPlayerToPlaceShowdownToken,
   RerollShodownDice
 }
 
