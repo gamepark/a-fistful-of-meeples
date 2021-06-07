@@ -1,6 +1,11 @@
-import GameState from '../GameState'
+import GameState, { Location_Showdown0, Location_Showdown1, canPayBuildingCost, PendingEffectType, Location_Jail, Location_Saloon } from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
+import Phase, { setCurrentPhase } from '../Phase'
+import Meeple from '../Meeple'
+import PlayerState from '../PlayerState'
+import { drawCubesFromBag } from '../MiningBag'
+import { getShowdownHighestShootingSkill, ShowdownResult } from '../Showdown'
 
 /**
  * Here is a example a of move involving hidden information
@@ -9,16 +14,127 @@ import MoveType from './MoveType'
 type ResolveMeeple = {
   type: MoveType.ResolveMeeple
   playerId: PlayerColor
+  space: number
 }
 
 export default ResolveMeeple
 
 export function resolveMeeple(state: GameState, move: ResolveMeeple) {
-  console.log(`${move.playerId} is drawing a card in ${state}`)
-  /* That's executed on backend side. Example:
-  const player = state.players.find(player => player.id === move.playerId)
-  if (!player) return console.error(`Unexpected player id: ${move.playerId} inside ${state}`)
-  player.hand.push(game.deck.shift())
-   */
+  const player = state.players.find(player => player.color === move.playerId)
+  if (player === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
+  if (!((move.space >= 1 && move.space <= 12) || move.space == Location_Showdown0 || move.space == Location_Showdown1)) return console.error('Invalid space ', move.space, ' for resolving meeple')
+
+  switch (move.space) {
+    case Location_Showdown0:
+    case Location_Showdown1:
+      state.showdowns[0].dice = Math.floor(Math.random() * 6) + 1
+      state.showdowns[1].dice = Math.floor(Math.random() * 6) + 1
+      switch (getShowdownHighestShootingSkill(state)) {
+        case ShowdownResult.Showdown0:
+          state.pendingEffects.unshift({ type: PendingEffectType.ChooseToRerollShowdownDice, player: state.showdowns[0].owner })
+          break
+        case ShowdownResult.Showdown1:
+          state.pendingEffects.unshift({ type: PendingEffectType.ChooseToRerollShowdownDice, player: state.showdowns[1].owner })
+          break
+        case ShowdownResult.None:
+          state.pendingEffects.unshift({ type: PendingEffectType.ResolveShowdown })
+          break
+      }
+      break
+    default:
+      const meeple: Meeple = state.doorways[move.space]
+      if (meeple == Meeple.None) return console.error('No meeple in doorway ', move.space)
+
+      // remove meeple from doorway
+      state.doorways[move.space] = Meeple.None
+
+      switch (meeple) {
+        case Meeple.Builder:
+          let owner: PlayerState | undefined
+          if (state.marquees[move.space].owner === PlayerColor.None) {
+            // no marquee ? current player may build one
+            owner = player
+          } else if (state.marquees[move.space].upgraded === false) {
+            // basic marquee ? owner may want to upgrade it
+            owner = state.players.find(player => player.color === state.marquees[move.space].owner)
+            if (owner === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
+          }
+          if (owner != undefined) {
+            // if relevant player has enough resources to build or upgrade, let him choose
+            if (canPayBuildingCost(owner, move.space)) {
+              state.pendingEffects.unshift({
+                type: PendingEffectType.BuildOrUpgradeMarquee, location: move.space
+              })
+            }
+          }
+          break;
+        case Meeple.Miner:
+          if (state.marquees[move.space].owner !== PlayerColor.None) {
+            state.pendingEffects.unshift({
+              type: PendingEffectType.DrawFromBag,
+              player: state.marquees[move.space].owner,
+              content: drawCubesFromBag(state, state.marquees[move.space].upgraded ? 4 : 2)
+            })
+          }
+          break;
+        case Meeple.Robber:
+          {
+            const numberOfMiners: number = state.buildings[move.space].filter(meeple => meeple === Meeple.Miner).length
+            if (numberOfMiners > 0) {
+              state.pendingEffects.unshift({
+                type: PendingEffectType.DrawFromBag,
+                player: state.activePlayer,
+                content: drawCubesFromBag(state, 2 * numberOfMiners)
+              })
+            }
+          }
+          break;
+        case Meeple.Deputy:
+          {
+            const numberOfRobbers: number = state.buildings[move.space].filter(meeple => meeple === Meeple.Robber).length
+            if (numberOfRobbers > 0) {
+              state.pendingEffects.unshift({
+                type: PendingEffectType.MoveMeeples,
+                meeples: Meeple.Robber,
+                sourceLocation: move.space,
+                destinationLocation: Location_Jail
+              })
+              state.pendingEffects.unshift({
+                type: PendingEffectType.DrawFromBag,
+                player: state.activePlayer,
+                content: drawCubesFromBag(state, 2 * numberOfRobbers)
+              })
+            }
+          }
+          break;
+        case Meeple.Madame:
+          {
+            const numberOfBuilders: number = state.buildings[move.space].filter(meeple => meeple === Meeple.Builder).length
+            if (numberOfBuilders > 0) {
+              state.pendingEffects.unshift({
+                type: PendingEffectType.MoveMeeples,
+                meeples: Meeple.Builder,
+                sourceLocation: move.space,
+                destinationLocation: Location_Saloon
+              })
+              state.pendingEffects.unshift({
+                type: PendingEffectType.DrawFromBag,
+                player: state.activePlayer,
+                content: drawCubesFromBag(state, numberOfBuilders)
+              })
+            }
+          }
+          break;
+      }
+
+      // move meeple inside the building
+      state.buildings[move.space].push(meeple)
+      break
+  }
+
+  if ((state.showdowns[0].meeple === Meeple.None || state.showdowns[1].meeple === Meeple.None) && state.doorways.every(doorway => doorway == Meeple.None)) {
+    // no more meeples to resolve : advance to next phase
+    setCurrentPhase(Phase.CheckGoldBars, state)
+  }
 }
 

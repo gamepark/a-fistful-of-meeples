@@ -1,7 +1,7 @@
 import GameState, { Location_Jail, Location_Saloon } from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
-import Phase from '../Phase'
+import Phase, { setCurrentPhase } from '../Phase'
 
 /**
  * Here is a example a of move involving hidden information
@@ -40,7 +40,7 @@ export function selectSourceLocation(state: GameState, move: SelectSourceLocatio
 
   if (state.meeplesInHand.length == 0) return console.error('No meeple in source location ', move.location)
 
-  state.currentPhase = Phase.PlaceMeeples
   state.meeplesSourceLocation = move.location
+  setCurrentPhase(Phase.PlaceMeeples, state)
 }
 

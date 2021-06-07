@@ -8,9 +8,15 @@ enum MoveType {
   PlaceMeeple,
   ChooseAnotherPlayerShowdownToken,
   ResolveMeeple,
-  BuildMarquee,
-  UpgradeMarquee,
-  RerollShodownDice
+  BuildOrUpgradeMarquee,
+  RerollShowdownDice,
+
+  DrawFromBag,
+  SendExtraMeeplesToSaloon,
+  DynamiteExplosion,
+  MoveMeeples,
+  ResolveShowdown,
+  CheckGoldBars,
 }
 
 

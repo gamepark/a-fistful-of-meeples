@@ -1,16 +1,24 @@
 import { SequentialGame } from '@gamepark/rules-api'
-import GameState, { initialiseGameState, Location_Saloon, Location_Jail, Space_None, Space_Showdown1, Space_Showdown2, Direction, getNextSpace, getPreviousSpace } from './GameState'
+import GameState, { initialiseGameState, Location_Saloon, Location_Jail, Direction, getNextSpace, getPreviousSpace, isSpaceEmpty, PendingEffectType, Location_None, Location_Showdown0, Location_Showdown1 } from './GameState'
 import Move from './moves/Move'
 import MoveType from './moves/MoveType'
-import { placeInitialMarqueeTile } from './moves/PlaceInitialMarqueeTile'
-import { selectSourceLocation } from './moves/SelectSourceLocation'
-import { placeMeeple } from './moves/PlaceMeeple'
-import { resolveMeeple } from './moves/ResolveMeeple'
-import {isGameOptions, AFistfulOfMeeplesOptions} from './AFistfulOfMeeplesOptions'
 import PlayerColor from './PlayerColor'
 import Phase from './Phase'
 import Meeple from './Meeple'
+import { isGameOptions, AFistfulOfMeeplesOptions } from './AFistfulOfMeeplesOptions'
+import { placeInitialMarqueeTile } from './moves/PlaceInitialMarqueeTile'
+import { selectSourceLocation } from './moves/SelectSourceLocation'
+import { placeMeeple } from './moves/PlaceMeeple'
 import { chooseAnotherPlayerToPlaceShowdownToken } from './moves/ChooseAnotherPlayerShowdownToken'
+import { resolveMeeple } from './moves/ResolveMeeple'
+import { buildOrUpgradeMarquee } from './moves/BuildOrUpgradeMarquee'
+import { drawFromBag } from './moves/DrawFromBag'
+import { sendExtraMeeplesToSaloon } from './moves/SendExtraMeeplesToSaloon'
+import { dynamiteExplosion } from './moves/DynamiteExplosion'
+import { moveMeeples } from './moves/MoveMeeples'
+import { resolveShowdown } from './moves/ResolveShowdown'
+import { rerollShowdownDice } from './moves/RerollShowdownDice'
+import { checkGoldBars } from './moves/CheckGoldBars'
 
 /**
  * Your Board Game rules must extend either "SequentialGame" or "SimultaneousGame".
@@ -46,7 +54,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    * @return True when game is over
    */
   isOver(): boolean {
-    return this.state.activePlayer == PlayerColor.None;
+    return this.state.activePlayer == PlayerColor.None
   }
 
   /**
@@ -55,7 +63,14 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    * @return The identifier of the player whose turn it is
    */
   getActivePlayer(): PlayerColor | undefined {
-    return this.state.activePlayer; // You must return undefined only when game is over, otherwise the game will be blocked.
+    if (this.state.pendingEffects.length > 0) {
+      let effect = this.state.pendingEffects[0]
+      if (effect.type == PendingEffectType.BuildOrUpgradeMarquee && this.state.marquees[effect.location].owner != PlayerColor.None) {
+        return this.state.marquees[effect.location].owner
+      }
+    }
+
+    return this.state.activePlayer // You must return undefined only when game is over, otherwise the game will be blocked.
   }
 
   /**
@@ -70,116 +85,191 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    */
   getLegalMoves(): Move[] {
     const moves: Move[] = []
-    let i: number;
+    let i: number
 
-    switch (this.state.currentPhase) {
-      case Phase.PlaceInitialMarqueeTiles:
-        [1, 6, 7, 12].forEach(i => {
-          if (this.state.marquees[i].owner === PlayerColor.None) {
-            moves.push({ type: MoveType.PlaceInitialMarqueeTile, playerId: this.state.activePlayer, location: i })
-          }
-        })
-        break;
-      case Phase.SelectSourceLocation:
-        for (i = 1; i <= 12; ++i) {
-          if (this.state.buildings[i].length > 0) {
-            moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: i })
-          }
-        }
-        if (this.state.saloon.length > 0) {
-          moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: Location_Saloon })
-        }
-        if (this.state.jail.length > 0) {
-          moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: Location_Jail })
-        }
-        break;
-      case Phase.PlaceMeeples:
-        if (this.state.previousMeeplePlacingSpace == Space_None) {
-          // first meeple to be placed : must be placed next to building they were taken from (or any space if taken from jail or saloon)
-          switch (this.state.meeplesSourceLocation) {
-            case Location_Saloon:
-            case Location_Jail:
-              for (i = 1; i <= 12; ++i) {
-                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: i, meeple: meeple }))
-              }
-              if (this.state.showdowns[0].meeple == Meeple.None) {
-                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Space_Showdown1, meeple: meeple }))
-              }
-              if (this.state.showdowns[1].meeple == Meeple.None) {
-                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Space_Showdown2, meeple: meeple }))
-              }
-              break;
-            default:
-              this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: this.state.meeplesSourceLocation, meeple: meeple }))
-              if ((this.state.meeplesSourceLocation == 1 || this.state.meeplesSourceLocation == 12) && this.state.showdowns[0].meeple == Meeple.None) {
-                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Space_Showdown1, meeple: meeple }))
-              }
-              if ((this.state.meeplesSourceLocation == 6 || this.state.meeplesSourceLocation == 7) && this.state.showdowns[1].meeple == Meeple.None) {
-                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Space_Showdown2, meeple: meeple }))
-              }
-              break;
-          }
-        } else {
-          this.state.meeplesInHand.forEach(meeple => {
-            if (this.state.meeplePlacingDirection != Direction.Clockwise) {
-              moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: getPreviousSpace(this.state.previousMeeplePlacingSpace, this.state), meeple: meeple })
-            }
-            if (this.state.meeplePlacingDirection != Direction.CounterClockwise) {
-              moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: getNextSpace(this.state.previousMeeplePlacingSpace, this.state), meeple: meeple })
+    if (this.state.pendingEffects.length > 0) {
+      let effect = this.state.pendingEffects[0]
+      switch (effect.type) {
+        case PendingEffectType.ChooseAnotherPlayerShowdownToken:
+          this.state.players.forEach(player => {
+            if (player.color !== this.state.activePlayer)
+              moves.push({ type: MoveType.ChooseAnotherPlayerShowdownToken, playerId: player.color })
+          })
+          break
+
+        case PendingEffectType.BuildOrUpgradeMarquee:
+          moves.push({ type: MoveType.BuildOrUpgradeMarquee, playerId: this.getActivePlayer()!, space: effect.location, build: true })
+          moves.push({ type: MoveType.BuildOrUpgradeMarquee, playerId: this.getActivePlayer()!, space: effect.location, build: false })
+          break
+
+        case PendingEffectType.ChooseToRerollShowdownDice:
+          moves.push({ type: MoveType.RerollShowdownDice, reroll: true })
+          moves.push({ type: MoveType.RerollShowdownDice, reroll: false })
+          break
+      }
+    } else {
+
+      // no relevant pending effect : allowed moves depend on current phase
+      switch (this.state.currentPhase) {
+
+        case Phase.PlaceInitialMarqueeTiles:
+          [1, 6, 7, 12].forEach(i => {
+            if (this.state.marquees[i].owner === PlayerColor.None) {
+              moves.push({ type: MoveType.PlaceInitialMarqueeTile, playerId: this.state.activePlayer, location: i })
             }
           })
-        }
-        break;
-      case Phase.ChooseAnotherPlayerShowdownToken:
-        this.state.players.forEach(player => {
-          if (player.color !== this.state.activePlayer)
-            moves.push({ type: MoveType.ChooseAnotherPlayerShowdownToken, playerId: player.color })
-        })
-        break;
-      case Phase.ResolveMeeples:
-        break;
-      case Phase.BuildMarquee:
-        break;
-      case Phase.UpgradeMarquee:
-        break;
-      case Phase.ChooseToRerollShowdownDice:
-        break;
-      default: {
-        const n: never = this.state.currentPhase;
-        return n;
+          break
+
+        case Phase.SelectSourceLocation:
+          for (i = 1; i <= 12; ++i) {
+            if (this.state.buildings[i].length > 0) {
+              moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: i })
+            }
+          }
+          if (this.state.saloon.length > 0) {
+            moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: Location_Saloon })
+          }
+          if (this.state.jail.length > 0) {
+            moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: Location_Jail })
+          }
+          break
+
+        case Phase.PlaceMeeples:
+          if (this.state.previousMeeplePlacingSpace == Location_None) {
+            // first meeple to be placed : must be placed next to building they were taken from (or any space if taken from jail or saloon)
+            switch (this.state.meeplesSourceLocation) {
+              case Location_Saloon:
+              case Location_Jail:
+                for (i = 1; i <= 12; ++i) {
+                  this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: i, meeple: meeple }))
+                }
+                if (this.state.showdowns[0].meeple == Meeple.None) {
+                  this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown0, meeple: meeple }))
+                }
+                if (this.state.showdowns[1].meeple == Meeple.None) {
+                  this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown1, meeple: meeple }))
+                }
+                break
+              default:
+                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: this.state.meeplesSourceLocation, meeple: meeple }))
+                if ((this.state.meeplesSourceLocation == 1 || this.state.meeplesSourceLocation == 12) && this.state.showdowns[0].meeple == Meeple.None) {
+                  this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown0, meeple: meeple }))
+                }
+                if ((this.state.meeplesSourceLocation == 6 || this.state.meeplesSourceLocation == 7) && this.state.showdowns[1].meeple == Meeple.None) {
+                  this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown1, meeple: meeple }))
+                }
+                break
+            }
+          } else {
+            // find valid destination spaces
+            const spaces:number[] = []
+            if (this.state.meeplePlacingDirection != Direction.Clockwise) {
+              const space: number = getPreviousSpace(this.state.previousMeeplePlacingSpace, this.state)
+              if (isSpaceEmpty(space, this.state)) {
+                spaces.push(space)
+              }
+            }
+            if (this.state.meeplePlacingDirection != Direction.CounterClockwise) {
+              const space: number = getNextSpace(this.state.previousMeeplePlacingSpace, this.state)
+              if (isSpaceEmpty(space, this.state)) {
+                spaces.push(space)
+              }
+            }
+
+            if (spaces.length > 0) {
+              // build available moves (only once for each meeple type)
+              const meeples: Meeple[] = []
+              this.state.meeplesInHand.forEach(meeple => {
+                if (!meeples.includes(meeple))
+                  meeples.push(meeple)
+                spaces.forEach(space => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: space, meeple: meeple }))
+              })
+            } else {
+              // no more spaces : send remaining meeples to saloon
+              moves.push({ type: MoveType.SendExtraMeeplesToSaloon })
+            }
+          }
+          break
+
+        case Phase.ResolveMeeples:
+          if (this.state.showdowns[0].meeple != Meeple.None && this.state.showdowns[1].meeple != Meeple.None) {
+            moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: Location_Showdown0 })
+            moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: Location_Showdown1 })
+          }
+          for (i = 1; i < 12; ++i) {
+            if (this.state.doorways[i] != Meeple.None) {
+              moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: i })
+            }
+          }
+          break
+
+        case Phase.CheckGoldBars:
+          // just automatic move here
+          break
+
+        default:
+          return this.state.currentPhase // never guard
+
       }
     }
-
-    return moves;
+    return moves
   }
 
   /**
-   * This is the one and only play where you will update the game's state, depending on the move that has been played.
+   * This is the one and only place where you will update the game's state, depending on the move that has been played.
    *
    * @param move The move that should be applied to current state.
    */
   play(move: Move): void {
     switch (move.type) {
       case MoveType.PlaceInitialMarqueeTile:
-        return placeInitialMarqueeTile(this.state, move);
+        return placeInitialMarqueeTile(this.state, move)
+
       case MoveType.SelectSourceLocation:
-        return selectSourceLocation(this.state, move);
+        return selectSourceLocation(this.state, move)
+
       case MoveType.PlaceMeeple:
-        return placeMeeple(this.state, move);
+        return placeMeeple(this.state, move)
+
       case MoveType.ChooseAnotherPlayerShowdownToken:
-        return chooseAnotherPlayerToPlaceShowdownToken(this.state, move);
+        this.state.pendingEffects.shift()
+        return chooseAnotherPlayerToPlaceShowdownToken(this.state, move)
+
       case MoveType.ResolveMeeple:
-        return resolveMeeple(this.state, move);
-      /*
-      case MoveType.BuildMarquee:
-        break;
-      case MoveType.UpgradeMarquee:
-        break;
-      case MoveType.ChooseAnotherPlayerToPlaceShowdownToken:
-        break;
-      case MoveType.RerollShodownDice:
-        break;
-        */
+        return resolveMeeple(this.state, move)
+
+      case MoveType.BuildOrUpgradeMarquee:
+        this.state.pendingEffects.shift()
+        return buildOrUpgradeMarquee(this.state, move)
+
+      case MoveType.DrawFromBag:
+        this.state.pendingEffects.shift()
+        return drawFromBag(this.state, move)
+
+      case MoveType.SendExtraMeeplesToSaloon:
+        return sendExtraMeeplesToSaloon(this.state)
+
+      case MoveType.DynamiteExplosion:
+        this.state.pendingEffects.shift()
+        return dynamiteExplosion(this.state)
+
+      case MoveType.MoveMeeples:
+        this.state.pendingEffects.shift()
+        return moveMeeples(this.state, move)
+
+      case MoveType.RerollShowdownDice:
+        this.state.pendingEffects.shift()
+        return rerollShowdownDice(this.state, move)
+
+      case MoveType.ResolveShowdown:
+        this.state.pendingEffects.shift()
+        return resolveShowdown(this.state)
+
+      case MoveType.CheckGoldBars:
+        return checkGoldBars(this.state, move)
+
+      default:
+        return move // never guard
     }
   }
 
@@ -197,19 +287,25 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    * @return The next automatic consequence that should be played in current game state.
    */
   getAutomaticMove(): void | Move {
-    /**
-     * Example:
-     * for (const player of this.state.players) {
-     *   if (player.mustDraw) {
-     *     return {type: MoveType.DrawCard, playerId: player.color}
-     *   }
-     * }
-     */
-    return
+    if (this.state.pendingEffects.length > 0) {
+      const effect = this.state.pendingEffects[0]
+      switch (effect.type) {
+        case PendingEffectType.DrawFromBag:
+          return { type: MoveType.DrawFromBag, playerId: effect.player, content: effect.content }
+        case PendingEffectType.DynamiteExplosion:
+          return { type: MoveType.DynamiteExplosion }
+        case PendingEffectType.MoveMeeples:
+          return { type: MoveType.MoveMeeples, meeples: effect.meeples, source: effect.sourceLocation, destination: effect.destinationLocation }
+        case PendingEffectType.ResolveShowdown:
+          return { type: MoveType.ResolveShowdown }
+      }
+    } else if (this.state.currentPhase == Phase.CheckGoldBars) {
+      return { type: MoveType.CheckGoldBars }
+    }
   }
 
   endOfGameTriggered(): boolean {
-    return this.state.goldBarsInBank == 0 || this.state.graveyard.length >= 6 || (this.state.dynamitesInJail == 0 && this.state.dynamitesInMiningBag == 0);
+    return this.state.goldBarsInBank == 0 || this.state.graveyard.length >= 6 || (this.state.dynamitesInJail == 0 && this.state.dynamitesInMiningBag == 0)
   }
 
 }

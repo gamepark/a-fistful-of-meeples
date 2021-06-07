@@ -1,7 +1,6 @@
-import GameState, { Direction, Location_None, Space_None, Space_Showdown1, Space_Showdown2 } from '../GameState'
+import GameState, { Location_Showdown0, Location_Showdown1} from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
-import Phase from '../Phase'
 
 /**
  * Here is a example a of move involving hidden information
@@ -17,21 +16,10 @@ export default ChooseAnotherPlayerShowdownToken
 export function chooseAnotherPlayerToPlaceShowdownToken(state: GameState, move: ChooseAnotherPlayerShowdownToken) {
   if (state.players.find(player => player.color === move.playerId) === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
 
-  if (state.previousMeeplePlacingSpace === Space_Showdown1) {
+  if (state.previousMeeplePlacingSpace === Location_Showdown0) {
     state.showdowns[0].owner = move.playerId;
-  } else if (state.previousMeeplePlacingSpace === Space_Showdown2) {
+  } else if (state.previousMeeplePlacingSpace === Location_Showdown1) {
     state.showdowns[1].owner = move.playerId;
-  }
-
-  if (state.meeplesInHand.length == 0) {
-    // no more meeples to place, time to resolve
-    state.currentPhase = Phase.ResolveMeeples
-    state.meeplesSourceLocation = Location_None
-    state.meeplePlacingDirection = Direction.None
-    state.previousMeeplePlacingSpace = Space_None
-  } else {
-    // place remaining meeples
-    state.currentPhase = Phase.PlaceMeeples
   }
 }
 
