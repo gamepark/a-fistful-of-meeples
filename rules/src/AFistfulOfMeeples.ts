@@ -304,8 +304,4 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
     }
   }
 
-  endOfGameTriggered(): boolean {
-    return this.state.goldBarsInBank == 0 || this.state.graveyard.length >= 6 || (this.state.dynamitesInJail == 0 && this.state.dynamitesInMiningBag == 0)
-  }
-
 }
