@@ -2,7 +2,7 @@ import GameState, { Direction, Location_Showdown0, Location_Showdown1, getNextSp
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
 import Phase, { setCurrentPhase } from '../Phase'
-import Meeple from '../Meeple'
+import MeepleType from '../MeepleType'
 
 /**
  * Here is a example a of move involving hidden information
@@ -11,7 +11,7 @@ import Meeple from '../Meeple'
 type PlaceMeeple = {
   type: MoveType.PlaceMeeple
   playerId: PlayerColor
-  meeple: Meeple
+  meeple: MeepleType
   space: number
 }
 
@@ -19,9 +19,9 @@ export default PlaceMeeple
 
 
 function placeOnShowdownSpace(state: GameState, move: PlaceMeeple, showdownIndex: number) {
-  if (state.showdowns[showdownIndex].meeple != Meeple.None) return console.error('There is already a meeple on showdown space ', showdownIndex)
-  if (move.meeple == Meeple.Madame) {
-    state.saloon.push(Meeple.Madame)  // shall Madame be placed on a showdown space, send her to saloon instead
+  if (state.showdowns[showdownIndex].meeple != MeepleType.None) return console.error('There is already a meeple on showdown space ', showdownIndex)
+  if (move.meeple == MeepleType.Madame) {
+    state.saloon.push(MeepleType.Madame)  // shall Madame be placed on a showdown space, send her to saloon instead
   } else {
     state.showdowns[showdownIndex].meeple = move.meeple;
     if (state.showdowns[1 - showdownIndex].owner != move.playerId) {

@@ -1,7 +1,7 @@
 import PlayerState from './PlayerState'
 import { initialisePlayerState } from './PlayerState'
 import PlayerColor from './PlayerColor'
-import Meeple from './Meeple'
+import MeepleType from './MeepleType'
 import Phase from './Phase'
 import { AFistfulOfMeeplesOptions } from './AFistfulOfMeeplesOptions'
 import shuffle from 'lodash.shuffle'
@@ -43,7 +43,7 @@ type PendingEffect = { type: PendingEffectType.ChooseAnotherPlayerShowdownToken,
   | { type: PendingEffectType.ResolveShowdown }
   | { type: PendingEffectType.DrawFromBag, player: PlayerColor, content: MiningBagContent[] }
   | { type: PendingEffectType.DynamiteExplosion }
-  | { type: PendingEffectType.MoveMeeples, meeples: Meeple, sourceLocation: number, destinationLocation: number }
+  | { type: PendingEffectType.MoveMeeples, meeples: MeepleType, sourceLocation: number, destinationLocation: number }
 
 type BuildingCost = {
   gold: number
@@ -82,11 +82,11 @@ type GameState = {
   goldCubesInMiningBag: number  // number of gold cubes in bag
   stoneCubesInMiningBag: number // number of stone cubes in bag
   dynamitesInMiningBag: number  // number of dynamite tokens in bag
-  saloon: Meeple[]  // array of meeples in saloon
-  jail: Meeple[]  // array of meeples in jail
-  graveyard: Meeple[] // array of meeples in graveyard
-  buildings: Meeple[][] // 12 arrays of meeples, one for each building
-  doorways: Meeple[]  // 12 meeple places, one for the doorway of each building
+  saloon: MeepleType[]  // array of meeples in saloon
+  jail: MeepleType[]  // array of meeples in jail
+  graveyard: MeepleType[] // array of meeples in graveyard
+  buildings: MeepleType[][] // 12 arrays of meeples, one for each building
+  doorways: MeepleType[]  // 12 meeple places, one for the doorway of each building
   showdowns: ShowdownPlace[] // 2 showdown places (meeple + owner)
   marquees: Marquee[] // one Marquee for each building, indicating the owner of the marquee and whether it's upgraded or not
 
@@ -94,7 +94,7 @@ type GameState = {
   activePlayer: PlayerColor  // None if game is over
   currentPhase: Phase // current phase of the game (see Phase)
   meeplesSourceLocation: number  // Location where meeples where taken from
-  meeplesInHand: Meeple[] // Meeples player took from source location, waiting to be placed
+  meeplesInHand: MeepleType[] // Meeples player took from source location, waiting to be placed
   meeplePlacingDirection: Direction // Direction in which meeples are being placed
   previousMeeplePlacingSpace: number // Space where previous meeple was placed
 
@@ -112,12 +112,12 @@ export function initialiseGameState(options: AFistfulOfMeeplesOptions): GameStat
     goldCubesInMiningBag: 36,
     stoneCubesInMiningBag: 18,
     dynamitesInMiningBag: 0,
-    saloon: [Meeple.Madame],
+    saloon: [MeepleType.Madame],
     jail: [],
     graveyard: [],
-    buildings: new Array<Meeple[]>(12),
-    doorways: new Array<Meeple>(12),
-    showdowns: [{ meeple: Meeple.None, owner: PlayerColor.None, dice: 0 }, { meeple: Meeple.None, owner: PlayerColor.None, dice: 0 }],
+    buildings: new Array<MeepleType[]>(12),
+    doorways: new Array<MeepleType>(12),
+    showdowns: [{ meeple: MeepleType.None, owner: PlayerColor.None, dice: 0 }, { meeple: MeepleType.None, owner: PlayerColor.None, dice: 0 }],
     marquees: new Array<Marquee>(12).fill({ owner: PlayerColor.None, upgraded: false }, 0, 12),
 
     startingPlayer: PlayerColor.Orange,
@@ -131,7 +131,7 @@ export function initialiseGameState(options: AFistfulOfMeeplesOptions): GameStat
     pendingEffects: [],
   }
 
-  let meeples: Meeple[] = shuffle(new Array<Meeple>(36).fill(Meeple.Deputy, 0, 4).fill(Meeple.Robber, 4, 9).fill(Meeple.Miner, 9, 15).fill(Meeple.Builder, 15, 36));
+  let meeples: MeepleType[] = shuffle(new Array<MeepleType>(36).fill(MeepleType.Deputy, 0, 4).fill(MeepleType.Robber, 4, 9).fill(MeepleType.Miner, 9, 15).fill(MeepleType.Builder, 15, 36));
   let i: number;
   for (i = 0; i < 12; ++i) {
     gameState.buildings[i] = meeples.slice(i * 3, i * 3 + 3);
@@ -144,11 +144,11 @@ export function getNextSpace(space: number, state: GameState): number {
     case Location_Showdown0:
       return 1
     case 6:
-      return (state.showdowns[1].meeple === Meeple.None) ? Location_Showdown1 : 7
+      return (state.showdowns[1].meeple === MeepleType.None) ? Location_Showdown1 : 7
     case Location_Showdown1:
       return 7
     case 12:
-      return (state.showdowns[0].meeple === Meeple.None) ? Location_Showdown0 : 1
+      return (state.showdowns[0].meeple === MeepleType.None) ? Location_Showdown0 : 1
     default:
       return space + 1;
   }
@@ -159,11 +159,11 @@ export function getPreviousSpace(space: number, state: GameState): number {
     case Location_Showdown0:
       return 12
     case 7:
-      return (state.showdowns[1].meeple === Meeple.None) ? Location_Showdown1 : 6
+      return (state.showdowns[1].meeple === MeepleType.None) ? Location_Showdown1 : 6
     case Location_Showdown1:
       return 6
     case 1:
-      return (state.showdowns[0].meeple === Meeple.None) ? Location_Showdown0 : 12
+      return (state.showdowns[0].meeple === MeepleType.None) ? Location_Showdown0 : 12
     default:
       return space - 1;
   }
@@ -172,11 +172,11 @@ export function getPreviousSpace(space: number, state: GameState): number {
 export function isSpaceEmpty(space: number, state: GameState): boolean {
   switch (space) {
     case Location_Showdown0:
-      return state.showdowns[0].meeple === Meeple.None
+      return state.showdowns[0].meeple === MeepleType.None
     case Location_Showdown1:
-      return state.showdowns[1].meeple === Meeple.None
+      return state.showdowns[1].meeple === MeepleType.None
     default:
-      return state.doorways[space] == Meeple.None
+      return state.doorways[space] == MeepleType.None
   }
 }
 

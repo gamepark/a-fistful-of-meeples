@@ -2,7 +2,7 @@ import GameState, { Location_Showdown0, Location_Showdown1, canPayBuildingCost, 
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
 import Phase, { setCurrentPhase } from '../Phase'
-import Meeple from '../Meeple'
+import MeepleType from '../MeepleType'
 import PlayerState from '../PlayerState'
 import { drawCubesFromBag } from '../MiningBag'
 import { getShowdownHighestShootingSkill, ShowdownResult } from '../Showdown'
@@ -42,14 +42,14 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
       }
       break
     default:
-      const meeple: Meeple = state.doorways[move.space]
-      if (meeple == Meeple.None) return console.error('No meeple in doorway ', move.space)
+      const meeple: MeepleType = state.doorways[move.space]
+      if (meeple == MeepleType.None) return console.error('No meeple in doorway ', move.space)
 
       // remove meeple from doorway
-      state.doorways[move.space] = Meeple.None
+      state.doorways[move.space] = MeepleType.None
 
       switch (meeple) {
-        case Meeple.Builder:
+        case MeepleType.Builder:
           let owner: PlayerState | undefined
           if (state.marquees[move.space].owner === PlayerColor.None) {
             // no marquee ? current player may build one
@@ -68,7 +68,7 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
             }
           }
           break;
-        case Meeple.Miner:
+        case MeepleType.Miner:
           if (state.marquees[move.space].owner !== PlayerColor.None) {
             state.pendingEffects.unshift({
               type: PendingEffectType.DrawFromBag,
@@ -77,9 +77,9 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
             })
           }
           break;
-        case Meeple.Robber:
+        case MeepleType.Robber:
           {
-            const numberOfMiners: number = state.buildings[move.space].filter(meeple => meeple === Meeple.Miner).length
+            const numberOfMiners: number = state.buildings[move.space].filter(meeple => meeple === MeepleType.Miner).length
             if (numberOfMiners > 0) {
               state.pendingEffects.unshift({
                 type: PendingEffectType.DrawFromBag,
@@ -89,13 +89,13 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
             }
           }
           break;
-        case Meeple.Deputy:
+        case MeepleType.Deputy:
           {
-            const numberOfRobbers: number = state.buildings[move.space].filter(meeple => meeple === Meeple.Robber).length
+            const numberOfRobbers: number = state.buildings[move.space].filter(meeple => meeple === MeepleType.Robber).length
             if (numberOfRobbers > 0) {
               state.pendingEffects.unshift({
                 type: PendingEffectType.MoveMeeples,
-                meeples: Meeple.Robber,
+                meeples: MeepleType.Robber,
                 sourceLocation: move.space,
                 destinationLocation: Location_Jail
               })
@@ -107,13 +107,13 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
             }
           }
           break;
-        case Meeple.Madame:
+        case MeepleType.Madame:
           {
-            const numberOfBuilders: number = state.buildings[move.space].filter(meeple => meeple === Meeple.Builder).length
+            const numberOfBuilders: number = state.buildings[move.space].filter(meeple => meeple === MeepleType.Builder).length
             if (numberOfBuilders > 0) {
               state.pendingEffects.unshift({
                 type: PendingEffectType.MoveMeeples,
-                meeples: Meeple.Builder,
+                meeples: MeepleType.Builder,
                 sourceLocation: move.space,
                 destinationLocation: Location_Saloon
               })
@@ -132,7 +132,7 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
       break
   }
 
-  if ((state.showdowns[0].meeple === Meeple.None || state.showdowns[1].meeple === Meeple.None) && state.doorways.every(doorway => doorway == Meeple.None)) {
+  if ((state.showdowns[0].meeple === MeepleType.None || state.showdowns[1].meeple === MeepleType.None) && state.doorways.every(doorway => doorway == MeepleType.None)) {
     // no more meeples to resolve : advance to next phase
     setCurrentPhase(Phase.CheckGoldBars, state)
   }

@@ -1,25 +1,25 @@
 /** @jsxImportSource @emotion/react */
 import {css, keyframes} from '@emotion/react'
 import GameState from '@gamepark/a-fistful-of-meeples/GameState'
+import { usePlayerId } from '@gamepark/react-client'
 import {Letterbox} from '@gamepark/react-components'
+import PlayerColor from '../../rules/src/PlayerColor'
+import Board from './material/Board'
 
 type Props = {
   game: GameState
 }
 
 export default function GameDisplay({ game }: Props) {
+  const playerColor = usePlayerId<PlayerColor>()
+
   return (
     <Letterbox css={letterBoxStyle} top={0}>
-      <div css={css`position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-size: 3rem;`}>
-        {JSON.stringify(game)}
-      </div>
+      <Board game={game} player={playerColor} />
     </Letterbox>
   )
 }
+
 
 const fadeIn = keyframes`
   from, 50% {
@@ -33,3 +33,4 @@ const fadeIn = keyframes`
 const letterBoxStyle = css`
   animation: ${fadeIn} 3s ease-in forwards;
 `
+

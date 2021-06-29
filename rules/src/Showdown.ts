@@ -1,9 +1,9 @@
 import GameState from './GameState'
-import Meeple from './Meeple'
+import MeepleType from './MeepleType'
 import PlayerColor from './PlayerColor'
 
 type ShowdownPlace = {
-  meeple: Meeple
+  meeple: MeepleType
   owner: PlayerColor
   dice: number
 }
@@ -16,15 +16,15 @@ export enum ShowdownResult {
   Showdown1,
 }
 
-export function getShootingSkill(meeple: Meeple): number {
+export function getShootingSkill(meeple: MeepleType): number {
   switch (meeple) {
-    case Meeple.Deputy:
+    case MeepleType.Deputy:
       return 4
-    case Meeple.Robber:
+    case MeepleType.Robber:
       return 3
-    case Meeple.Miner:
+    case MeepleType.Miner:
       return 2
-    case Meeple.Builder:
+    case MeepleType.Builder:
       return 1
     default:
       console.error('Unexpected meeple type, no shooting skill defined for ', meeple)

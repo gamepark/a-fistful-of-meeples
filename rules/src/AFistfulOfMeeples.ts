@@ -4,7 +4,7 @@ import Move from './moves/Move'
 import MoveType from './moves/MoveType'
 import PlayerColor from './PlayerColor'
 import Phase from './Phase'
-import Meeple from './Meeple'
+import MeepleType from './MeepleType'
 import { isGameOptions, AFistfulOfMeeplesOptions } from './AFistfulOfMeeplesOptions'
 import { placeInitialMarqueeTile } from './moves/PlaceInitialMarqueeTile'
 import { selectSourceLocation } from './moves/SelectSourceLocation'
@@ -143,19 +143,19 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
                 for (i = 1; i <= 12; ++i) {
                   this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: i, meeple: meeple }))
                 }
-                if (this.state.showdowns[0].meeple == Meeple.None) {
+                if (this.state.showdowns[0].meeple == MeepleType.None) {
                   this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown0, meeple: meeple }))
                 }
-                if (this.state.showdowns[1].meeple == Meeple.None) {
+                if (this.state.showdowns[1].meeple == MeepleType.None) {
                   this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown1, meeple: meeple }))
                 }
                 break
               default:
                 this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: this.state.meeplesSourceLocation, meeple: meeple }))
-                if ((this.state.meeplesSourceLocation == 1 || this.state.meeplesSourceLocation == 12) && this.state.showdowns[0].meeple == Meeple.None) {
+                if ((this.state.meeplesSourceLocation == 1 || this.state.meeplesSourceLocation == 12) && this.state.showdowns[0].meeple == MeepleType.None) {
                   this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown0, meeple: meeple }))
                 }
-                if ((this.state.meeplesSourceLocation == 6 || this.state.meeplesSourceLocation == 7) && this.state.showdowns[1].meeple == Meeple.None) {
+                if ((this.state.meeplesSourceLocation == 6 || this.state.meeplesSourceLocation == 7) && this.state.showdowns[1].meeple == MeepleType.None) {
                   this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown1, meeple: meeple }))
                 }
                 break
@@ -178,7 +178,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
 
             if (spaces.length > 0) {
               // build available moves (only once for each meeple type)
-              const meeples: Meeple[] = []
+              const meeples: MeepleType[] = []
               this.state.meeplesInHand.forEach(meeple => {
                 if (!meeples.includes(meeple))
                   meeples.push(meeple)
@@ -192,12 +192,12 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
           break
 
         case Phase.ResolveMeeples:
-          if (this.state.showdowns[0].meeple != Meeple.None && this.state.showdowns[1].meeple != Meeple.None) {
+          if (this.state.showdowns[0].meeple != MeepleType.None && this.state.showdowns[1].meeple != MeepleType.None) {
             moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: Location_Showdown0 })
             moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: Location_Showdown1 })
           }
           for (i = 1; i < 12; ++i) {
-            if (this.state.doorways[i] != Meeple.None) {
+            if (this.state.doorways[i] != MeepleType.None) {
               moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: i })
             }
           }
