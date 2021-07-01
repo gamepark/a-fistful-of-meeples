@@ -62,3 +62,31 @@ export const buildingsPosition = [
   [446 / boardImageWidth * 100, 710 / boardImageHeight * 100],
   [217 / boardImageWidth * 100, 710 / boardImageHeight * 100],
 ]
+
+export const doorwaysPosition = [
+  [295 / boardImageWidth * 100, 395 / boardImageHeight * 100],
+  [522 / boardImageWidth * 100, 395 / boardImageHeight * 100],
+  [748 / boardImageWidth * 100, 395 / boardImageHeight * 100],
+  [972 / boardImageWidth * 100, 395 / boardImageHeight * 100],
+  [1200 / boardImageWidth * 100, 395 / boardImageHeight * 100],
+  [1425 / boardImageWidth * 100, 395 / boardImageHeight * 100],
+  [1425 / boardImageWidth * 100, 630 / boardImageHeight * 100],
+  [1200 / boardImageWidth * 100, 630 / boardImageHeight * 100],
+  [972 / boardImageWidth * 100, 630 / boardImageHeight * 100],
+  [748 / boardImageWidth * 100, 630 / boardImageHeight * 100],
+  [522 / boardImageWidth * 100, 630 / boardImageHeight * 100],
+  [295 / boardImageWidth * 100, 630 / boardImageHeight * 100],
+]
+
+export const saloonPosition = [1570 / boardImageWidth * 100, 100 / boardImageHeight * 100]
+
+export const graveyardPositions = [
+  [45 / boardImageWidth * 100, 905 / boardImageHeight * 100],
+  [110 / boardImageWidth * 100, 890 / boardImageHeight * 100],
+  [45 / boardImageWidth * 100, 810 / boardImageHeight * 100],
+  [110 / boardImageWidth * 100, 790 / boardImageHeight * 100],
+  [45 / boardImageWidth * 100, 700 / boardImageHeight * 100],
+  [110 / boardImageWidth * 100, 690 / boardImageHeight * 100],
+]
+
+export const jailPosition = [42 / boardImageWidth * 100, 248 / boardImageHeight * 100]

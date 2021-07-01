@@ -42,8 +42,11 @@ export function moveMeeples(state: GameState, move: MoveMeeples): void {
       break;
 
     case Location_Graveyard:
-      for (let i: number = 0; i < numberOfMeeples; ++i)
-        state.graveyard.push(move.meeples)
+      for (let i: number = 0; i < numberOfMeeples; ++i) {
+        if (state.graveyard.length < 6) {
+          state.graveyard.push(move.meeples)
+        }
+      }
       break
 
     default:
