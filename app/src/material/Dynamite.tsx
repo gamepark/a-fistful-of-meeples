@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { useTranslation } from 'react-i18next'
-import { dynamiteHeight, dynamiteWidth } from '../util/Styles'
+import { dynamiteHeight, dynamiteWidth } from '../util/Metrics'
 import Images from './Images'
 
 

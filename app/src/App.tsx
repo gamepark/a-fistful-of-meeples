@@ -1,17 +1,19 @@
 /** @jsxImportSource @emotion/react */
 import { css, Global } from '@emotion/react'
 import GameState from '@gamepark/a-fistful-of-meeples/GameState'
-import {FailuresDialog, FullscreenDialog, Menu, useGame} from '@gamepark/react-client'
+import {FailuresDialog, FullscreenDialog, Menu, useGame, usePlayer} from '@gamepark/react-client'
 import {Header, LoadingScreen} from '@gamepark/react-components'
 import {useEffect, useState} from 'react'
 import {DndProvider} from 'react-dnd-multi-backend'
 import HTML5ToTouch from 'react-dnd-multi-backend/dist/cjs/HTML5toTouch'
+import PlayerColor from '../../rules/src/PlayerColor'
 import GameDisplay from './GameDisplay'
 import HeaderText from './HeaderText'
 import Cover from './images/Cover.jpg'
 
 export default function App() {
   const game = useGame<GameState>()
+  const player = usePlayer<PlayerColor>()
   const [isJustDisplayed, setJustDisplayed] = useState(true)
   useEffect(() => {
     setTimeout(() => setJustDisplayed(false), 2000)
@@ -21,8 +23,8 @@ export default function App() {
     <DndProvider options={HTML5ToTouch}>
       <Global styles={globalStyle} />
       {game && <GameDisplay game={game}/>}
-      <LoadingScreen display={loading} gameBox={Cover} author="Jonathan “Jonny Pac” Cantin" artist="Mihajlo Dimitrievski – The Mico" publisher="Final Frontier Games" developer="Jagrin"/>
-      <Header><HeaderText loading={loading} game={game}/></Header>
+      <LoadingScreen display={loading} gameBox={Cover} author="Jonathan “Jonny Pac” Cantin" artist="Mihajlo Dimitrievski – The Mico" publisher="Final Frontier Games" developer="Jagrin" />
+      <Header><HeaderText loading={loading} game={game} player={player?.id} /></Header>
       <Menu/>
       <FailuresDialog/>
       <FullscreenDialog/>

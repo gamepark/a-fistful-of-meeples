@@ -116,12 +116,12 @@ export function initialiseGameState(options: AFistfulOfMeeplesOptions): GameStat
     jail: [],
     graveyard: [],
     buildings: new Array<MeepleType[]>(12),
-    doorways: new Array<MeepleType>(12),
+    doorways: new Array<MeepleType>(12).fill(MeepleType.None),
     showdowns: [{ meeple: MeepleType.None, owner: PlayerColor.None, dice: 0 }, { meeple: MeepleType.None, owner: PlayerColor.None, dice: 0 }],
     marquees: new Array<Marquee>(12).fill({ owner: PlayerColor.None, upgraded: false }, 0, 12),
 
-    startingPlayer: PlayerColor.Orange,
-    activePlayer: PlayerColor.Black,
+    startingPlayer: options.players[0].id,
+    activePlayer: options.players[options.players.length - 1].id,
     currentPhase: Phase.PlaceInitialMarqueeTiles,
     meeplesSourceLocation: Location_None,
     meeplesInHand: [],
@@ -196,5 +196,11 @@ export function getPreviousPlayer(state: GameState, playerColor: PlayerColor): P
 
 export function endOfGameTriggered(state: GameState): boolean {
   return state.goldBarsInBank == 0 || state.graveyard.length >= 6 || (state.dynamitesInJail == 0 && state.dynamitesInMiningBag == 0)
+}
+
+export function getPlayerScore(state: GameState, player: PlayerColor): number {
+  const playerState: PlayerState = state.players.find(ps => ps.color = player)!
+  // compute score : gold bars, gold pieces and marquees
+  return playerState.goldPieces + 10 * playerState.goldBars + state.marquees.map<number>(marquee => marquee.owner == player ? (marquee.upgraded ? 10 : 5) : 0).reduce((previous: number, current: number) => previous + current, 0)
 }
 

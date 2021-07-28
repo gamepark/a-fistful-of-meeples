@@ -34,6 +34,23 @@ export const miningBagHeight = miningBagWidth / miningBagRatio * screenRatio
 export const miningBagLeft = -miningBagWidth - 2
 export const miningBagTop = 4
 
+export const playerInfoRatio = 64 / 64
+export const playerInfoWidth = 8
+export const playerInfoHeight = playerInfoWidth / playerInfoRatio * screenRatio
+export const playerInfoPositions = [
+  [-playerInfoWidth - 2, miningBagTop + miningBagHeight + 4],
+  [-playerInfoWidth - 2, miningBagTop + miningBagHeight + playerInfoHeight + 6],
+  [-playerInfoWidth - 2, miningBagTop + miningBagHeight + playerInfoHeight * 2 + 8],
+  [-playerInfoWidth - 2, miningBagTop + miningBagHeight + playerInfoHeight * 3 + 10],
+]
+
+export const goldCubeRatio = 101 / 115
+export const goldCubeWidth = 3
+export const goldCubeHeight = goldCubeWidth / goldCubeRatio
+
+export const stoneCubeRatio = 103 / 121
+export const stoneCubeWidth = 3
+export const stoneCubeHeight = stoneCubeWidth / stoneCubeRatio
 
 export const dynamiteRatio = 131 / 147
 export const dynamiteWidth = 1.9
@@ -42,6 +59,25 @@ export const dynamitePositions = [
   [35 / boardImageWidth * 100, 93 / boardImageHeight * 100],
   [95 / boardImageWidth * 100, 93 / boardImageHeight * 100],
   [155 / boardImageWidth * 100, 93 / boardImageHeight * 100]
+]
+
+export const marqueeRatio = 484 / 167
+export const marqueeWidth = 11.8
+export const marqueeHeight = marqueeWidth / marqueeRatio * screenRatio
+
+export const marqueesPosition = [
+  [209 / boardImageWidth * 100, 50 / boardImageHeight * 100],
+  [435 / boardImageWidth * 100, 50 / boardImageHeight * 100],
+  [661 / boardImageWidth * 100, 50 / boardImageHeight * 100],
+  [887 / boardImageWidth * 100, 50 / boardImageHeight * 100],
+  [1113 / boardImageWidth * 100, 50 / boardImageHeight * 100],
+  [1339 / boardImageWidth * 100, 50 / boardImageHeight * 100],
+  [1339 / boardImageWidth * 100, 948 / boardImageHeight * 100],
+  [1113 / boardImageWidth * 100, 948 / boardImageHeight * 100],
+  [887 / boardImageWidth * 100, 948 / boardImageHeight * 100],
+  [661 / boardImageWidth * 100, 948 / boardImageHeight * 100],
+  [435 / boardImageWidth * 100, 948 / boardImageHeight * 100],
+  [209 / boardImageWidth * 100, 948 / boardImageHeight * 100],
 ]
 
 export const meepleRatio = 286 / 350
@@ -90,3 +126,29 @@ export const graveyardPositions = [
 ]
 
 export const jailPosition = [42 / boardImageWidth * 100, 248 / boardImageHeight * 100]
+
+export const showdownMeeplePositions = [
+  [258 / boardImageWidth * 100, 550 / boardImageHeight * 100],
+  [1458 / boardImageWidth * 100, 550 / boardImageHeight * 100],
+]
+
+export const showdownTokenRatio = 236 / 236
+export const showdownTokenWidth = 6.5
+export const showdownTokenHeight = showdownTokenWidth / showdownTokenRatio * screenRatio
+
+export const showdownTokenPositions = [
+  [218 / boardImageWidth * 100, 475 / boardImageHeight * 100],
+  [1420 / boardImageWidth * 100, 475 / boardImageHeight * 100],
+]
+
+export const phaseRatio = 64 / 64
+export const phaseWidth = 6
+export const phaseHeight = phaseWidth / phaseRatio * screenRatio
+export const phasesPositions = [
+  [102, 4],
+  [102, 4 + phaseHeight + 4],
+  [102, 4 + (phaseHeight + 4) * 2],
+  [102, 4 + (phaseHeight + 4) * 3],
+]
+
+export const meeplesInHandPosition = [ 101, 70 ]

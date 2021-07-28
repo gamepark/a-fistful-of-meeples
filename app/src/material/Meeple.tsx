@@ -2,7 +2,7 @@
 import { css } from '@emotion/react'
 import { useTranslation } from 'react-i18next'
 import MeepleType from '../../../rules/src/MeepleType'
-import { meepleHeight, meepleWidth } from '../util/Styles'
+import { meepleHeight, meepleWidth } from '../util/Metrics'
 import Images from './Images'
 
 
@@ -32,8 +32,9 @@ const getMeepleName = (type: MeepleType) => {
       return 'Deputy'
     case MeepleType.Madame:
       return 'Madame'
+    default:
+      return ''
   }
-  return ''
 }
 
 const getMeepleImage = (type: MeepleType) => {
@@ -48,8 +49,9 @@ const getMeepleImage = (type: MeepleType) => {
       return Images.deputy
     case MeepleType.Madame:
       return Images.madame
+    default:
+      return undefined
   }
-  return undefined
 }
 
 const getMeepleStyle = (left: number, top: number) => css`

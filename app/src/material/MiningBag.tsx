@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { miningBagHeight, miningBagWidth } from '../util/Styles'
+import { miningBagHeight, miningBagWidth } from '../util/Metrics'
 import Images from './Images'
 
 
