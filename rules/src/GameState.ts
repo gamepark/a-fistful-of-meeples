@@ -13,13 +13,17 @@ type Marquee = {
   upgraded: boolean
 }
 
-export const Location_None: number = 0;
-// Locations 1-12 are buildings
-export const Location_Showdown0: number = 13;
-export const Location_Showdown1: number = 14;
-export const Location_Saloon: number = 15;
-export const Location_Jail: number = 16;
-export const Location_Graveyard: number = 17;
+export const Location_None: number = -1;
+// Locations 0-11 are buildings
+export const Location_Showdown0: number = 12;
+export const Location_Showdown1: number = 13;
+export const Location_Saloon: number = 14;
+export const Location_Jail: number = 15;
+export const Location_Graveyard: number = 16;
+
+export function isBuildingLocation(location: number): boolean {
+  return location >= 0 && location < 12
+}
 
 export enum Direction {
     None = 0,
@@ -93,10 +97,9 @@ type GameState = {
   startingPlayer: PlayerColor // which was the first player
   activePlayer: PlayerColor  // None if game is over
   currentPhase: Phase // current phase of the game (see Phase)
-  meeplesSourceLocation: number  // Location where meeples where taken from
   meeplesInHand: MeepleType[] // Meeples player took from source location, waiting to be placed
   meeplePlacingDirection: Direction // Direction in which meeples are being placed
-  previousMeeplePlacingSpace: number // Space where previous meeple was placed
+  previousMeepleLocation: number // Space where previous meeple was placed (or location where meeples where taken from)
 
   pendingEffects: PendingEffect[] // effects which must be resolved before going on with the game. 
 }
@@ -123,10 +126,9 @@ export function initialiseGameState(options: AFistfulOfMeeplesOptions): GameStat
     startingPlayer: options.players[0].id,
     activePlayer: options.players[options.players.length - 1].id,
     currentPhase: Phase.PlaceInitialMarqueeTiles,
-    meeplesSourceLocation: Location_None,
     meeplesInHand: [],
     meeplePlacingDirection: Direction.None,
-    previousMeeplePlacingSpace: Location_None,
+    previousMeepleLocation: Location_None,
 
     pendingEffects: [],
   }
@@ -137,47 +139,6 @@ export function initialiseGameState(options: AFistfulOfMeeplesOptions): GameStat
     gameState.buildings[i] = meeples.slice(i * 3, i * 3 + 3);
   }
   return gameState;
-}
-
-export function getNextSpace(space: number, state: GameState): number {
-  switch (space) {
-    case Location_Showdown0:
-      return 1
-    case 6:
-      return (state.showdowns[1].meeple === MeepleType.None) ? Location_Showdown1 : 7
-    case Location_Showdown1:
-      return 7
-    case 12:
-      return (state.showdowns[0].meeple === MeepleType.None) ? Location_Showdown0 : 1
-    default:
-      return space + 1;
-  }
-}
-
-export function getPreviousSpace(space: number, state: GameState): number {
-  switch (space) {
-    case Location_Showdown0:
-      return 12
-    case 7:
-      return (state.showdowns[1].meeple === MeepleType.None) ? Location_Showdown1 : 6
-    case Location_Showdown1:
-      return 6
-    case 1:
-      return (state.showdowns[0].meeple === MeepleType.None) ? Location_Showdown0 : 12
-    default:
-      return space - 1;
-  }
-}
-
-export function isSpaceEmpty(space: number, state: GameState): boolean {
-  switch (space) {
-    case Location_Showdown0:
-      return state.showdowns[0].meeple === MeepleType.None
-    case Location_Showdown1:
-      return state.showdowns[1].meeple === MeepleType.None
-    default:
-      return state.doorways[space] == MeepleType.None
-  }
 }
 
 export function getNextPlayer(state: GameState, playerColor: PlayerColor): PlayerColor {

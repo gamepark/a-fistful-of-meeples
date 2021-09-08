@@ -11,6 +11,7 @@ import DynamiteExplosion from './DynamiteExplosion'
 import ResolveShowdown from './ResolveShowdown'
 import RerollShowdownDice from './RerollShowdownDice'
 import CheckGoldBars from './CheckGoldBars'
+import MoveType from './MoveType'
 
 /**
  * A "Move" is the combination of all the types of moves that exists in you game
@@ -19,3 +20,15 @@ type Move = PlaceInitialMarqueeTile | SelectSourceLocation | PlaceMeeple | Choos
   | DrawFromBag | SendExtraMeeplesToSaloon | MoveMeeples | DynamiteExplosion | RerollShowdownDice | ResolveShowdown | CheckGoldBars
 
 export default Move
+
+export function isPlaceInitialMarqueeTileMove(move: Move): move is PlaceInitialMarqueeTile {
+  return move.type === MoveType.PlaceInitialMarqueeTile
+}
+
+export function isSelectSourceLocationMove(move: Move): move is SelectSourceLocation {
+  return move.type === MoveType.SelectSourceLocation
+}
+
+export function isPlaceMeepleMove(move: Move): move is PlaceMeeple {
+  return move.type === MoveType.PlaceMeeple
+}

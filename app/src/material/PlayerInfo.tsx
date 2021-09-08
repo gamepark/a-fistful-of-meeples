@@ -64,7 +64,7 @@ const getPlayerInfoStyle = (left: number, top: number, color: PlayerColor, isAct
   top: ${top}%;
   width: ${playerInfoWidth}%;
   height: ${playerInfoHeight}%;
-  ${isActive && 'border-image: url(' + Images.redOutline + ') 1 / 5% round;'}
+  ${isActive && 'filter: drop-shadow(0 0.2em 0.2em black) drop-shadow(0 0 0.2em red)'}
 `
 
 

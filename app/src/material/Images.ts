@@ -23,11 +23,14 @@ import upgradedBlackMarquee from '../images/UpgradedBlackMarquee.png'
 import upgradedGreenMarquee from '../images/UpgradedGreenMarquee.png'
 import upgradedOrangeMarquee from '../images/UpgradedOrangeMarquee.png'
 import upgradedGreyMarquee from '../images/UpgradedGreyMarquee.png'
+import marqueeSelecter from '../images/MarqueeSelecter.png'
+import buildingSelecter from '../images/BuildingSelecter.png'
+import doorwaySelecter from '../images/DoorwaySelecter.png'
+import showdownSelecter from '../images/ShowdownSelecter.png'
 import playerBlack from '../images/Black.jpg'
 import playerGreen from '../images/Green.jpg'
 import playerOrange from '../images/Orange.jpg'
 import playerGrey from '../images/Grey.jpg'
-import redOutline from '../images/RedOutline.png'
 import phase1 from '../images/Phase1.jpg'
 import phase2 from '../images/Phase2.jpg'
 import phase3 from '../images/Phase3.jpg'
@@ -57,11 +60,14 @@ const Images = {
   upgradedGreenMarquee,
   upgradedOrangeMarquee,
   upgradedGreyMarquee,
+  marqueeSelecter,
+  buildingSelecter,
+  doorwaySelecter,
+  showdownSelecter,
   playerBlack,
   playerGreen,
   playerOrange,
   playerGrey,
-  redOutline,
   phase1,
   phase2,
   phase3,

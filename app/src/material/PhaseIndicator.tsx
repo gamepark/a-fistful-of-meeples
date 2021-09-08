@@ -46,6 +46,6 @@ const getPhaseStyle = (left: number, top: number, phase: Phase, isActive: boolea
   top: ${top}%;
   width: ${phaseWidth}%;
   height: ${phaseHeight}%;
-  ${isActive && 'border-image: url(' + Images.redOutline + ') 1 / 5% round;'}
+  ${isActive && 'filter: drop-shadow(0 0.2em 0.2em black) drop-shadow(0 0 0.2em red)'}
 `
 

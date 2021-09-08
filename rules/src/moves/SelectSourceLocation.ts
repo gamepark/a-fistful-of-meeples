@@ -17,7 +17,7 @@ export default SelectSourceLocation
 
 export function selectSourceLocation(state: GameState, move: SelectSourceLocation) {
   if (state.players.find(player => player.color === move.playerId) === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
-  if (!((move.location >= 1 && move.location <= 12) || move.location == Location_Saloon || move.location == Location_Jail)) return console.error('Invalid location ', move.location, ' for taking meeples')
+  if (!((move.location >= 0 && move.location < 12) || move.location == Location_Saloon || move.location == Location_Jail)) return console.error('Invalid location ', move.location, ' for taking meeples')
 
   switch (move.location) {
     case Location_Saloon:
@@ -40,7 +40,7 @@ export function selectSourceLocation(state: GameState, move: SelectSourceLocatio
 
   if (state.meeplesInHand.length == 0) return console.error('No meeple in source location ', move.location)
 
-  state.meeplesSourceLocation = move.location
+  state.previousMeepleLocation = move.location
   setCurrentPhase(Phase.PlaceMeeples, state)
 }
 

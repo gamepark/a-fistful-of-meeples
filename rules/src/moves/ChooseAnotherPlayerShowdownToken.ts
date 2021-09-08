@@ -16,9 +16,9 @@ export default ChooseAnotherPlayerShowdownToken
 export function chooseAnotherPlayerToPlaceShowdownToken(state: GameState, move: ChooseAnotherPlayerShowdownToken) {
   if (state.players.find(player => player.color === move.playerId) === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
 
-  if (state.previousMeeplePlacingSpace === Location_Showdown0) {
+  if (state.previousMeepleLocation === Location_Showdown0) {
     state.showdowns[0].owner = move.playerId;
-  } else if (state.previousMeeplePlacingSpace === Location_Showdown1) {
+  } else if (state.previousMeepleLocation === Location_Showdown1) {
     state.showdowns[1].owner = move.playerId;
   }
 }

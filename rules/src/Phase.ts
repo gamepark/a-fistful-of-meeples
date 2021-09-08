@@ -19,9 +19,8 @@ export function setCurrentPhase(phase: Phase, state: GameState) : void {
 		case Phase.PlaceMeeples:
 			break
 		case Phase.ResolveMeeples:
-			state.meeplesSourceLocation = Location_None
 			state.meeplePlacingDirection = Direction.None
-			state.previousMeeplePlacingSpace = Location_None
+			state.previousMeepleLocation = Location_None
 			break
 		case Phase.CheckGoldBars:
 			break

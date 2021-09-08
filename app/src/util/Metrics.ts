@@ -62,22 +62,22 @@ export const dynamitePositions = [
 ]
 
 export const marqueeRatio = 484 / 167
-export const marqueeWidth = 11.8
+export const marqueeWidth = 12.5
 export const marqueeHeight = marqueeWidth / marqueeRatio * screenRatio
 
 export const marqueesPosition = [
-  [209 / boardImageWidth * 100, 50 / boardImageHeight * 100],
-  [435 / boardImageWidth * 100, 50 / boardImageHeight * 100],
-  [661 / boardImageWidth * 100, 50 / boardImageHeight * 100],
-  [887 / boardImageWidth * 100, 50 / boardImageHeight * 100],
-  [1113 / boardImageWidth * 100, 50 / boardImageHeight * 100],
-  [1339 / boardImageWidth * 100, 50 / boardImageHeight * 100],
-  [1339 / boardImageWidth * 100, 948 / boardImageHeight * 100],
-  [1113 / boardImageWidth * 100, 948 / boardImageHeight * 100],
-  [887 / boardImageWidth * 100, 948 / boardImageHeight * 100],
-  [661 / boardImageWidth * 100, 948 / boardImageHeight * 100],
-  [435 / boardImageWidth * 100, 948 / boardImageHeight * 100],
-  [209 / boardImageWidth * 100, 948 / boardImageHeight * 100],
+  [202 / boardImageWidth * 100, 47 / boardImageHeight * 100],
+  [431 / boardImageWidth * 100, 47 / boardImageHeight * 100],
+  [667 / boardImageWidth * 100, 47 / boardImageHeight * 100],
+  [883 / boardImageWidth * 100, 47 / boardImageHeight * 100],
+  [1110 / boardImageWidth * 100, 47 / boardImageHeight * 100],
+  [1332 / boardImageWidth * 100, 47 / boardImageHeight * 100],
+  [1332 / boardImageWidth * 100, 946 / boardImageHeight * 100],
+  [1110 / boardImageWidth * 100, 946 / boardImageHeight * 100],
+  [883 / boardImageWidth * 100, 946 / boardImageHeight * 100],
+  [667 / boardImageWidth * 100, 946 / boardImageHeight * 100],
+  [431 / boardImageWidth * 100, 946 / boardImageHeight * 100],
+  [202 / boardImageWidth * 100, 946 / boardImageHeight * 100],
 ]
 
 export const meepleRatio = 286 / 350
@@ -99,6 +99,12 @@ export const buildingsPosition = [
   [217 / boardImageWidth * 100, 710 / boardImageHeight * 100],
 ]
 
+export const buildingRatio = 251 / 220
+export const buildingWidth = 12.5
+export const buildingHeight = buildingWidth / buildingRatio * screenRatio
+export const buildingSelecterDeltaX = -1
+export const buildingSelecterDeltaY = -1.5
+
 export const doorwaysPosition = [
   [295 / boardImageWidth * 100, 395 / boardImageHeight * 100],
   [522 / boardImageWidth * 100, 395 / boardImageHeight * 100],
@@ -113,6 +119,12 @@ export const doorwaysPosition = [
   [522 / boardImageWidth * 100, 630 / boardImageHeight * 100],
   [295 / boardImageWidth * 100, 630 / boardImageHeight * 100],
 ]
+
+export const doorwayRatio = 66 / 60
+export const doorwayWidth = 3.8
+export const doorwayHeight = doorwayWidth / doorwayRatio * screenRatio
+export const doorwaySelecterDeltaX = -1
+export const doorwaySelecterDeltaY = -0.5
 
 export const saloonPosition = [1570 / boardImageWidth * 100, 100 / boardImageHeight * 100]
 
@@ -140,6 +152,15 @@ export const showdownTokenPositions = [
   [218 / boardImageWidth * 100, 475 / boardImageHeight * 100],
   [1420 / boardImageWidth * 100, 475 / boardImageHeight * 100],
 ]
+
+export const showdownSelecterPositions = [
+  [200 / boardImageWidth * 100, 380 / boardImageHeight * 100],
+  [1406 / boardImageWidth * 100, 380 / boardImageHeight * 100],
+]
+
+export const showdownSelecterRatio = 156 / 300
+export const showdownSelecterWidth = 8.5
+export const showdownSelecterHeight = showdownSelecterWidth / showdownSelecterRatio * screenRatio
 
 export const phaseRatio = 64 / 64
 export const phaseWidth = 6

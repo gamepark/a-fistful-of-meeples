@@ -1,5 +1,5 @@
 import { SequentialGame } from '@gamepark/rules-api'
-import GameState, { initialiseGameState, Location_Saloon, Location_Jail, Direction, getNextSpace, getPreviousSpace, isSpaceEmpty, PendingEffectType, Location_None, Location_Showdown0, Location_Showdown1 } from './GameState'
+import GameState, { initialiseGameState, Location_Saloon, Location_Jail, PendingEffectType, Location_Showdown0, Location_Showdown1 } from './GameState'
 import Move from './moves/Move'
 import MoveType from './moves/MoveType'
 import PlayerColor from './PlayerColor'
@@ -8,7 +8,7 @@ import MeepleType from './MeepleType'
 import { isGameOptions, AFistfulOfMeeplesOptions } from './AFistfulOfMeeplesOptions'
 import { placeInitialMarqueeTile } from './moves/PlaceInitialMarqueeTile'
 import { selectSourceLocation } from './moves/SelectSourceLocation'
-import { placeMeeple } from './moves/PlaceMeeple'
+import { getPlaceMeepleMove, isValidSpaceToPlaceMeeple, placeMeeple } from './moves/PlaceMeeple'
 import { chooseAnotherPlayerToPlaceShowdownToken } from './moves/ChooseAnotherPlayerShowdownToken'
 import { resolveMeeple } from './moves/ResolveMeeple'
 import { buildOrUpgradeMarquee } from './moves/BuildOrUpgradeMarquee'
@@ -113,7 +113,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
       switch (this.state.currentPhase) {
 
         case Phase.PlaceInitialMarqueeTiles:
-          [1, 6, 7, 12].forEach(i => {
+          [0, 5, 6, 11].forEach(i => {
             if (this.state.marquees[i].owner === PlayerColor.None) {
               moves.push({ type: MoveType.PlaceInitialMarqueeTile, playerId: this.state.activePlayer, location: i })
             }
@@ -121,7 +121,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
           break
 
         case Phase.SelectSourceLocation:
-          for (i = 1; i <= 12; ++i) {
+          for (i = 0; i < 12; ++i) {
             if (this.state.buildings[i].length > 0) {
               moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: i })
             }
@@ -135,59 +135,25 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
           break
 
         case Phase.PlaceMeeples:
-          if (this.state.previousMeeplePlacingSpace == Location_None) {
-            // first meeple to be placed : must be placed next to building they were taken from (or any space if taken from jail or saloon)
-            switch (this.state.meeplesSourceLocation) {
-              case Location_Saloon:
-              case Location_Jail:
-                for (i = 1; i <= 12; ++i) {
-                  this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: i, meeple: meeple }))
-                }
-                if (this.state.showdowns[0].meeple == MeepleType.None) {
-                  this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown0, meeple: meeple }))
-                }
-                if (this.state.showdowns[1].meeple == MeepleType.None) {
-                  this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown1, meeple: meeple }))
-                }
-                break
-              default:
-                this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: this.state.meeplesSourceLocation, meeple: meeple }))
-                if ((this.state.meeplesSourceLocation == 1 || this.state.meeplesSourceLocation == 12) && this.state.showdowns[0].meeple == MeepleType.None) {
-                  this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown0, meeple: meeple }))
-                }
-                if ((this.state.meeplesSourceLocation == 6 || this.state.meeplesSourceLocation == 7) && this.state.showdowns[1].meeple == MeepleType.None) {
-                  this.state.meeplesInHand.forEach(meeple => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: Location_Showdown1, meeple: meeple }))
-                }
-                break
-            }
-          } else {
-            // find valid destination spaces
-            const spaces:number[] = []
-            if (this.state.meeplePlacingDirection != Direction.Clockwise) {
-              const space: number = getPreviousSpace(this.state.previousMeeplePlacingSpace, this.state)
-              if (isSpaceEmpty(space, this.state)) {
-                spaces.push(space)
-              }
-            }
-            if (this.state.meeplePlacingDirection != Direction.CounterClockwise) {
-              const space: number = getNextSpace(this.state.previousMeeplePlacingSpace, this.state)
-              if (isSpaceEmpty(space, this.state)) {
-                spaces.push(space)
-              }
-            }
+          // get meeple types in hand (only once for each meeple type)
+          const meeples: MeepleType[] = []
+          this.state.meeplesInHand.forEach(meeple => {
+            if (!meeples.includes(meeple))
+              meeples.push(meeple)
+          })
 
-            if (spaces.length > 0) {
-              // build available moves (only once for each meeple type)
-              const meeples: MeepleType[] = []
-              this.state.meeplesInHand.forEach(meeple => {
-                if (!meeples.includes(meeple))
-                  meeples.push(meeple)
-                spaces.forEach(space => moves.push({ type: MoveType.PlaceMeeple, playerId: this.state.activePlayer, space: space, meeple: meeple }))
-              })
-            } else {
-              // no more spaces : send remaining meeples to saloon
-              moves.push({ type: MoveType.SendExtraMeeplesToSaloon })
-            }
+          if (isValidSpaceToPlaceMeeple(Location_Showdown0, this.state))
+            meeples.forEach(meeple => moves.push(getPlaceMeepleMove(this.state.activePlayer, Location_Showdown0, meeple)))
+          if (isValidSpaceToPlaceMeeple(Location_Showdown1, this.state))
+            meeples.forEach(meeple => moves.push(getPlaceMeepleMove(this.state.activePlayer, Location_Showdown1, meeple)))
+          for (i = 0; i < 12; ++i) {
+            if (isValidSpaceToPlaceMeeple(i, this.state))
+              meeples.forEach(meeple => moves.push(getPlaceMeepleMove(this.state.activePlayer, i, meeple)))
+          }
+
+          if (moves.length > 0) {
+            // no valid space : send remaining meeples to saloon
+            moves.push({ type: MoveType.SendExtraMeeplesToSaloon })
           }
           break
 
@@ -196,7 +162,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
             moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: Location_Showdown0 })
             moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: Location_Showdown1 })
           }
-          for (i = 1; i < 12; ++i) {
+          for (i = 0; i < 12; ++i) {
             if (this.state.doorways[i] != MeepleType.None) {
               moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: i })
             }

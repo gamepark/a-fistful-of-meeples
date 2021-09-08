@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import GameState from '@gamepark/a-fistful-of-meeples/GameState'
+import GameState, { isBuildingLocation, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeftMargin, boardTopMargin, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, miningBagLeft, miningBagTop, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, playerInfoPositions, goldBarWidth, goldBarHeight, phasesPositions, meeplesInHandPosition } from '../util/Metrics'
+import { boardHeight, boardLeftMargin, boardTopMargin, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, miningBagLeft, miningBagTop, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, playerInfoPositions, goldBarWidth, goldBarHeight, phasesPositions, meeplesInHandPosition, showdownSelecterPositions } from '../util/Metrics'
 import MiningBag from './MiningBag'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
@@ -14,6 +14,17 @@ import Phase from '../../../rules/src/Phase'
 import Marquee from './Marquee'
 import PlayerInfo from './PlayerInfo'
 import PhaseIndicator from './PhaseIndicator'
+import AFistfulOfMeeples from '../../../rules/src/AFistfulOfMeeples'
+import { isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
+import MarqueeSelecter from './MarqueeSelecter'
+import PlaceInitialMarqueeTile from '../../../rules/src/moves/PlaceInitialMarqueeTile'
+import { usePlay } from '@gamepark/react-client'
+import BuildingSelecter from './BuildingSelecter'
+import SelectSourceLocation from '../../../rules/src/moves/SelectSourceLocation'
+import DoorwaySelecter from './DoorwaySelecter'
+import PlaceMeeple, { getPlaceMeepleMove } from '../../../rules/src/moves/PlaceMeeple'
+import ShowdownSelecter from './ShowdownSelecter'
+
 
 type Props = {
   game: GameState
@@ -21,6 +32,10 @@ type Props = {
 }
 
 export default function Board({ game, player }: Props) {
+  const currentGame = new AFistfulOfMeeples(game)
+  const legalMoves = currentGame.getLegalMoves()
+  const play = usePlay()
+
   return (
     <div css={style}>
       <MiningBag gold={game.goldCubesInMiningBag} stone={game.stoneCubesInMiningBag} dynamite={game.dynamitesInMiningBag} left={miningBagLeft} top={miningBagTop} />
@@ -90,10 +105,10 @@ export default function Board({ game, player }: Props) {
       <>
         { game.showdowns.map((showdown, index) => {
           if (showdown.meeple !== MeepleType.None) {
-            return <>
-              <ShowdownToken position={showdownTokenPositions[index]} color={showdown.owner} key={index} />
-              <Meeple position={showdownMeeplePositions[index]} type={showdown.meeple} key={index} />
-              </>
+            return <div key={index}>
+              <ShowdownToken position={showdownTokenPositions[index]} color={showdown.owner} />
+              <Meeple position={showdownMeeplePositions[index]} type={showdown.meeple} />
+              </div>
           }
           return undefined
         })}
@@ -107,9 +122,46 @@ export default function Board({ game, player }: Props) {
       </>
 
       <>
-        {game.meeplesInHand.map((meeple, index) =>
-          <Meeple position={getPositionInHand(index)} type={meeple} key={index} />
+        { game.meeplesInHand.map((meeple, index) =>
+          <Meeple position={getPositionInHand(index)} type={meeple} draggable={true} key={index} />
         )}
+      </>
+
+      <>
+        { legalMoves.filter(move => isPlaceInitialMarqueeTileMove(move)).map((move) => {
+          const marqueeSelected = () => {
+            play(move)
+          }
+          return <MarqueeSelecter position={marqueesPosition[(move as PlaceInitialMarqueeTile).location]} flip={(move as PlaceInitialMarqueeTile).location > 5} selected={marqueeSelected} key={(move as PlaceInitialMarqueeTile).location} />
+        })}
+
+        { legalMoves.filter(move => (isSelectSourceLocationMove(move) && move.location < 12)).map((move) => {
+          const buildingSelected = () => {
+            play(move)
+          }
+          return <BuildingSelecter position={buildingsPosition[(move as SelectSourceLocation).location]} selected={buildingSelected} key={(move as SelectSourceLocation).location} />
+        })}
+
+        { legalMoves.filter((move, index, moves) => isPlaceMeepleMove(move) && moves.findIndex(m => (m as PlaceMeeple).space === move.space) === index).map((move) => {
+          const placeMeepleMove = move as PlaceMeeple
+          if (isBuildingLocation(placeMeepleMove.space)) {
+            const doorwaySelected = (meeple: MeepleType) => {
+              play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
+            }
+            return <DoorwaySelecter position={doorwaysPosition[placeMeepleMove.space]} selected={doorwaySelected} key={placeMeepleMove.space} />
+          } else if (placeMeepleMove.space === Location_Showdown0) {
+            const showdownSelected = (meeple: MeepleType) => {
+              play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
+            }
+            return <ShowdownSelecter position={showdownSelecterPositions[0]} flip={false} selected={showdownSelected} key={placeMeepleMove.space} />
+          } else if (placeMeepleMove.space === Location_Showdown1) {
+            const showdownSelected = (meeple: MeepleType) => {
+              play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
+            }
+            return <ShowdownSelecter position={showdownSelecterPositions[1]} flip={true} selected={showdownSelected} key={placeMeepleMove.space} />
+          }
+          return undefined
+        })}
       </>
 
 

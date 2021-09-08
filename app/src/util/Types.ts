@@ -1,0 +1,1 @@
+export const MEEPLE_DRAG_TYPE = 'meeple'
