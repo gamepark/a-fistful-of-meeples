@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom'
 import App from './App'
 import translations from './translations.json'
 
-setupTranslation(translations)
+setupTranslation(translations, { debug: false })
 
 const style = css`
   html {
@@ -58,7 +58,7 @@ const style = css`
 
 ReactDOM.render(
   <StrictMode>
-    <GameProvider game="a-fistful-of-meeples" Rules={AFistfulOfMeeples} optionsDescription={AFistfulOfMeeplesOptionsDescription}>
+    <GameProvider game="a-fistful-of-meeples" Rules={AFistfulOfMeeples} optionsSpec={AFistfulOfMeeplesOptionsDescription}>
       <App/>
     </GameProvider>
     <Global styles={[normalize, style]}/>

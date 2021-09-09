@@ -136,10 +136,14 @@ export default function Board({ game, player }: Props) {
         })}
 
         { legalMoves.filter(move => (isSelectSourceLocationMove(move) && move.location < 12)).map((move) => {
-          const buildingSelected = () => {
+          const selectSourceLocationMove = move as SelectSourceLocation
+          const locationSelected = () => {
             play(move)
           }
-          return <BuildingSelecter position={buildingsPosition[(move as SelectSourceLocation).location]} selected={buildingSelected} key={(move as SelectSourceLocation).location} />
+          if (isBuildingLocation(selectSourceLocationMove.location))
+            return <BuildingSelecter position={buildingsPosition[selectSourceLocationMove.location]} selected={locationSelected} key={selectSourceLocationMove.location} />
+//          else if (selectSourceLocationMove.location === Location_Saloon)
+            return undefined
         })}
 
         { legalMoves.filter((move, index, moves) => isPlaceMeepleMove(move) && moves.findIndex(m => (m as PlaceMeeple).space === move.space) === index).map((move) => {
@@ -149,16 +153,11 @@ export default function Board({ game, player }: Props) {
               play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
             }
             return <DoorwaySelecter position={doorwaysPosition[placeMeepleMove.space]} selected={doorwaySelected} key={placeMeepleMove.space} />
-          } else if (placeMeepleMove.space === Location_Showdown0) {
+          } else if (placeMeepleMove.space === Location_Showdown0 || placeMeepleMove.space === Location_Showdown1) {
             const showdownSelected = (meeple: MeepleType) => {
               play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
             }
-            return <ShowdownSelecter position={showdownSelecterPositions[0]} flip={false} selected={showdownSelected} key={placeMeepleMove.space} />
-          } else if (placeMeepleMove.space === Location_Showdown1) {
-            const showdownSelected = (meeple: MeepleType) => {
-              play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
-            }
-            return <ShowdownSelecter position={showdownSelecterPositions[1]} flip={true} selected={showdownSelected} key={placeMeepleMove.space} />
+            return <ShowdownSelecter position={showdownSelecterPositions[placeMeepleMove.space === Location_Showdown0 ? 0 : 1]} flip={false} selected={showdownSelected} key={placeMeepleMove.space} />
           }
           return undefined
         })}

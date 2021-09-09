@@ -256,7 +256,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
     if (this.state.pendingEffects.length > 0) {
       const effect = this.state.pendingEffects[0]
       switch (effect.type) {
-        case PendingEffectType.DrawFromBag:
+        case PendingEffectType.DrawFromBag:   // utiliser typeof window === undefined pour vérifier si on est sur le serveur
           return { type: MoveType.DrawFromBag, playerId: effect.player, content: effect.content }
         case PendingEffectType.DynamiteExplosion:
           return { type: MoveType.DynamiteExplosion }

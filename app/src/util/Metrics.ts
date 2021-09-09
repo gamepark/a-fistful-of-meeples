@@ -127,6 +127,9 @@ export const doorwaySelecterDeltaX = -1
 export const doorwaySelecterDeltaY = -0.5
 
 export const saloonPosition = [1570 / boardImageWidth * 100, 100 / boardImageHeight * 100]
+export const saloonSelecterRatio = 156 / 300
+export const saloonSelecterWidth = 8.5
+export const saloonSelecterHeight = saloonSelecterWidth / saloonSelecterRatio * screenRatio
 
 export const graveyardPositions = [
   [45 / boardImageWidth * 100, 905 / boardImageHeight * 100],
