@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
+import { Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import { dynamiteHeight, dynamiteWidth } from '../util/Metrics'
 import Images from './Images'
@@ -14,7 +15,7 @@ export default function Dynamite(props: Props) {
   const { t } = useTranslation()
 
   return (
-    <img src={Images.dynamite} css={getDynamiteStyle(props.position[0], props.position[1]) } alt = { t('Dynamite') } />
+    <Picture src={Images.dynamite} css={getDynamiteStyle(props.position[0], props.position[1])} alt={t('Dynamite')} />
   )
 }
 

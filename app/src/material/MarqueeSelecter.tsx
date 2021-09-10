@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
+import { Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import { marqueeHeight, marqueeWidth } from '../util/Metrics'
 import Images from './Images'
@@ -20,7 +21,7 @@ export default function MarqueeSelecter(props: Props) {
   };
 
   return (
-    <img src={Images.marqueeSelecter} onClick={onSelectMarquee} css={getMarqueeSelecterStyle(props.position[0], props.position[1], props.flip)} alt={t("SelectThisMarqueePlace")} />
+    <Picture src={Images.marqueeSelecter} onClick={onSelectMarquee} css={getMarqueeSelecterStyle(props.position[0], props.position[1], props.flip)} alt={t("SelectThisMarqueePlace")} />
   )
 }
 

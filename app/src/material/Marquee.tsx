@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
+import { Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import PlayerColor from '../../../rules/src/PlayerColor'
 import { marqueeHeight, marqueeWidth } from '../util/Metrics'
@@ -18,7 +19,7 @@ export default function Marquee(props: Props) {
   const { t } = useTranslation()
 
   return (
-    <img src={getMarqueeImage(props.owner, props.upgraded)} css={getMarqueeStyle(props.position[0], props.position[1], props.flip)} alt={t(getMarqueeName(props.owner, props.upgraded))} />
+    <Picture src={getMarqueeImage(props.owner, props.upgraded)} css={getMarqueeStyle(props.position[0], props.position[1], props.flip)} alt={t(getMarqueeName(props.owner, props.upgraded))} />
   )
 }
 

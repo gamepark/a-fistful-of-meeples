@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { Draggable } from '@gamepark/react-components'
+import { Draggable, Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import MeepleType from '../../../rules/src/MeepleType'
 import { meepleHeight, meepleWidth } from '../util/Metrics'
@@ -28,11 +28,11 @@ export default function Meeple(props: Props) {
         css={getMainMeepleStyle(props.position[0], props.position[1])}
       >
 
-        <img src={getMeepleImage(props.type)} draggable={false} css={getInnerMeepleStyle} alt={t(getMeepleName(props.type))} />
+        <Picture src={getMeepleImage(props.type)} draggable={false} css={getInnerMeepleStyle} alt={t(getMeepleName(props.type))} />
       </Draggable>
     )
   } else {
-    return <img src={getMeepleImage(props.type)} css={getMainMeepleStyle(props.position[0], props.position[1])} alt={t(getMeepleName(props.type))} />
+    return <Picture src={getMeepleImage(props.type)} css={getMainMeepleStyle(props.position[0], props.position[1])} alt={t(getMeepleName(props.type))} />
   }
 }
 

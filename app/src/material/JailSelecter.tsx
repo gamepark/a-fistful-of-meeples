@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
+import { Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import { jailSelecterWidth, jailSelecterHeight } from '../util/Metrics'
 import Images from './Images'
@@ -19,7 +20,7 @@ export default function JailSelecter(props: Props) {
   };
 
   return (
-    <img src={Images.buildingSelecter} onClick={onSelectBuilding} css={getBuildingSelecterStyle(props.position[0], props.position[1])} alt={t("SelectJail")} />
+    <Picture src={Images.buildingSelecter} onClick={onSelectBuilding} css={getBuildingSelecterStyle(props.position[0], props.position[1])} alt={t("SelectJail")} />
   )
 }
 

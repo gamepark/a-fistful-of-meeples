@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
+import { Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import PlayerColor from '../../../rules/src/PlayerColor'
 import { showdownTokenHeight, showdownTokenWidth } from '../util/Metrics'
@@ -16,7 +17,7 @@ export default function Meeple(props: Props) {
   const { t } = useTranslation()
 
   return (
-    <img src={getShowdownTokenImage(props.color)} css={getShowdownTokenStyle(props.position[0], props.position[1])} alt={t(getShowdownTokenName(props.color))} />
+    <Picture src={getShowdownTokenImage(props.color)} css={getShowdownTokenStyle(props.position[0], props.position[1])} alt={t(getShowdownTokenName(props.color))} />
   )
 }
 

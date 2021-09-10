@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
+import { Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import { saloonSelecterWidth, saloonSelecterHeight } from '../util/Metrics'
 import Images from './Images'
@@ -19,7 +20,7 @@ export default function SaloonSelecter(props: Props) {
   };
 
   return (
-    <img src={Images.buildingSelecter} onClick={onSelectBuilding} css={getBuildingSelecterStyle(props.position[0], props.position[1])} alt={t("SelectSaloon")} />
+    <Picture src={Images.buildingSelecter} onClick={onSelectBuilding} css={getBuildingSelecterStyle(props.position[0], props.position[1])} alt={t("SelectSaloon")} />
   )
 }
 
