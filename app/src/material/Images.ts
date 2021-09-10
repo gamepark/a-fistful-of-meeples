@@ -25,6 +25,8 @@ import upgradedOrangeMarquee from '../images/UpgradedOrangeMarquee.png'
 import upgradedGreyMarquee from '../images/UpgradedGreyMarquee.png'
 import marqueeSelecter from '../images/MarqueeSelecter.png'
 import buildingSelecter from '../images/BuildingSelecter.png'
+import saloonSelecter from '../images/SaloonSelecter.png'
+import jailSelecter from '../images/JailSelecter.png'
 import doorwaySelecter from '../images/DoorwaySelecter.png'
 import showdownSelecter from '../images/ShowdownSelecter.png'
 import playerBlack from '../images/Black.jpg'
@@ -62,6 +64,8 @@ const Images = {
   upgradedGreyMarquee,
   marqueeSelecter,
   buildingSelecter,
+  saloonSelecter,
+  jailSelecter,
   doorwaySelecter,
   showdownSelecter,
   playerBlack,

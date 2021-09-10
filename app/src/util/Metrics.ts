@@ -127,8 +127,9 @@ export const doorwaySelecterDeltaX = -1
 export const doorwaySelecterDeltaY = -0.5
 
 export const saloonPosition = [1570 / boardImageWidth * 100, 100 / boardImageHeight * 100]
-export const saloonSelecterRatio = 156 / 300
-export const saloonSelecterWidth = 8.5
+export const saloonSelecterPosition = [1560 / boardImageWidth * 100, 88 / boardImageHeight * 100]
+export const saloonSelecterRatio = 169 / 284
+export const saloonSelecterWidth = 9.3
 export const saloonSelecterHeight = saloonSelecterWidth / saloonSelecterRatio * screenRatio
 
 export const graveyardPositions = [
@@ -141,6 +142,10 @@ export const graveyardPositions = [
 ]
 
 export const jailPosition = [42 / boardImageWidth * 100, 248 / boardImageHeight * 100]
+export const jailSelecterPosition = [24 / boardImageWidth * 100, 84 / boardImageHeight * 100]
+export const jailSelecterRatio = 177 / 270
+export const jailSelecterWidth = 9.8
+export const jailSelecterHeight = jailSelecterWidth / jailSelecterRatio * screenRatio
 
 export const showdownMeeplePositions = [
   [258 / boardImageWidth * 100, 550 / boardImageHeight * 100],

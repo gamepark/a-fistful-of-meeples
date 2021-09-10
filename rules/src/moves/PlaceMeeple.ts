@@ -62,8 +62,7 @@ export function placeMeeple(state: GameState, move: PlaceMeeple) {
   if (index == -1) return console.error('No meeple of type ', move.meeple, ' in hand')
 
   // remove meeple from hand
-  state.meeplesInHand[index] = state.meeplesInHand[state.meeplesInHand.length - 1]
-  state.meeplesInHand.pop()
+  state.meeplesInHand[index] = MeepleType.None
 
   // update gamestate
   if (state.meeplePlacingDirection === Direction.None) {
@@ -90,8 +89,9 @@ export function placeMeeple(state: GameState, move: PlaceMeeple) {
   }
   state.previousMeepleLocation = move.space
 
-  if (state.meeplesInHand.length == 0) {
+  if (state.meeplesInHand.every(meeple => meeple === MeepleType.None)) {
     // no more meeples to place, time to resolve
+    state.meeplesInHand = []
     setCurrentPhase(Phase.ResolveMeeples, state)
   }
 }

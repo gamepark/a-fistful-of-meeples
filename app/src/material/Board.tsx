@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import GameState, { isBuildingLocation, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
+import GameState, { isBuildingLocation, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeftMargin, boardTopMargin, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, miningBagLeft, miningBagTop, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, playerInfoPositions, goldBarWidth, goldBarHeight, phasesPositions, meeplesInHandPosition, showdownSelecterPositions } from '../util/Metrics'
+import { boardHeight, boardLeftMargin, boardTopMargin, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, miningBagLeft, miningBagTop, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, playerInfoPositions, goldBarWidth, goldBarHeight, phasesPositions, meeplesInHandPosition, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition } from '../util/Metrics'
 import MiningBag from './MiningBag'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
@@ -24,6 +24,8 @@ import SelectSourceLocation from '../../../rules/src/moves/SelectSourceLocation'
 import DoorwaySelecter from './DoorwaySelecter'
 import PlaceMeeple, { getPlaceMeepleMove } from '../../../rules/src/moves/PlaceMeeple'
 import ShowdownSelecter from './ShowdownSelecter'
+import SaloonSelecter from './SaloonSelecter'
+import JailSelecter from './JailSelecter'
 
 
 type Props = {
@@ -123,7 +125,7 @@ export default function Board({ game, player }: Props) {
 
       <>
         { game.meeplesInHand.map((meeple, index) =>
-          <Meeple position={getPositionInHand(index)} type={meeple} draggable={true} key={index} />
+          (meeple !== MeepleType.None) && < Meeple position={getPositionInHand(index)} type={meeple} draggable={true} key={index} />
         )}
       </>
 
@@ -135,15 +137,18 @@ export default function Board({ game, player }: Props) {
           return <MarqueeSelecter position={marqueesPosition[(move as PlaceInitialMarqueeTile).location]} flip={(move as PlaceInitialMarqueeTile).location > 5} selected={marqueeSelected} key={(move as PlaceInitialMarqueeTile).location} />
         })}
 
-        { legalMoves.filter(move => (isSelectSourceLocationMove(move) && move.location < 12)).map((move) => {
+        { legalMoves.filter(move => isSelectSourceLocationMove(move)).map((move) => {
           const selectSourceLocationMove = move as SelectSourceLocation
           const locationSelected = () => {
             play(move)
           }
           if (isBuildingLocation(selectSourceLocationMove.location))
             return <BuildingSelecter position={buildingsPosition[selectSourceLocationMove.location]} selected={locationSelected} key={selectSourceLocationMove.location} />
-//          else if (selectSourceLocationMove.location === Location_Saloon)
-            return undefined
+          else if (selectSourceLocationMove.location === Location_Saloon)
+            return <JailSelecter position={jailSelecterPosition} selected={locationSelected} key={selectSourceLocationMove.location} />
+          else if (selectSourceLocationMove.location === Location_Jail)
+            return <SaloonSelecter position={saloonSelecterPosition} selected={locationSelected} key={selectSourceLocationMove.location} />
+          return undefined
         })}
 
         { legalMoves.filter((move, index, moves) => isPlaceMeepleMove(move) && moves.findIndex(m => (m as PlaceMeeple).space === move.space) === index).map((move) => {
@@ -157,7 +162,8 @@ export default function Board({ game, player }: Props) {
             const showdownSelected = (meeple: MeepleType) => {
               play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
             }
-            return <ShowdownSelecter position={showdownSelecterPositions[placeMeepleMove.space === Location_Showdown0 ? 0 : 1]} flip={false} selected={showdownSelected} key={placeMeepleMove.space} />
+            const isShowdown1 = placeMeepleMove.space === Location_Showdown1
+            return <ShowdownSelecter position={showdownSelecterPositions[isShowdown1 ? 1 : 0]} flip={isShowdown1} selected={showdownSelected} key={placeMeepleMove.space} />
           }
           return undefined
         })}
