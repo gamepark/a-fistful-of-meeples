@@ -6,6 +6,7 @@ import { showdownSelecterHeight, showdownSelecterWidth } from '../util/Metrics'
 import Images from './Images'
 import { MEEPLE_DRAG_TYPE } from '../util/Types'
 import MeepleType from '../../../rules/src/MeepleType'
+import { Picture } from '@gamepark/react-components'
 
 
 type Props = {
@@ -31,7 +32,7 @@ export default function ShowdownSelecter(props: Props) {
   })
   
   return (
-    <img ref={dropRef} src={Images.showdownSelecter} css={getShowdownSelecterStyle(props.position[0], props.position[1], props.flip, isOver)} alt={t("SelectThisShodownPlace")} />
+    <Picture ref={dropRef} src={Images.showdownSelecter} css={getShowdownSelecterStyle(props.position[0], props.position[1], props.flip, isOver)} alt={t("SelectThisShodownPlace")} />
   )
 }
 

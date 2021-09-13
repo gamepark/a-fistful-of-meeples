@@ -19,6 +19,7 @@ import { moveMeeples } from './moves/MoveMeeples'
 import { resolveShowdown } from './moves/ResolveShowdown'
 import { rerollShowdownDice } from './moves/RerollShowdownDice'
 import { checkGoldBars } from './moves/CheckGoldBars'
+import { drawCubesFromBag } from './MiningBag'
 
 /**
  * Your Board Game rules must extend either "SequentialGame" or "SimultaneousGame".
@@ -151,7 +152,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
               meeples.forEach(meeple => moves.push(getPlaceMeepleMove(this.state.activePlayer, i, meeple)))
           }
 
-          if (moves.length > 0) {
+          if (moves.length === 0) {
             // no valid space : send remaining meeples to saloon
             moves.push({ type: MoveType.SendExtraMeeplesToSaloon })
           }
@@ -256,8 +257,10 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
     if (this.state.pendingEffects.length > 0) {
       const effect = this.state.pendingEffects[0]
       switch (effect.type) {
-        case PendingEffectType.DrawFromBag:   // utiliser typeof window === undefined pour vérifier si on est sur le serveur
-          return { type: MoveType.DrawFromBag, playerId: effect.player, content: effect.content }
+        case PendingEffectType.DrawFromBag:
+          if ('window' in globalThis) // if we are on client side, don't draw cubes. It will be done on server side only (not sure about this test...)
+            return
+          return { type: MoveType.DrawFromBag, playerId: effect.player, content: drawCubesFromBag(this.state, effect.amount) }
         case PendingEffectType.DynamiteExplosion:
           return { type: MoveType.DynamiteExplosion }
         case PendingEffectType.MoveMeeples:
@@ -269,5 +272,4 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
       return { type: MoveType.CheckGoldBars }
     }
   }
-
 }

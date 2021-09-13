@@ -15,7 +15,7 @@ import Marquee from './Marquee'
 import PlayerInfo from './PlayerInfo'
 import PhaseIndicator from './PhaseIndicator'
 import AFistfulOfMeeples from '../../../rules/src/AFistfulOfMeeples'
-import { isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
+import { isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isResolveMeepleMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
 import MarqueeSelecter from './MarqueeSelecter'
 import PlaceInitialMarqueeTile from '../../../rules/src/moves/PlaceInitialMarqueeTile'
 import { usePlay } from '@gamepark/react-client'
@@ -26,6 +26,7 @@ import PlaceMeeple, { getPlaceMeepleMove } from '../../../rules/src/moves/PlaceM
 import ShowdownSelecter from './ShowdownSelecter'
 import SaloonSelecter from './SaloonSelecter'
 import JailSelecter from './JailSelecter'
+import ResolveMeeple from '../../../rules/src/moves/ResolveMeeple'
 
 
 type Props = {
@@ -130,34 +131,40 @@ export default function Board({ game, player }: Props) {
       </>
 
       <>
-        { legalMoves.filter(move => isPlaceInitialMarqueeTileMove(move)).map((move) => {
+        {
+          legalMoves.filter(move => isPlaceInitialMarqueeTileMove(move)).map((move) => {
           const marqueeSelected = () => {
             play(move)
           }
-          return <MarqueeSelecter position={marqueesPosition[(move as PlaceInitialMarqueeTile).location]} flip={(move as PlaceInitialMarqueeTile).location > 5} selected={marqueeSelected} key={(move as PlaceInitialMarqueeTile).location} />
-        })}
+            return <MarqueeSelecter position={marqueesPosition[(move as PlaceInitialMarqueeTile).location]} flip={(move as PlaceInitialMarqueeTile).location > 5} selected={marqueeSelected} key={(move as PlaceInitialMarqueeTile).location} />
+          })
+        }
 
-        { legalMoves.filter(move => isSelectSourceLocationMove(move)).map((move) => {
-          const selectSourceLocationMove = move as SelectSourceLocation
+        {
+          legalMoves.filter(move => isSelectSourceLocationMove(move)).map((move) => {
+            const location = (move as SelectSourceLocation).location
           const locationSelected = () => {
             play(move)
           }
-          if (isBuildingLocation(selectSourceLocationMove.location))
-            return <BuildingSelecter position={buildingsPosition[selectSourceLocationMove.location]} selected={locationSelected} key={selectSourceLocationMove.location} />
-          else if (selectSourceLocationMove.location === Location_Saloon)
-            return <JailSelecter position={jailSelecterPosition} selected={locationSelected} key={selectSourceLocationMove.location} />
-          else if (selectSourceLocationMove.location === Location_Jail)
-            return <SaloonSelecter position={saloonSelecterPosition} selected={locationSelected} key={selectSourceLocationMove.location} />
+          if (isBuildingLocation(location))
+            return <BuildingSelecter position={buildingsPosition[location]} selected={locationSelected} key={location} />
+          else if (location === Location_Saloon)
+            return <JailSelecter position={jailSelecterPosition} selected={locationSelected} key={location} />
+          else if (location === Location_Jail)
+            return <SaloonSelecter position={saloonSelecterPosition} selected={locationSelected} key={location} />
           return undefined
-        })}
+          })
+        }
 
-        { legalMoves.filter((move, index, moves) => isPlaceMeepleMove(move) && moves.findIndex(m => (m as PlaceMeeple).space === move.space) === index).map((move) => {
+        {
+          legalMoves.filter((move, index, moves) => isPlaceMeepleMove(move) && moves.findIndex(m => (m as PlaceMeeple).space === move.space) === index).map((move) => {
           const placeMeepleMove = move as PlaceMeeple
           if (isBuildingLocation(placeMeepleMove.space)) {
-            const doorwaySelected = (meeple: MeepleType) => {
-              play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
+            const doorwaySelected = (meeple?: MeepleType) => {
+              if (meeple !== undefined)
+                play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
             }
-            return <DoorwaySelecter position={doorwaysPosition[placeMeepleMove.space]} selected={doorwaySelected} key={placeMeepleMove.space} />
+            return <DoorwaySelecter position={doorwaysPosition[placeMeepleMove.space]} droppable={true} selected={doorwaySelected} key={placeMeepleMove.space} />
           } else if (placeMeepleMove.space === Location_Showdown0 || placeMeepleMove.space === Location_Showdown1) {
             const showdownSelected = (meeple: MeepleType) => {
               play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
@@ -166,7 +173,26 @@ export default function Board({ game, player }: Props) {
             return <ShowdownSelecter position={showdownSelecterPositions[isShowdown1 ? 1 : 0]} flip={isShowdown1} selected={showdownSelected} key={placeMeepleMove.space} />
           }
           return undefined
-        })}
+          })
+        }
+
+        {
+          legalMoves.filter(move => isResolveMeepleMove(move)).map(move => {
+            const space = (move as ResolveMeeple).space
+            const locationSelected = () => {
+              play(move)
+            }
+
+            if (isBuildingLocation(space)) {
+              return <DoorwaySelecter position={doorwaysPosition[space]} droppable={false} selected={locationSelected} key={space} />
+            } else if (space === Location_Showdown0 || space === Location_Showdown1) {
+              const isShowdown1 = space === Location_Showdown1
+              return <ShowdownSelecter position={showdownSelecterPositions[isShowdown1 ? 1 : 0]} flip={isShowdown1} selected={locationSelected} key={space} />
+            }
+            return undefined
+          })
+        }
+
       </>
 
 

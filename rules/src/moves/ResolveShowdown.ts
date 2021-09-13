@@ -1,7 +1,7 @@
 import GameState, { Location_Graveyard, Location_Saloon, Location_Showdown0, Location_Showdown1, PendingEffectType } from '../GameState'
 import MoveType from './MoveType'
 import { getShootingSkill, getShowdownWinner, ShowdownResult } from '../Showdown'
-import { drawCubesFromBag } from '../MiningBag'
+import { getDrawFromBagPendingEffect } from './DrawFromBag'
 
 type ResolveShowdown = {
   type: MoveType.ResolveShowdown,
@@ -13,11 +13,7 @@ export default ResolveShowdown
 export function resolveShowdown(state: GameState): void {
   switch (getShowdownWinner(state)) {
     case ShowdownResult.Showdown0:
-      state.pendingEffects.unshift({
-        type: PendingEffectType.DrawFromBag,
-        player: state.showdowns[0].owner,
-        content: drawCubesFromBag(state, getShootingSkill(state.showdowns[1].meeple))
-      })
+      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[0].owner, getShootingSkill(state.showdowns[1].meeple)))
       state.pendingEffects.unshift({
         type: PendingEffectType.MoveMeeples,
         meeples: state.showdowns[0].meeple,
@@ -33,11 +29,7 @@ export function resolveShowdown(state: GameState): void {
       break
 
     case ShowdownResult.Showdown1:
-      state.pendingEffects.unshift({
-        type: PendingEffectType.DrawFromBag,
-        player: state.showdowns[1].owner,
-        content: drawCubesFromBag(state, getShootingSkill(state.showdowns[0].meeple))
-      })
+      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[1].owner, getShootingSkill(state.showdowns[0].meeple)))
       state.pendingEffects.unshift({
         type: PendingEffectType.MoveMeeples,
         meeples: state.showdowns[1].meeple,
@@ -53,16 +45,8 @@ export function resolveShowdown(state: GameState): void {
       break
 
     case ShowdownResult.None:
-      state.pendingEffects.unshift({
-        type: PendingEffectType.DrawFromBag,
-        player: state.showdowns[0].owner,
-        content: drawCubesFromBag(state, getShootingSkill(state.showdowns[1].meeple))
-      })
-      state.pendingEffects.unshift({
-        type: PendingEffectType.DrawFromBag,
-        player: state.showdowns[1].owner,
-        content: drawCubesFromBag(state, getShootingSkill(state.showdowns[0].meeple))
-      })
+      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[0].owner, getShootingSkill(state.showdowns[1].meeple)))
+      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[1].owner, getShootingSkill(state.showdowns[0].meeple)))
       state.pendingEffects.unshift({
         type: PendingEffectType.MoveMeeples,
         meeples: state.showdowns[0].meeple,

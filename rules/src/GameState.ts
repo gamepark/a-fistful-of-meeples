@@ -5,7 +5,6 @@ import MeepleType from './MeepleType'
 import Phase from './Phase'
 import { AFistfulOfMeeplesOptions } from './AFistfulOfMeeplesOptions'
 import shuffle from 'lodash.shuffle'
-import MiningBagContent from './MiningBag'
 import ShowdownPlace from './Showdown'
 
 type Marquee = {
@@ -41,11 +40,11 @@ export enum PendingEffectType {
   MoveMeeples,  // when meeples are sent to another location
 }
 
-type PendingEffect = { type: PendingEffectType.ChooseAnotherPlayerShowdownToken, space: number }
+export type PendingEffect = { type: PendingEffectType.ChooseAnotherPlayerShowdownToken, space: number }
   | { type: PendingEffectType.BuildOrUpgradeMarquee, location: number }
   | { type: PendingEffectType.ChooseToRerollShowdownDice, player: PlayerColor }
   | { type: PendingEffectType.ResolveShowdown }
-  | { type: PendingEffectType.DrawFromBag, player: PlayerColor, content: MiningBagContent[] }
+  | { type: PendingEffectType.DrawFromBag, player: PlayerColor, amount: number }
   | { type: PendingEffectType.DynamiteExplosion }
   | { type: PendingEffectType.MoveMeeples, meeples: MeepleType, sourceLocation: number, destinationLocation: number }
 

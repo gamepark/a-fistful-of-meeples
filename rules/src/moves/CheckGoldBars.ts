@@ -1,4 +1,5 @@
 import GameState, { endOfGameTriggered, getNextPlayer } from '../GameState'
+import Phase, { setCurrentPhase } from '../Phase'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
 
@@ -28,5 +29,7 @@ export function checkGoldBars(state: GameState, move: CheckGoldBars): void {
   if (state.activePlayer == state.startingPlayer && endOfGameTriggered(state)) {
     // game is over : all players have played the same number of turns
     state.activePlayer = PlayerColor.None
+  } else {
+    setCurrentPhase(Phase.SelectSourceLocation, state)
   }
 }

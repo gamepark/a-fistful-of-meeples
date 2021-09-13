@@ -1,4 +1,4 @@
-import GameState, { PendingEffectType } from '../GameState'
+import GameState, { PendingEffect, PendingEffectType } from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MiningBagContent from '../MiningBag'
 import MoveType from './MoveType'
@@ -19,13 +19,24 @@ export function drawFromBag(state: GameState, move: DrawFromBag) {
     switch (content) {
       case MiningBagContent.Gold:
         ++player.goldPieces
+        --state.goldCubesInMiningBag
         break
       case MiningBagContent.Stone:
         ++player.stones
+        --state.stoneCubesInMiningBag
         break
       case MiningBagContent.Dynamite:
+        --state.dynamitesInMiningBag
         state.pendingEffects.unshift({ type: PendingEffectType.DynamiteExplosion })
         break
     }
   })
+}
+
+export function getDrawFromBagPendingEffect(player: PlayerColor, amount: number): PendingEffect {
+  return {
+    type: PendingEffectType.DrawFromBag,
+    player: player,
+    amount: amount
+  }
 }

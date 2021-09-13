@@ -9,18 +9,21 @@ export enum MiningBagContent {
 export default MiningBagContent
 
 export function drawCubesFromBag(state: GameState, amount: number): MiningBagContent[] {
+  let nGold = state.goldCubesInMiningBag
+  let nStones = state.stoneCubesInMiningBag
+  let nDynamites = state.dynamitesInMiningBag
   const result: MiningBagContent[] = []
   for (let i: number = 0; i < amount; ++i) {
-    const value = Math.floor(Math.random() * (state.goldCubesInMiningBag + state.stoneCubesInMiningBag + state.dynamitesInMiningBag))
-    if (value < state.goldCubesInMiningBag) {
+    const value = Math.floor(Math.random() * (nGold + nStones + nDynamites))
+    if (value < nGold) {
       result.push(MiningBagContent.Gold)
-      --state.goldCubesInMiningBag
-    } else if (value < state.goldCubesInMiningBag + state.stoneCubesInMiningBag) {
+      --nGold
+    } else if (value < nGold + nStones) {
       result.push(MiningBagContent.Stone)
-      --state.stoneCubesInMiningBag
+      --nStones
     } else {
       result.push(MiningBagContent.Dynamite)
-      --state.dynamitesInMiningBag
+      --nDynamites
     }
   }
   return result

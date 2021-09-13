@@ -70,7 +70,7 @@ export function placeMeeple(state: GameState, move: PlaceMeeple) {
       state.meeplePlacingDirection = Direction.Clockwise;
     } else if (getPreviousEmptySpace(state.previousMeepleLocation, state) === move.space) {
       state.meeplePlacingDirection = Direction.CounterClockwise;
-    } else {
+    } else if (isBuildingLocation(state.previousMeepleLocation)) {
       return console.error('Unexpected space ', move.space, ' to place meeple')
     }
   }

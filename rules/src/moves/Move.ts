@@ -32,3 +32,7 @@ export function isSelectSourceLocationMove(move: Move): move is SelectSourceLoca
 export function isPlaceMeepleMove(move: Move): move is PlaceMeeple {
   return move.type === MoveType.PlaceMeeple
 }
+
+export function isResolveMeepleMove(move: Move): move is ResolveMeeple {
+  return move.type === MoveType.ResolveMeeple
+}
