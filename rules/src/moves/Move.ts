@@ -36,3 +36,15 @@ export function isPlaceMeepleMove(move: Move): move is PlaceMeeple {
 export function isResolveMeepleMove(move: Move): move is ResolveMeeple {
   return move.type === MoveType.ResolveMeeple
 }
+
+export function isBuildOrUpgradeMarqueeMove(move: Move): move is BuildOrUpgradeMarquee {
+  return move.type === MoveType.BuildOrUpgradeMarquee
+}
+
+export function isChooseAnotherPlayerShowdownTokenMove(move: Move): move is ChooseAnotherPlayerShowdownToken {
+  return move.type === MoveType.ChooseAnotherPlayerShowdownToken
+}
+
+export function isRerollShowdownDiceMove(move: Move): move is RerollShowdownDice {
+  return move.type === MoveType.RerollShowdownDice
+}

@@ -9,15 +9,15 @@ import { isGameOptions, AFistfulOfMeeplesOptions } from './AFistfulOfMeeplesOpti
 import { placeInitialMarqueeTile } from './moves/PlaceInitialMarqueeTile'
 import { selectSourceLocation } from './moves/SelectSourceLocation'
 import { getPlaceMeepleMove, isValidSpaceToPlaceMeeple, placeMeeple } from './moves/PlaceMeeple'
-import { chooseAnotherPlayerToPlaceShowdownToken } from './moves/ChooseAnotherPlayerShowdownToken'
+import { chooseAnotherPlayerToPlaceShowdownToken, getChooseAnotherPlayerShowdownTokenMove } from './moves/ChooseAnotherPlayerShowdownToken'
 import { resolveMeeple } from './moves/ResolveMeeple'
-import { buildOrUpgradeMarquee } from './moves/BuildOrUpgradeMarquee'
+import { buildOrUpgradeMarquee, getBuildOrUpgradeMarqueeMove } from './moves/BuildOrUpgradeMarquee'
 import { drawFromBag } from './moves/DrawFromBag'
 import { sendExtraMeeplesToSaloon } from './moves/SendExtraMeeplesToSaloon'
 import { dynamiteExplosion } from './moves/DynamiteExplosion'
 import { moveMeeples } from './moves/MoveMeeples'
 import { resolveShowdown } from './moves/ResolveShowdown'
-import { rerollShowdownDice } from './moves/RerollShowdownDice'
+import { getRerollShowdownDiceMove, rerollShowdownDice } from './moves/RerollShowdownDice'
 import { checkGoldBars } from './moves/CheckGoldBars'
 import { drawCubesFromBag } from './MiningBag'
 
@@ -94,18 +94,18 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
         case PendingEffectType.ChooseAnotherPlayerShowdownToken:
           this.state.players.forEach(player => {
             if (player.color !== this.state.activePlayer)
-              moves.push({ type: MoveType.ChooseAnotherPlayerShowdownToken, playerId: player.color })
+              moves.push(getChooseAnotherPlayerShowdownTokenMove(player.color))
           })
           break
 
         case PendingEffectType.BuildOrUpgradeMarquee:
-          moves.push({ type: MoveType.BuildOrUpgradeMarquee, playerId: this.getActivePlayer()!, space: effect.location, build: true })
-          moves.push({ type: MoveType.BuildOrUpgradeMarquee, playerId: this.getActivePlayer()!, space: effect.location, build: false })
+          moves.push(getBuildOrUpgradeMarqueeMove(this.getActivePlayer()!, effect.location, true))
+          moves.push(getBuildOrUpgradeMarqueeMove(this.getActivePlayer()!, effect.location, false))
           break
 
         case PendingEffectType.ChooseToRerollShowdownDice:
-          moves.push({ type: MoveType.RerollShowdownDice, reroll: true })
-          moves.push({ type: MoveType.RerollShowdownDice, reroll: false })
+          moves.push(getRerollShowdownDiceMove(true))
+          moves.push(getRerollShowdownDiceMove(false))
           break
       }
     } else {
@@ -258,8 +258,8 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
       const effect = this.state.pendingEffects[0]
       switch (effect.type) {
         case PendingEffectType.DrawFromBag:
-          if ('window' in globalThis) // if we are on client side, don't draw cubes. It will be done on server side only (not sure about this test...)
-            return
+///          if ('window' in globalThis && globalThis['window'] !== undefined) // if we are on client side, don't draw cubes. It will be done on server side only (not sure about this test...)
+///            return
           return { type: MoveType.DrawFromBag, playerId: effect.player, content: drawCubesFromBag(this.state, effect.amount) }
         case PendingEffectType.DynamiteExplosion:
           return { type: MoveType.DynamiteExplosion }
@@ -268,7 +268,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
         case PendingEffectType.ResolveShowdown:
           return { type: MoveType.ResolveShowdown }
       }
-    } else if (this.state.currentPhase == Phase.CheckGoldBars) {
+    } else if (this.state.currentPhase === Phase.CheckGoldBars) {
       return { type: MoveType.CheckGoldBars }
     }
   }

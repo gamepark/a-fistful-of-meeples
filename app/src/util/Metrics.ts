@@ -170,6 +170,15 @@ export const showdownSelecterRatio = 156 / 300
 export const showdownSelecterWidth = 8.5
 export const showdownSelecterHeight = showdownSelecterWidth / showdownSelecterRatio * screenRatio
 
+export const diceRatio = 236 / 236
+export const diceWidth = 6.5
+export const diceHeight = diceWidth / diceRatio * screenRatio
+
+export const dicePositions = [
+  [218 / boardImageWidth * 100, 500 / boardImageHeight * 100],
+  [1420 / boardImageWidth * 100, 500 / boardImageHeight * 100],
+]
+
 export const phaseRatio = 64 / 64
 export const phaseWidth = 6
 export const phaseHeight = phaseWidth / phaseRatio * screenRatio

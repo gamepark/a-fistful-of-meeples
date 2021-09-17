@@ -2,7 +2,7 @@
 import { css } from '@emotion/react'
 import GameState, { isBuildingLocation, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeftMargin, boardTopMargin, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, miningBagLeft, miningBagTop, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, playerInfoPositions, goldBarWidth, goldBarHeight, phasesPositions, meeplesInHandPosition, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition } from '../util/Metrics'
+import { boardHeight, boardLeftMargin, boardTopMargin, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, miningBagLeft, miningBagTop, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, playerInfoPositions, goldBarWidth, goldBarHeight, phasesPositions, meeplesInHandPosition, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth } from '../util/Metrics'
 import MiningBag from './MiningBag'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
@@ -15,7 +15,7 @@ import Marquee from './Marquee'
 import PlayerInfo from './PlayerInfo'
 import PhaseIndicator from './PhaseIndicator'
 import AFistfulOfMeeples from '../../../rules/src/AFistfulOfMeeples'
-import { isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isResolveMeepleMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
+import { isBuildOrUpgradeMarqueeMove, isChooseAnotherPlayerShowdownTokenMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isRerollShowdownDiceMove, isResolveMeepleMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
 import MarqueeSelecter from './MarqueeSelecter'
 import PlaceInitialMarqueeTile from '../../../rules/src/moves/PlaceInitialMarqueeTile'
 import { usePlay } from '@gamepark/react-client'
@@ -27,6 +27,14 @@ import ShowdownSelecter from './ShowdownSelecter'
 import SaloonSelecter from './SaloonSelecter'
 import JailSelecter from './JailSelecter'
 import ResolveMeeple from '../../../rules/src/moves/ResolveMeeple'
+import YesNoSelecter from '../util/YesNoSelecter'
+import { getBuildOrUpgradeMarqueeMove } from '../../../rules/src/moves/BuildOrUpgradeMarquee'
+import { useTranslation } from 'react-i18next'
+import { getRerollShowdownDiceMove } from '../../../rules/src/moves/RerollShowdownDice'
+import { getChooseAnotherPlayerShowdownTokenMove } from '../../../rules/src/moves/ChooseAnotherPlayerShowdownToken'
+import Dice from './Dice'
+import PlayerSelecter from './PlayerSelecter'
+import ChooseAnotherPlayerShowdownToken from '../../../rules/src/moves/ChooseAnotherPlayerShowdownToken'
 
 
 type Props = {
@@ -35,9 +43,27 @@ type Props = {
 }
 
 export default function Board({ game, player }: Props) {
+  const { t } = useTranslation()
   const currentGame = new AFistfulOfMeeples(game)
   const legalMoves = currentGame.getLegalMoves()
   const play = usePlay()
+  const buildOrUpgradeMarqueeMove = legalMoves.find(move => isBuildOrUpgradeMarqueeMove(move))
+  const rerollShowdownDiceMove = legalMoves.find(move => isRerollShowdownDiceMove(move))
+  const chooseAnotherPlayerMoves = legalMoves.filter(move => isChooseAnotherPlayerShowdownTokenMove(move)).map(move => (move as ChooseAnotherPlayerShowdownToken).playerId)
+
+  let popup = undefined
+  if (buildOrUpgradeMarqueeMove !== undefined && isBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove)) {
+    const text = (game.marquees[buildOrUpgradeMarqueeMove.space].owner === PlayerColor.None) ? t("DoYouWantToBuildAMarquee") : t("DoYouWantToUpgradeYourMarquee")
+    popup = <YesNoSelecter text={text} answered={answer => play(getBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove.playerId, buildOrUpgradeMarqueeMove.space, answer))} />
+  }
+  if (rerollShowdownDiceMove !== undefined && isRerollShowdownDiceMove(rerollShowdownDiceMove)) {
+    const text = t("DoYouWantToRerollYourShowdownDice")
+    popup = <YesNoSelecter text={text} answered={answer => play(getRerollShowdownDiceMove(answer))} />
+  }
+  if (chooseAnotherPlayerMoves.length > 0) {
+    const text = t('ChooseAnotherPlayerToPlaceHisShowdownToken')
+    popup = <PlayerSelecter text={text} players={chooseAnotherPlayerMoves} selected={player => play(getChooseAnotherPlayerShowdownTokenMove(player))} />
+  }
 
   return (
     <div css={style}>
@@ -109,8 +135,9 @@ export default function Board({ game, player }: Props) {
         { game.showdowns.map((showdown, index) => {
           if (showdown.meeple !== MeepleType.None) {
             return <div key={index}>
-              <ShowdownToken position={showdownTokenPositions[index]} color={showdown.owner} />
+              <ShowdownToken playercolor={showdown.owner} css={getShowdownTokenStyle(showdownTokenPositions[index])} />
               <Meeple position={showdownMeeplePositions[index]} type={showdown.meeple} />
+              {showdown.dice && <Dice value={showdown.dice} css={getDiceStyle(dicePositions[index])} />}
               </div>
           }
           return undefined
@@ -149,9 +176,9 @@ export default function Board({ game, player }: Props) {
           if (isBuildingLocation(location))
             return <BuildingSelecter position={buildingsPosition[location]} selected={locationSelected} key={location} />
           else if (location === Location_Saloon)
-            return <JailSelecter position={jailSelecterPosition} selected={locationSelected} key={location} />
-          else if (location === Location_Jail)
             return <SaloonSelecter position={saloonSelecterPosition} selected={locationSelected} key={location} />
+          else if (location === Location_Jail)
+            return <JailSelecter position={jailSelecterPosition} selected={locationSelected} key={location} />
           return undefined
           })
         }
@@ -166,11 +193,12 @@ export default function Board({ game, player }: Props) {
             }
             return <DoorwaySelecter position={doorwaysPosition[placeMeepleMove.space]} droppable={true} selected={doorwaySelected} key={placeMeepleMove.space} />
           } else if (placeMeepleMove.space === Location_Showdown0 || placeMeepleMove.space === Location_Showdown1) {
-            const showdownSelected = (meeple: MeepleType) => {
-              play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
+            const showdownSelected = (meeple?: MeepleType) => {
+              if (meeple !== undefined)
+                play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
             }
             const isShowdown1 = placeMeepleMove.space === Location_Showdown1
-            return <ShowdownSelecter position={showdownSelecterPositions[isShowdown1 ? 1 : 0]} flip={isShowdown1} selected={showdownSelected} key={placeMeepleMove.space} />
+            return <ShowdownSelecter position={showdownSelecterPositions[isShowdown1 ? 1 : 0]} flip={isShowdown1} droppable={true} selected={showdownSelected} key={placeMeepleMove.space} />
           }
           return undefined
           })
@@ -187,10 +215,36 @@ export default function Board({ game, player }: Props) {
               return <DoorwaySelecter position={doorwaysPosition[space]} droppable={false} selected={locationSelected} key={space} />
             } else if (space === Location_Showdown0 || space === Location_Showdown1) {
               const isShowdown1 = space === Location_Showdown1
-              return <ShowdownSelecter position={showdownSelecterPositions[isShowdown1 ? 1 : 0]} flip={isShowdown1} selected={locationSelected} key={space} />
+              return <ShowdownSelecter position={showdownSelecterPositions[isShowdown1 ? 1 : 0]} flip={isShowdown1} droppable={false} selected={locationSelected} key={space} />
             }
             return undefined
           })
+        }
+
+        { popup}
+
+        {
+          /*
+           * moves implemented : 
+          PlaceInitialMarqueeTile,
+          SelectSourceLocation,
+          PlaceMeeple,
+          ResolveMeeple,
+          BuildOrUpgradeMarquee,
+          RerollShowdownDice,
+
+           * remaining moves :
+          ChooseAnotherPlayerShowdownToken,
+
+          * no action required, animation instead :
+          DrawFromBag,
+          SendExtraMeeplesToSaloon,
+          DynamiteExplosion,
+          MoveMeeples,
+          ResolveShowdown,
+          CheckGoldBars,
+
+        */
         }
 
       </>
@@ -250,3 +304,22 @@ function getGoldBarStyle(position: Array<number>) {
 `
 }
 
+function getDiceStyle(position: Array<number>) {
+  return css`
+  position: absolute;
+  left: ${position[0]}%;
+  top: ${position[1]}%;
+  width: ${diceWidth}%;
+  height: ${diceHeight}%;
+`
+}
+
+function getShowdownTokenStyle(position: Array<number>) {
+  return css`
+  position: absolute;
+  left: ${position[0]}%;
+  top: ${position[1]}%;
+  width: ${showdownTokenWidth}%;
+  height: ${showdownTokenHeight}%;
+`
+}

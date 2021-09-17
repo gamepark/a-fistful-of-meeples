@@ -11,6 +11,10 @@ type BuildOrUpgradeMarquee = {
 
 export default BuildOrUpgradeMarquee
 
+export function getBuildOrUpgradeMarqueeMove(player: PlayerColor, space: number, build: boolean): BuildOrUpgradeMarquee {
+  return { type: MoveType.BuildOrUpgradeMarquee,  playerId: player, space: space, build: build}
+}
+
 export function buildOrUpgradeMarquee(state: GameState, move: BuildOrUpgradeMarquee) {
   const player = state.players.find(player => player.color === move.playerId)
   if (player === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')

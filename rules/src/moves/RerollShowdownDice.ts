@@ -9,6 +9,11 @@ type RerollShowdownDice = {
 
 export default RerollShowdownDice
 
+export function getRerollShowdownDiceMove(reroll: boolean): RerollShowdownDice {
+  return { type: MoveType.RerollShowdownDice, reroll: reroll }
+}
+
+
 export function rerollShowdownDice(state: GameState, move: RerollShowdownDice) {
   if (move.reroll) {
     if (getShowdownHighestShootingSkill(state) == ShowdownResult.Showdown0)

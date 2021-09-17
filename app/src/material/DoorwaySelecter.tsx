@@ -22,7 +22,6 @@ export default function DoorwaySelecter(props: Props) {
   const { t } = useTranslation()
 
   if (props.droppable) {
-
     const [{ isOver }, dropRef] = useDrop({
       accept: MEEPLE_DRAG_TYPE,
       collect: monitor => ({

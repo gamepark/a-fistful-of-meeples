@@ -92,7 +92,8 @@ export function placeMeeple(state: GameState, move: PlaceMeeple) {
   if (state.meeplesInHand.every(meeple => meeple === MeepleType.None)) {
     // no more meeples to place, time to resolve
     state.meeplesInHand = []
-    setCurrentPhase(Phase.ResolveMeeples, state)
+    if (state.pendingEffects.length === 0)  // don't change phase yet if there are effects remaining
+      setCurrentPhase(Phase.ResolveMeeples, state)
   }
 }
 

@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import GameState from '@gamepark/a-fistful-of-meeples/GameState'
+import GameState, { PendingEffectType } from '@gamepark/a-fistful-of-meeples/GameState'
 import { Player as PlayerInfo, usePlayers } from '@gamepark/react-client'
 import {TFunction, useTranslation} from 'react-i18next'
 import { getPlayerName } from '../../rules/src/AFistfulOfMeeplesOptions'
@@ -27,6 +27,22 @@ function getText(t: TFunction, game: GameState, player: PlayerColor, players:Pla
   const getName = (playerId: PlayerColor) => players.find(p => p.id === playerId)?.name || getPlayerName(playerId, t)
 
   if (game.pendingEffects.length > 0) {
+    switch (game.pendingEffects[0].type) {
+      case PendingEffectType.BuildOrUpgradeMarquee:
+        return isActivePlayer ? t('Choose if you want to build or upgrade a marquee') : t('{player} has to choose whether if wants to build or upgrade a marquee', { player: getName(game.activePlayer) })
+      case PendingEffectType.ChooseAnotherPlayerShowdownToken:
+        return isActivePlayer ? t('Choose another player to place his Showdown token') : t('{player} has to choose another player to place his Showdown token', { player: getName(game.activePlayer) })
+      case PendingEffectType.ChooseToRerollShowdownDice:
+        return isActivePlayer ? t('You may choose to reroll your Showdown dice') : t('{player} has to choose whether to reroll his showdown dice', { player: getName(game.activePlayer) })
+      case PendingEffectType.DrawFromBag:
+        return t('Drawing pieces from the Mining Bag...')
+      case PendingEffectType.DynamiteExplosion:
+        return t('Dynamite explosion !')
+      case PendingEffectType.MoveMeeples:
+        return t('Moving meeples...')
+      case PendingEffectType.ResolveShowdown:
+        return t('Resolving Showdown...')
+    }
   }
   
   switch (game.currentPhase) {
