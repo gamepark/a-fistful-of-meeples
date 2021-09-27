@@ -23,7 +23,7 @@ export function placeInitialMarqueeTile(state: GameState, move: PlaceInitialMarq
   // record marquee for player
   state.marquees[move.location].owner = move.playerId
 
-  if (state.activePlayer == state.startingPlayer) {
+  if (state.activePlayer === state.startingPlayer) {
     setCurrentPhase(Phase.SelectSourceLocation, state)  // all players have placed their initial marquee, begin first turn of the game
   } else {
     state.activePlayer = getPreviousPlayer(state, state.activePlayer); // switch to next player in reverse order

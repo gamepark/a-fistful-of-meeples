@@ -27,8 +27,7 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
   switch (move.space) {
     case Location_Showdown0:
     case Location_Showdown1:
-      state.showdowns[0].dice = Math.floor(Math.random() * 6) + 1
-      state.showdowns[1].dice = Math.floor(Math.random() * 6) + 1
+      state.pendingEffects.unshift({ type: PendingEffectType.ResolveShowdown })
       switch (getShowdownHighestShootingSkill(state)) {
         case ShowdownResult.Showdown0:
           state.pendingEffects.unshift({ type: PendingEffectType.ChooseToRerollShowdownDice, player: state.showdowns[0].owner })
@@ -37,9 +36,10 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
           state.pendingEffects.unshift({ type: PendingEffectType.ChooseToRerollShowdownDice, player: state.showdowns[1].owner })
           break
         case ShowdownResult.None:
-          state.pendingEffects.unshift({ type: PendingEffectType.ResolveShowdown })
           break
       }
+      state.pendingEffects.unshift({ type: PendingEffectType.RollShowdownDice, location: Location_Showdown1 })
+      state.pendingEffects.unshift({ type: PendingEffectType.RollShowdownDice, location: Location_Showdown0 })
       break
     default:
       const meeple: MeepleType = state.doorways[move.space]

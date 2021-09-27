@@ -5,6 +5,7 @@ import {GameProvider, setupTranslation} from '@gamepark/react-client'
 import normalize from 'emotion-normalize'
 import {StrictMode} from 'react'
 import ReactDOM from 'react-dom'
+import AFistfulOfMeeplesView from './AFistfulOfMeeplesView'
 import App from './App'
 import translations from './translations.json'
 
@@ -58,7 +59,7 @@ const style = css`
 
 ReactDOM.render(
   <StrictMode>
-    <GameProvider game="a-fistful-of-meeples" Rules={AFistfulOfMeeples} optionsSpec={AFistfulOfMeeplesOptionsDescription}>
+    <GameProvider game="a-fistful-of-meeples" Rules={AFistfulOfMeeples} RulesView={AFistfulOfMeeplesView} optionsSpec={AFistfulOfMeeplesOptionsDescription} >
       <App/>
     </GameProvider>
     <Global styles={[normalize, style]}/>

@@ -20,6 +20,7 @@ import { resolveShowdown } from './moves/ResolveShowdown'
 import { getRerollShowdownDiceMove, rerollShowdownDice } from './moves/RerollShowdownDice'
 import { checkGoldBars } from './moves/CheckGoldBars'
 import { drawCubesFromBag } from './MiningBag'
+import { rollShowdownDice } from './moves/RollShowdownDice'
 
 /**
  * Your Board Game rules must extend either "SequentialGame" or "SimultaneousGame".
@@ -55,7 +56,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    * @return True when game is over
    */
   isOver(): boolean {
-    return this.state.activePlayer == PlayerColor.None
+    return this.state.activePlayer === PlayerColor.None
   }
 
   /**
@@ -66,9 +67,11 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
   getActivePlayer(): PlayerColor | undefined {
     if (this.state.pendingEffects.length > 0) {
       let effect = this.state.pendingEffects[0]
-      if (effect.type == PendingEffectType.BuildOrUpgradeMarquee && this.state.marquees[effect.location].owner != PlayerColor.None) {
+      if (effect.type === PendingEffectType.BuildOrUpgradeMarquee && this.state.marquees[effect.location].owner != PlayerColor.None) {
         return this.state.marquees[effect.location].owner
       }
+      if (effect.type === PendingEffectType.ChooseToRerollShowdownDice)
+        return effect.player
     }
 
     return this.state.activePlayer // You must return undefined only when game is over, otherwise the game will be blocked.
@@ -188,56 +191,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    * @param move The move that should be applied to current state.
    */
   play(move: Move): void {
-    switch (move.type) {
-      case MoveType.PlaceInitialMarqueeTile:
-        return placeInitialMarqueeTile(this.state, move)
-
-      case MoveType.SelectSourceLocation:
-        return selectSourceLocation(this.state, move)
-
-      case MoveType.PlaceMeeple:
-        return placeMeeple(this.state, move)
-
-      case MoveType.ChooseAnotherPlayerShowdownToken:
-        this.state.pendingEffects.shift()
-        return chooseAnotherPlayerToPlaceShowdownToken(this.state, move)
-
-      case MoveType.ResolveMeeple:
-        return resolveMeeple(this.state, move)
-
-      case MoveType.BuildOrUpgradeMarquee:
-        this.state.pendingEffects.shift()
-        return buildOrUpgradeMarquee(this.state, move)
-
-      case MoveType.DrawFromBag:
-        this.state.pendingEffects.shift()
-        return drawFromBag(this.state, move)
-
-      case MoveType.SendExtraMeeplesToSaloon:
-        return sendExtraMeeplesToSaloon(this.state)
-
-      case MoveType.DynamiteExplosion:
-        this.state.pendingEffects.shift()
-        return dynamiteExplosion(this.state)
-
-      case MoveType.MoveMeeples:
-        this.state.pendingEffects.shift()
-        return moveMeeples(this.state, move)
-
-      case MoveType.RerollShowdownDice:
-        this.state.pendingEffects.shift()
-        return rerollShowdownDice(this.state, move)
-
-      case MoveType.ResolveShowdown:
-        this.state.pendingEffects.shift()
-        return resolveShowdown(this.state)
-
-      case MoveType.CheckGoldBars:
-        return checkGoldBars(this.state, move)
-
-      default:
-        return move // never guard
-    }
+    playMove(this.state, move)
   }
 
   /**
@@ -254,22 +208,89 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    * @return The next automatic consequence that should be played in current game state.
    */
   getAutomaticMove(): void | Move {
-    if (this.state.pendingEffects.length > 0) {
-      const effect = this.state.pendingEffects[0]
-      switch (effect.type) {
-        case PendingEffectType.DrawFromBag:
-///          if ('window' in globalThis && globalThis['window'] !== undefined) // if we are on client side, don't draw cubes. It will be done on server side only (not sure about this test...)
-///            return
-          return { type: MoveType.DrawFromBag, playerId: effect.player, content: drawCubesFromBag(this.state, effect.amount) }
-        case PendingEffectType.DynamiteExplosion:
-          return { type: MoveType.DynamiteExplosion }
-        case PendingEffectType.MoveMeeples:
-          return { type: MoveType.MoveMeeples, meeples: effect.meeples, source: effect.sourceLocation, destination: effect.destinationLocation }
-        case PendingEffectType.ResolveShowdown:
-          return { type: MoveType.ResolveShowdown }
-      }
-    } else if (this.state.currentPhase === Phase.CheckGoldBars) {
-      return { type: MoveType.CheckGoldBars }
+    return getPredictableMove(this.state, true)
+  }
+}
+
+
+export function getPredictableMove(state: GameState, serverSide: boolean): void | Move {
+  if (state.pendingEffects.length > 0) {
+    const effect = state.pendingEffects[0]
+    switch (effect.type) {
+      case PendingEffectType.DrawFromBag:
+        if (serverSide)
+          return { type: MoveType.DrawFromBag, playerId: effect.player, content: drawCubesFromBag(state, effect.amount) }
+        return  // if we are on client side, don't draw cubes. It will be done on server side only
+      case PendingEffectType.RollShowdownDice:
+        if (serverSide)
+          return { type: MoveType.RollShowdownDice, location: effect.location, value: Math.floor(Math.random() * 6) + 1 }
+        return  // if we are on client side, don't roll dice. It will be done on server side only
+      case PendingEffectType.DynamiteExplosion:
+        return { type: MoveType.DynamiteExplosion }
+      case PendingEffectType.MoveMeeples:
+        return { type: MoveType.MoveMeeples, meeples: effect.meeples, source: effect.sourceLocation, destination: effect.destinationLocation }
+      case PendingEffectType.ResolveShowdown:
+        return { type: MoveType.ResolveShowdown }
     }
+  } else if (state.currentPhase === Phase.CheckGoldBars) {
+    return { type: MoveType.CheckGoldBars }
+  }
+}
+
+
+export function playMove(state: GameState, move: Move): void {
+  switch (move.type) {
+    case MoveType.PlaceInitialMarqueeTile:
+      return placeInitialMarqueeTile(state, move)
+
+    case MoveType.SelectSourceLocation:
+      return selectSourceLocation(state, move)
+
+    case MoveType.PlaceMeeple:
+      return placeMeeple(state, move)
+
+    case MoveType.ChooseAnotherPlayerShowdownToken:
+      state.pendingEffects.shift()
+      return chooseAnotherPlayerToPlaceShowdownToken(state, move)
+
+    case MoveType.ResolveMeeple:
+      return resolveMeeple(state, move)
+
+    case MoveType.BuildOrUpgradeMarquee:
+      state.pendingEffects.shift()
+      return buildOrUpgradeMarquee(state, move)
+
+    case MoveType.DrawFromBag:
+      state.pendingEffects.shift()
+      return drawFromBag(state, move)
+
+    case MoveType.SendExtraMeeplesToSaloon:
+      return sendExtraMeeplesToSaloon(state)
+
+    case MoveType.DynamiteExplosion:
+      state.pendingEffects.shift()
+      return dynamiteExplosion(state)
+
+    case MoveType.MoveMeeples:
+      state.pendingEffects.shift()
+      return moveMeeples(state, move)
+
+    case MoveType.RollShowdownDice:
+      state.pendingEffects.shift()
+      return rollShowdownDice(state, move)
+
+    case MoveType.RerollShowdownDice:
+      state.pendingEffects.shift()
+      return rerollShowdownDice(state, move)
+
+    case MoveType.ResolveShowdown:
+      state.pendingEffects.shift()
+      return resolveShowdown(state)
+
+    case MoveType.CheckGoldBars:
+      return checkGoldBars(state, move)
+
+    default:
+      return move // never guard
   }
 }

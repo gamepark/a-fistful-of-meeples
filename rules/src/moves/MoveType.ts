@@ -16,6 +16,7 @@ enum MoveType {
   DynamiteExplosion,
   MoveMeeples,
   ResolveShowdown,
+  RollShowdownDice,
   CheckGoldBars,
 }
 

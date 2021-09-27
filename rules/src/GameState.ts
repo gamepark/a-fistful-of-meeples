@@ -33,6 +33,7 @@ export enum Direction {
 export enum PendingEffectType {
   ChooseAnotherPlayerShowdownToken,	// active player must choose another player to place his showdown token
   BuildOrUpgradeMarquee, // a player may build or upgrade a marquee
+  RollShowdownDice, // resolving showdown, players dice must be rolled
   ChooseToRerollShowdownDice, // a player may reroll his showdown dice
   ResolveShowdown,  // dice have been rolled and rerolled, time to resolve showdown !
   DrawFromBag,  // when a meeple is resolved in a building, some players may have to draw from bag
@@ -42,6 +43,7 @@ export enum PendingEffectType {
 
 export type PendingEffect = { type: PendingEffectType.ChooseAnotherPlayerShowdownToken, space: number }
   | { type: PendingEffectType.BuildOrUpgradeMarquee, location: number }
+  | { type: PendingEffectType.RollShowdownDice, location: number }
   | { type: PendingEffectType.ChooseToRerollShowdownDice, player: PlayerColor }
   | { type: PendingEffectType.ResolveShowdown }
   | { type: PendingEffectType.DrawFromBag, player: PlayerColor, amount: number }

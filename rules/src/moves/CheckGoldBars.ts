@@ -26,7 +26,7 @@ export function checkGoldBars(state: GameState, move: CheckGoldBars): void {
   }
 
   state.activePlayer = getNextPlayer(state, state.activePlayer)
-  if (state.activePlayer == state.startingPlayer && endOfGameTriggered(state)) {
+  if (state.activePlayer === state.startingPlayer && endOfGameTriggered(state)) {
     // game is over : all players have played the same number of turns
     state.activePlayer = PlayerColor.None
   } else {
