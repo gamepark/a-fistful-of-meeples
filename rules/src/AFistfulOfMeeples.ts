@@ -21,6 +21,7 @@ import { getRerollShowdownDiceMove, rerollShowdownDice } from './moves/RerollSho
 import { checkGoldBars } from './moves/CheckGoldBars'
 import { drawCubesFromBag } from './MiningBag'
 import { rollShowdownDice } from './moves/RollShowdownDice'
+import { changeCurrentPhase } from './moves/ChangeCurrentPhase'
 
 /**
  * Your Board Game rules must extend either "SequentialGame" or "SimultaneousGame".
@@ -177,6 +178,9 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
           // just automatic move here
           break
 
+        case Phase.GameOver:
+          break;
+
         default:
           return this.state.currentPhase // never guard
 
@@ -229,6 +233,8 @@ export function getPredictableMove(state: GameState, serverSide: boolean): void 
         return { type: MoveType.DynamiteExplosion }
       case PendingEffectType.MoveMeeples:
         return { type: MoveType.MoveMeeples, meeples: effect.meeples, source: effect.sourceLocation, destination: effect.destinationLocation }
+      case PendingEffectType.ChangeCurrentPhase:
+        return { type: MoveType.ChangeCurrentPhase, phase: effect.phase }
       case PendingEffectType.ResolveShowdown:
         return { type: MoveType.ResolveShowdown }
     }
@@ -274,6 +280,10 @@ export function playMove(state: GameState, move: Move): void {
     case MoveType.MoveMeeples:
       state.pendingEffects.shift()
       return moveMeeples(state, move)
+
+    case MoveType.ChangeCurrentPhase:
+      state.pendingEffects.shift()
+      return changeCurrentPhase(state, move)
 
     case MoveType.RollShowdownDice:
       state.pendingEffects.shift()

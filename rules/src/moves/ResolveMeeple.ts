@@ -1,11 +1,12 @@
 import GameState, { Location_Showdown0, Location_Showdown1, canPayBuildingCost, PendingEffectType, Location_Jail, Location_Saloon, isBuildingLocation } from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
-import Phase, { setCurrentPhase } from '../Phase'
+import Phase from '../Phase'
 import MeepleType from '../MeepleType'
 import PlayerState from '../PlayerState'
 import { getShowdownHighestShootingSkill, ShowdownResult } from '../Showdown'
 import { getDrawFromBagPendingEffect } from './DrawFromBag'
+import { getChangeCurrentPhasePendingEffect } from './ChangeCurrentPhase'
 
 /**
  * Here is a example a of move involving hidden information
@@ -24,9 +25,12 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
   if (player === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
   if (!(isBuildingLocation(move.space) || move.space == Location_Showdown0 || move.space == Location_Showdown1)) return console.error('Invalid space ', move.space, ' for resolving meeple')
 
+  let isShowdown: boolean = false
+
   switch (move.space) {
     case Location_Showdown0:
     case Location_Showdown1:
+      isShowdown = true
       state.pendingEffects.unshift({ type: PendingEffectType.ResolveShowdown })
       switch (getShowdownHighestShootingSkill(state)) {
         case ShowdownResult.Showdown0:
@@ -116,9 +120,9 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
       break
   }
 
-  if ((state.showdowns[0].meeple === MeepleType.None || state.showdowns[1].meeple === MeepleType.None) && state.doorways.every(doorway => doorway === MeepleType.None)) {
+  if ((state.showdowns[0].meeple === MeepleType.None || state.showdowns[1].meeple === MeepleType.None || isShowdown) && state.doorways.every(doorway => doorway === MeepleType.None)) {
     // no more meeples to resolve : advance to next phase
-    setCurrentPhase(Phase.CheckGoldBars, state)
+    state.pendingEffects.push(getChangeCurrentPhasePendingEffect(Phase.CheckGoldBars))
   }
 }
 

@@ -1,7 +1,8 @@
 import GameState, { Location_Jail, Location_Saloon } from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
-import Phase, { setCurrentPhase } from '../Phase'
+import Phase from '../Phase'
+import { getChangeCurrentPhasePendingEffect } from './ChangeCurrentPhase'
 
 /**
  * Here is a example a of move involving hidden information
@@ -41,6 +42,6 @@ export function selectSourceLocation(state: GameState, move: SelectSourceLocatio
   if (state.meeplesInHand.length == 0) return console.error('No meeple in source location ', move.location)
 
   state.previousMeepleLocation = move.location
-  setCurrentPhase(Phase.PlaceMeeples, state)
+  state.pendingEffects.push(getChangeCurrentPhasePendingEffect(Phase.PlaceMeeples))
 }
 

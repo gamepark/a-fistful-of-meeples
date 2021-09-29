@@ -39,6 +39,7 @@ export enum PendingEffectType {
   DrawFromBag,  // when a meeple is resolved in a building, some players may have to draw from bag
   DynamiteExplosion,  // when a dynamite is drawn from the bag
   MoveMeeples,  // when meeples are sent to another location
+  ChangeCurrentPhase, // game phase changes
 }
 
 export type PendingEffect = { type: PendingEffectType.ChooseAnotherPlayerShowdownToken, space: number }
@@ -49,6 +50,7 @@ export type PendingEffect = { type: PendingEffectType.ChooseAnotherPlayerShowdow
   | { type: PendingEffectType.DrawFromBag, player: PlayerColor, amount: number }
   | { type: PendingEffectType.DynamiteExplosion }
   | { type: PendingEffectType.MoveMeeples, meeples: MeepleType, sourceLocation: number, destinationLocation: number }
+  | { type: PendingEffectType.ChangeCurrentPhase, phase: Phase }
 
 type BuildingCost = {
   gold: number

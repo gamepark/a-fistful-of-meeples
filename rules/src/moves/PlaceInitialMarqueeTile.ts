@@ -1,7 +1,8 @@
 import GameState, { getPreviousPlayer } from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
-import Phase, { setCurrentPhase } from '../Phase'
+import Phase from '../Phase'
+import { getChangeCurrentPhasePendingEffect } from './ChangeCurrentPhase'
 
 /**
  * Here is a example a of move involving hidden information
@@ -24,7 +25,7 @@ export function placeInitialMarqueeTile(state: GameState, move: PlaceInitialMarq
   state.marquees[move.location].owner = move.playerId
 
   if (state.activePlayer === state.startingPlayer) {
-    setCurrentPhase(Phase.SelectSourceLocation, state)  // all players have placed their initial marquee, begin first turn of the game
+    state.pendingEffects.push(getChangeCurrentPhasePendingEffect(Phase.SelectSourceLocation))  // all players have placed their initial marquee, begin first turn of the game
   } else {
     state.activePlayer = getPreviousPlayer(state, state.activePlayer); // switch to next player in reverse order
   }

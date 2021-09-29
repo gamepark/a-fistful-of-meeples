@@ -15,6 +15,9 @@ export default MoveMeeples
 export function moveMeeples(state: GameState, move: MoveMeeples): void {
   let numberOfMeeples: number
 
+  if (move.meeples === MeepleType.None)
+    return console.error('Moving meeple of type "None" from ' + move.source + ' to ' + move.destination)
+
   switch (move.source) {
     case Location_Showdown0:
       numberOfMeeples = 1

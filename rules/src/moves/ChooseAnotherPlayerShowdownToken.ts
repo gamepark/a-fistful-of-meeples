@@ -1,5 +1,4 @@
 import GameState, { Location_Showdown0, Location_Showdown1} from '../GameState'
-import Phase, { setCurrentPhase } from '../Phase'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
 
@@ -26,8 +25,5 @@ export function chooseAnotherPlayerToPlaceShowdownToken(state: GameState, move: 
   } else if (state.previousMeepleLocation === Location_Showdown1) {
     state.showdowns[1].owner = move.playerId;
   }
-
-  if (state.meeplesInHand.length === 0)  // if it was the last meeple placed who triggered this, go to resolution phase
-    setCurrentPhase(Phase.ResolveMeeples, state)
 }
 

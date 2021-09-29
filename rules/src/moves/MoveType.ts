@@ -15,6 +15,7 @@ enum MoveType {
   SendExtraMeeplesToSaloon,
   DynamiteExplosion,
   MoveMeeples,
+  ChangeCurrentPhase,
   ResolveShowdown,
   RollShowdownDice,
   CheckGoldBars,

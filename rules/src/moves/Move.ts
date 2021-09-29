@@ -13,12 +13,13 @@ import ResolveShowdown from './ResolveShowdown'
 import RerollShowdownDice from './RerollShowdownDice'
 import CheckGoldBars from './CheckGoldBars'
 import MoveType from './MoveType'
+import ChangeCurrentPhase from './ChangeCurrentPhase'
 
 /**
  * A "Move" is the combination of all the types of moves that exists in you game
  */
 type Move = PlaceInitialMarqueeTile | SelectSourceLocation | PlaceMeeple | RollShowdownDice | ChooseAnotherPlayerShowdownToken | ResolveMeeple | BuildOrUpgradeMarquee
-  | DrawFromBag | SendExtraMeeplesToSaloon | MoveMeeples | DynamiteExplosion | RerollShowdownDice | ResolveShowdown | CheckGoldBars
+  | DrawFromBag | SendExtraMeeplesToSaloon | MoveMeeples | ChangeCurrentPhase | DynamiteExplosion | RerollShowdownDice | ResolveShowdown | CheckGoldBars
 
 export default Move
 
