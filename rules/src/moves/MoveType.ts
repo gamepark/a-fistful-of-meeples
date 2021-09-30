@@ -18,7 +18,7 @@ enum MoveType {
   ChangeCurrentPhase,
   ResolveShowdown,
   RollShowdownDice,
-  CheckGoldBars,
+  ConvertGoldBar,
 }
 
 

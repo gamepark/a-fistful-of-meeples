@@ -1,5 +1,5 @@
 import { SequentialGame } from '@gamepark/rules-api'
-import GameState, { initialiseGameState, Location_Saloon, Location_Jail, PendingEffectType, Location_Showdown0, Location_Showdown1 } from './GameState'
+import GameState, { initialiseGameState, Location_Saloon, Location_Jail, PendingEffectType, Location_Showdown0, Location_Showdown1, Location_None, getNextPlayer, endOfGameTriggered } from './GameState'
 import Move from './moves/Move'
 import MoveType from './moves/MoveType'
 import PlayerColor from './PlayerColor'
@@ -18,10 +18,11 @@ import { dynamiteExplosion } from './moves/DynamiteExplosion'
 import { moveMeeples } from './moves/MoveMeeples'
 import { resolveShowdown } from './moves/ResolveShowdown'
 import { getRerollShowdownDiceMove, rerollShowdownDice } from './moves/RerollShowdownDice'
-import { checkGoldBars } from './moves/CheckGoldBars'
+import { canTradeGoldBar } from './moves/ConvertGoldBar'
 import { drawCubesFromBag } from './MiningBag'
 import { rollShowdownDice } from './moves/RollShowdownDice'
-import { changeCurrentPhase } from './moves/ChangeCurrentPhase'
+import { changeCurrentPhase, getChangeCurrentPhaseMove } from './moves/ChangeCurrentPhase'
+import { convertGoldBar } from './moves/ConvertGoldBar'
 
 /**
  * Your Board Game rules must extend either "SequentialGame" or "SimultaneousGame".
@@ -233,13 +234,44 @@ export function getPredictableMove(state: GameState, serverSide: boolean): void 
         return { type: MoveType.DynamiteExplosion }
       case PendingEffectType.MoveMeeples:
         return { type: MoveType.MoveMeeples, meeples: effect.meeples, source: effect.sourceLocation, destination: effect.destinationLocation }
-      case PendingEffectType.ChangeCurrentPhase:
-        return { type: MoveType.ChangeCurrentPhase, phase: effect.phase }
       case PendingEffectType.ResolveShowdown:
         return { type: MoveType.ResolveShowdown }
     }
-  } else if (state.currentPhase === Phase.CheckGoldBars) {
-    return { type: MoveType.CheckGoldBars }
+  } else switch (state.currentPhase) {
+    case Phase.PlaceInitialMarqueeTiles:
+      if (state.marquees.filter(marquee => marquee.owner !== PlayerColor.None).length === state.players.length)
+        return getChangeCurrentPhaseMove(Phase.SelectSourceLocation)  // all players have placed their initial marquee, begin first turn of the game
+      break
+
+    case Phase.SelectSourceLocation:
+      if (state.previousMeepleLocation !== Location_None)
+        return getChangeCurrentPhaseMove(Phase.PlaceMeeples)  // source location has been chosen, time to place meeples
+      break
+
+    case Phase.PlaceMeeples:
+      if (state.meeplesInHand.every(meeple => meeple === MeepleType.None)) {
+        return getChangeCurrentPhaseMove(Phase.ResolveMeeples)  // no more meeples to place, time to resolve
+      }
+      break
+
+    case Phase.ResolveMeeples:
+      if ((state.showdowns[0].meeple === MeepleType.None || state.showdowns[1].meeple === MeepleType.None) && state.doorways.every(doorway => doorway === MeepleType.None)) {
+        return getChangeCurrentPhaseMove(Phase.CheckGoldBars) // no meeple to resolve : advance to next phase
+      }
+      break
+
+    case Phase.CheckGoldBars:
+      if (canTradeGoldBar(state, state.activePlayer))
+        return { type: MoveType.ConvertGoldBar }
+      if (getNextPlayer(state, state.activePlayer) === state.startingPlayer && endOfGameTriggered(state))
+        return getChangeCurrentPhaseMove(Phase.GameOver)  // game is over : all players have played the same number of turns
+      return getChangeCurrentPhaseMove(Phase.SelectSourceLocation)
+
+    case Phase.GameOver:
+      break
+
+    default:
+      return state.currentPhase
   }
 }
 
@@ -282,7 +314,6 @@ export function playMove(state: GameState, move: Move): void {
       return moveMeeples(state, move)
 
     case MoveType.ChangeCurrentPhase:
-      state.pendingEffects.shift()
       return changeCurrentPhase(state, move)
 
     case MoveType.RollShowdownDice:
@@ -297,8 +328,8 @@ export function playMove(state: GameState, move: Move): void {
       state.pendingEffects.shift()
       return resolveShowdown(state)
 
-    case MoveType.CheckGoldBars:
-      return checkGoldBars(state, move)
+    case MoveType.ConvertGoldBar:
+      return convertGoldBar(state, move)
 
     default:
       return move // never guard

@@ -1,7 +1,6 @@
 import GameState from '../GameState'
 import MoveType from './MoveType'
-import Phase from '../Phase'
-import { getChangeCurrentPhasePendingEffect } from './ChangeCurrentPhase'
+import MeepleType from '../MeepleType'
 
 type SendExtraMeeplesToSaloon = {
   type: MoveType.SendExtraMeeplesToSaloon
@@ -10,7 +9,6 @@ type SendExtraMeeplesToSaloon = {
 export default SendExtraMeeplesToSaloon
 
 export function sendExtraMeeplesToSaloon(state: GameState): void {
-  state.meeplesInHand.forEach(meeple => state.saloon.push(meeple))
+  state.meeplesInHand.filter(meeple => meeple !== MeepleType.None).forEach(meeple => state.saloon.push(meeple))
   state.meeplesInHand = []
-  state.pendingEffects.push(getChangeCurrentPhasePendingEffect(Phase.ResolveMeeples))
 }

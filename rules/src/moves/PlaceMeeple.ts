@@ -1,10 +1,8 @@
 import GameState, { Direction, Location_Showdown0, Location_Showdown1, PendingEffectType, Location_Saloon, Location_Jail, isBuildingLocation } from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
-import Phase from '../Phase'
 import MeepleType from '../MeepleType'
 import { getNextEmptySpace, getPreviousEmptySpace, isSpaceEmpty } from '../Location'
-import { getChangeCurrentPhasePendingEffect } from './ChangeCurrentPhase'
 
 /**
  * Here is a example a of move involving hidden information
@@ -89,11 +87,5 @@ export function placeMeeple(state: GameState, move: PlaceMeeple) {
       break
   }
   state.previousMeepleLocation = move.space
-
-  if (state.meeplesInHand.every(meeple => meeple === MeepleType.None)) {
-    // no more meeples to place, time to resolve
-    state.meeplesInHand = []
-    state.pendingEffects.push(getChangeCurrentPhasePendingEffect(Phase.ResolveMeeples))
-  }
 }
 

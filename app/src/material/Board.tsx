@@ -232,8 +232,6 @@ export default function Board({ game, player }: Props) {
           ResolveMeeple,
           BuildOrUpgradeMarquee,
           RerollShowdownDice,
-
-           * remaining moves :
           ChooseAnotherPlayerShowdownToken,
 
           * no action required, animation instead :
@@ -241,6 +239,7 @@ export default function Board({ game, player }: Props) {
           SendExtraMeeplesToSaloon,
           DynamiteExplosion,
           MoveMeeples,
+          ChangePhase,
           ResolveShowdown,
           CheckGoldBars,
 
