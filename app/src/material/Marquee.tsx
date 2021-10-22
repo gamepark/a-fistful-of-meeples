@@ -59,6 +59,7 @@ const getMarqueeStyle = (left: number, top: number, flip: boolean) => css`
   top: ${top}%;
   width: ${marqueeWidth}%;
   height: ${marqueeHeight}%;
-  transform: scaleY(${flip ? -1 : 1});
+  ${flip ? 'transform: rotate(180deg);' : ''}
 `
+
 

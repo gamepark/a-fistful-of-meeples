@@ -2,39 +2,50 @@
 import { css } from '@emotion/react'
 import PlayerColor from '../../../rules/src/PlayerColor'
 import PlayerState from '../../../rules/src/PlayerState'
-import { playerInfoWidth, playerInfoHeight, stoneCubeRatio, goldCubeRatio, goldBarRatio } from '../util/Metrics'
+import { stoneCubeRatio, goldCubeRatio, goldBarRatio } from '../util/Metrics'
 import GoldBar from './GoldBar'
 import Images from './Images'
 import StoneCube from './StoneCube'
 import GoldCube from './GoldCube'
 import GameState from '../../../rules/src/GameState'
+import { HTMLAttributes } from 'react'
+import { Avatar, usePlayer } from '@gamepark/react-client'
+import { SpeechBubbleDirection } from '@gamepark/react-client/dist/Avatar'
+import { Picture } from '@gamepark/react-components'
+import { useTranslation } from 'react-i18next'
 
 
 type Props = {
   player: PlayerColor | undefined
   playerState: PlayerState
   gameState: GameState
-  left: number
-  top: number
-}
+} & HTMLAttributes<HTMLDivElement>
 
 
 export default function PlayerInfo(props: Props) {
+  const { t } = useTranslation()
+  const playerInfo = usePlayer<PlayerColor>(props.player)
+
+
   return (
-    <div css={getPlayerInfoStyle(props.left, props.top, props.playerState.color, props.gameState.activePlayer === props.playerState.color)} >
-      <div css={getItemStyle(32, 10)}>
+    <div {...props} css={getPlayerInfoStyle(props.playerState.color, props.gameState.activePlayer === props.playerState.color)} >
+      {playerInfo?.avatar ?
+        <Avatar playerId={props.player} css={avatarStyle} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }} /> :
+        <Picture alt={t('Player avatar')} src={Images.avatar} css={fallbackAvatarStyle} />
+      }
+
+      <div css={getItemStyle(82, 10)}>
         {props.playerState.stones}
       </div>
-      <div css={getItemStyle(82 , 10)}>
+      <div css={getItemStyle(82 , 40)}>
         {props.playerState.goldPieces}
       </div>
-      <div css={getItemStyle(62, 42)}>
+      <div css={getItemStyle(62, 72)}>
         {props.playerState.goldBars}
       </div>
       <StoneCube style={getStoneCubeStyle} />
       <GoldCube style={getGoldCubeStyle} />
       <GoldBar style={getGoldBarStyle} />
-      { (props.gameState.startingPlayer === props.playerState.color) && 'S'}
     </div>
   )
 }
@@ -55,15 +66,11 @@ const getPlayerImage = (color: PlayerColor) => {
 }
 
 
-const getPlayerInfoStyle = (left: number, top: number, color: PlayerColor, isActive: boolean) => css`
+const getPlayerInfoStyle = (color: PlayerColor, isActive: boolean) => css`
   background-image: url(${getPlayerImage(color)});
   background-color: #00000000;
   background-size: cover;
   position: absolute;
-  left: ${left}%;
-  top: ${top}%;
-  width: ${playerInfoWidth}%;
-  height: ${playerInfoHeight}%;
   ${isActive && 'filter: drop-shadow(0 0.2em 0.2em black) drop-shadow(0 0 0.2em red)'}
 `
 
@@ -77,7 +84,7 @@ const getItemStyle = (left: number, top: number) => css`
 
 const getStoneCubeStyle = css`
   position: absolute;
-  left: 5%;
+  left: 60%;
   top: 5%;
   width: 20%;
   height: ${20 / stoneCubeRatio}%;
@@ -85,8 +92,8 @@ const getStoneCubeStyle = css`
 
 const getGoldCubeStyle = css`
   position: absolute;
-  left: 55%;
-  top: 5%;
+  left: 60%;
+  top: 35%;
   width: 20%;
   height: ${20 / goldCubeRatio}%;
 `
@@ -95,7 +102,25 @@ const getGoldBarStyle = css`
   position: absolute;
   transform: rotate(90deg);
   left: 15%;
-  top: 25%;
+  top: 55%;
   width: 30%;
   height: ${30 / goldBarRatio}%;
+`
+
+const avatarStyle = css`
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 5%;
+  left: 5%;
+`
+
+const fallbackAvatarStyle = css`
+  position: absolute;
+  width: 50%;
+  height: 50%;
+  top: 5%;
+  left: 5%;
+  border: 0.1em solid white;
+  border-radius: 100%; 
 `

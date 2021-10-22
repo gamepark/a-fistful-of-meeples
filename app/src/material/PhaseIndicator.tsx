@@ -1,22 +1,25 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { phaseWidth, phaseHeight } from '../util/Metrics'
 import Images from './Images'
 import GameState from '../../../rules/src/GameState'
 import Phase from '../../../rules/src/Phase'
+import { HTMLAttributes } from 'react'
+import { Picture } from '@gamepark/react-components'
+import { useTranslation } from 'react-i18next'
 
 
 type Props = {
   phase: Phase
   gameState: GameState
-  left: number
-  top: number
-}
+} & HTMLAttributes<HTMLDivElement>
 
 
 export default function PhaseIndicator(props: Props) {
+  const { t } = useTranslation()
+
   return (
-    <div css={getPhaseStyle(props.left, props.top, props.phase, props.gameState.currentPhase === props.phase)} >
+    <div {...props} css={getPhaseStyle(props.gameState.currentPhase === props.phase)} >
+      <Picture src={getPhaseImage(props.phase)} draggable={false} css={getInnerPhaseStyle} alt={t(getPhaseName(props.phase))} />
     </div>
   )
 }
@@ -32,20 +35,33 @@ const getPhaseImage = (phase: Phase) => {
     case Phase.CheckGoldBars:
       return Images.phase4
     default:
-      return undefined
+      return ''
+  }
+}
+
+const getPhaseName = (phase: Phase) => {
+  switch (phase) {
+    case Phase.SelectSourceLocation:
+      return 'Select source location'
+    case Phase.PlaceMeeples:
+      return 'Place meeples'
+    case Phase.ResolveMeeples:
+      return 'Resolve meeples'
+    case Phase.CheckGoldBars:
+      return 'Check gold bars'
+    default:
+      return ''
   }
 }
 
 
-const getPhaseStyle = (left: number, top: number, phase: Phase, isActive: boolean) => css`
-  background-image: url(${getPhaseImage(phase)});
+const getPhaseStyle = (isActive: boolean) => css`
+  background-image: url(${isActive ? Images.phaseActive : Images.phase});
   background-color: #00000000;
   background-size: cover;
-  position: absolute;
-  left: ${left}%;
-  top: ${top}%;
-  width: ${phaseWidth}%;
-  height: ${phaseHeight}%;
-  ${isActive && 'filter: drop-shadow(0 0.2em 0.2em black) drop-shadow(0 0 0.2em red)'}
 `
 
+const getInnerPhaseStyle = css`
+  width: 100%;
+  height: 100%;
+`

@@ -22,7 +22,7 @@ export default function HeaderText({loading, game, player}: Props) {
   return <>{getText(t, game!, player!, players!)}</>
 }
 
-function getText(t: TFunction, game: GameState, player: PlayerColor, players:PlayerInfo<PlayerColor>[]) {
+function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[]): string {
   const isActivePlayer: boolean = player === game.activePlayer
   const getName = (playerId: PlayerColor) => players.find(p => p.id === playerId)?.name || getPlayerName(playerId, t)
 
@@ -42,6 +42,10 @@ function getText(t: TFunction, game: GameState, player: PlayerColor, players:Pla
         return t('Moving meeples...')
       case PendingEffectType.ResolveShowdown:
         return t('Resolving Showdown...')
+      case PendingEffectType.RollShowdownDice:
+        return t('Rolling dices...')
+      default:
+        return game.pendingEffects[0]
     }
   }
   
@@ -56,6 +60,9 @@ function getText(t: TFunction, game: GameState, player: PlayerColor, players:Pla
       return isActivePlayer ? t('Select a meeple to resolve') : t('{player} has to select a meeple to resolve', { player: getName(game.activePlayer) })
     case Phase.CheckGoldBars:
       return t('Checking for gold bars')
+    case Phase.GameOver:
+      return t('Game is over')
+    default:
+      return game.currentPhase
   }
-  return ''
 }

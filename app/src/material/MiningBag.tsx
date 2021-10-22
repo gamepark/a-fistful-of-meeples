@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { miningBagHeight, miningBagWidth } from '../util/Metrics'
+import { HTMLAttributes } from 'react'
 import Images from './Images'
 
 
@@ -8,14 +8,12 @@ type Props = {
   gold: number
   stone: number
   dynamite: number
-  left: number
-  top: number
-}
+} & HTMLAttributes<HTMLDivElement>
 
 
 export default function MiningBag(props: Props) {
   return (
-    <div css={getMiningBagStyle(props.left, props.top)} >
+    <div css={miningBagStyle} {...props} >
       <div css={goldAmountStyle}>{props.gold}</div>
       <div css={stoneAmountStyle}>{props.stone}</div>
       <div css={dynamiteAmountStyle}>{props.dynamite}</div>
@@ -24,15 +22,10 @@ export default function MiningBag(props: Props) {
 }
 
 
-const getMiningBagStyle = (left: number, top: number) => css`
+const miningBagStyle = css`
   background-image: url(${Images.miningBag});
   background-color: #00000000;
   background-size: cover;
-  position: absolute;
-  left: ${left}%;
-  top: ${top}%;
-  width: ${miningBagWidth}%;
-  height: ${miningBagHeight}%;
 `
 
 const goldAmountStyle = css`

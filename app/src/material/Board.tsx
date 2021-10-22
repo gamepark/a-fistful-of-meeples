@@ -2,18 +2,14 @@
 import { css } from '@emotion/react'
 import GameState, { isBuildingLocation, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeftMargin, boardTopMargin, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, miningBagLeft, miningBagTop, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, playerInfoPositions, goldBarWidth, goldBarHeight, phasesPositions, meeplesInHandPosition, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth } from '../util/Metrics'
-import MiningBag from './MiningBag'
+import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth } from '../util/Metrics'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
 import Images from './Images'
 import Meeple from './Meeple'
 import ShowdownToken from './ShowdownToken'
 import MeepleType from '../../../rules/src/MeepleType'
-import Phase from '../../../rules/src/Phase'
 import Marquee from './Marquee'
-import PlayerInfo from './PlayerInfo'
-import PhaseIndicator from './PhaseIndicator'
 import AFistfulOfMeeples from '../../../rules/src/AFistfulOfMeeples'
 import { isBuildOrUpgradeMarqueeMove, isChooseAnotherPlayerShowdownTokenMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isRerollShowdownDiceMove, isResolveMeepleMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
 import MarqueeSelecter from './MarqueeSelecter'
@@ -39,10 +35,9 @@ import ChooseAnotherPlayerShowdownToken from '../../../rules/src/moves/ChooseAno
 
 type Props = {
   game: GameState
-  player: PlayerColor | undefined
 }
 
-export default function Board({ game, player }: Props) {
+export default function Board({ game }: Props) {
   const { t } = useTranslation()
   const currentGame = new AFistfulOfMeeples(game)
   const legalMoves = currentGame.getLegalMoves()
@@ -67,14 +62,6 @@ export default function Board({ game, player }: Props) {
 
   return (
     <div css={style}>
-      <MiningBag gold={game.goldCubesInMiningBag} stone={game.stoneCubesInMiningBag} dynamite={game.dynamitesInMiningBag} left={miningBagLeft} top={miningBagTop} />
-
-      <>
-        {game.players.map((playerState, index) =>
-          <PlayerInfo left={playerInfoPositions[index][0]} top={playerInfoPositions[index][1]} playerState={playerState} player={player} gameState={game} key={index}/>
-        )}
-      </>
-
       {game.goldBarsInBank > 0 &&
         <>
         {[...Array(game.goldBarsInBank)].map((_, index) =>
@@ -145,19 +132,6 @@ export default function Board({ game, player }: Props) {
       </>
 
       <>
-        <PhaseIndicator left={phasesPositions[0][0]} top={phasesPositions[0][1]} phase={Phase.SelectSourceLocation} gameState={game} key='PhaseIndicator1' />
-        <PhaseIndicator left={phasesPositions[1][0]} top={phasesPositions[1][1]} phase={Phase.PlaceMeeples} gameState={game} key='PhaseIndicator2' />
-        <PhaseIndicator left={phasesPositions[2][0]} top={phasesPositions[2][1]} phase={Phase.ResolveMeeples} gameState={game} key='PhaseIndicator3' />
-        <PhaseIndicator left={phasesPositions[3][0]} top={phasesPositions[3][1]} phase={Phase.CheckGoldBars} gameState={game} key='PhaseIndicator4' />
-      </>
-
-      <>
-        { game.meeplesInHand.map((meeple, index) =>
-          (meeple !== MeepleType.None) && < Meeple position={getPositionInHand(index)} type={meeple} draggable={true} key={index} />
-        )}
-      </>
-
-      <>
         {
           legalMoves.filter(move => isPlaceInitialMarqueeTileMove(move)).map((move) => {
           const marqueeSelected = () => {
@@ -221,30 +195,7 @@ export default function Board({ game, player }: Props) {
           })
         }
 
-        { popup}
-
-        {
-          /*
-           * moves implemented : 
-          PlaceInitialMarqueeTile,
-          SelectSourceLocation,
-          PlaceMeeple,
-          ResolveMeeple,
-          BuildOrUpgradeMarquee,
-          RerollShowdownDice,
-          ChooseAnotherPlayerShowdownToken,
-
-          * no action required, animation instead :
-          DrawFromBag,
-          SendExtraMeeplesToSaloon,
-          DynamiteExplosion,
-          MoveMeeples,
-          ChangePhase,
-          ResolveShowdown,
-          CheckGoldBars,
-
-        */
-        }
+        {popup}
 
       </>
 
@@ -260,8 +211,8 @@ const style = css`
   position: absolute;
   width: ${boardWidth}%;
   height: ${boardHeight}%;
-  top: ${boardTopMargin}%;
-  left: ${boardLeftMargin}%;
+  top: ${boardTop}%;
+  left: ${boardLeft}%;
 `
 
 function getPositionInBuilding(building: number, index: number) {
@@ -280,13 +231,6 @@ function getPositionInSaloon(index: number) {
 
 function getPositionInJail(index: number) {
   let result = [...jailPosition]
-  result[0] += (index % 3) * (meepleWidth + 1)
-  result[1] += Math.floor(index / 3) * (meepleHeight + 1)
-  return result
-}
-
-function getPositionInHand(index: number) {
-  let result = [...meeplesInHandPosition]
   result[0] += (index % 3) * (meepleWidth + 1)
   result[1] += Math.floor(index / 3) * (meepleHeight + 1)
   return result

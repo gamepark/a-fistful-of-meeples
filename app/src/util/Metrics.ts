@@ -7,10 +7,45 @@ export const boardImageHeight = 1080
 export const boardRatio = boardImageWidth / boardImageHeight
 export const boardHeight = 93
 export const boardWidth = boardHeight * boardRatio / screenRatio
-export const boardLeftMargin = (100 - boardWidth) / 2
-export const boardTopMargin = 7
+export const boardLeft = 0
+export const boardTop = 7
 
-export const goldBarRatio = 51 / 83
+export const miningBagRatio = 784 / 764
+export const miningBagWidth = 8
+export const miningBagHeight = miningBagWidth / miningBagRatio * screenRatio
+export const miningBagLeft = boardWidth
+export const miningBagTop = boardTop
+
+export const playerInfoRatio = 64 / 64
+export const playerInfoWidth = 8
+export const playerInfoHeight = playerInfoWidth / playerInfoRatio * screenRatio
+export const playerInfoPositions = [
+  [boardWidth, miningBagTop + miningBagHeight + 4],
+  [boardWidth, miningBagTop + miningBagHeight + playerInfoHeight + 6],
+  [boardWidth, miningBagTop + miningBagHeight + playerInfoHeight * 2 + 8],
+  [boardWidth, miningBagTop + miningBagHeight + playerInfoHeight * 3 + 10],
+]
+
+export const phaseRatio = 64 / 64
+export const phaseWidth = 6
+export const phaseHeight = phaseWidth / phaseRatio * screenRatio
+export const phasesLeft = 100 - phaseWidth
+export const phasesPositions = [
+  [phasesLeft, boardTop + 2],
+  [phasesLeft, boardTop + 2 + phaseHeight + 1],
+  [phasesLeft, boardTop + 2 + (phaseHeight + 1) * 2],
+  [phasesLeft, boardTop + 2 + (phaseHeight + 1) * 3],
+]
+
+export const goldCubeRatio = 128 / 128
+export const goldCubeWidth = 3
+export const goldCubeHeight = goldCubeWidth / goldCubeRatio
+
+export const stoneCubeRatio = 128 / 128
+export const stoneCubeWidth = 3
+export const stoneCubeHeight = stoneCubeWidth / stoneCubeRatio
+
+export const goldBarRatio = 64 / 104
 export const goldBarWidth = 2.7
 export const goldBarHeight = goldBarWidth / goldBarRatio * screenRatio
 export const goldBarLeft1 = 1562 / boardImageWidth * 100
@@ -28,31 +63,7 @@ export const goldBarPositions = [
   [goldBarLeft1, goldBarTop1],
 ]
 
-export const miningBagRatio = 784 / 764
-export const miningBagWidth = 10
-export const miningBagHeight = miningBagWidth / miningBagRatio * screenRatio
-export const miningBagLeft = -miningBagWidth - 2
-export const miningBagTop = 4
-
-export const playerInfoRatio = 64 / 64
-export const playerInfoWidth = 8
-export const playerInfoHeight = playerInfoWidth / playerInfoRatio * screenRatio
-export const playerInfoPositions = [
-  [-playerInfoWidth - 2, miningBagTop + miningBagHeight + 4],
-  [-playerInfoWidth - 2, miningBagTop + miningBagHeight + playerInfoHeight + 6],
-  [-playerInfoWidth - 2, miningBagTop + miningBagHeight + playerInfoHeight * 2 + 8],
-  [-playerInfoWidth - 2, miningBagTop + miningBagHeight + playerInfoHeight * 3 + 10],
-]
-
-export const goldCubeRatio = 101 / 115
-export const goldCubeWidth = 3
-export const goldCubeHeight = goldCubeWidth / goldCubeRatio
-
-export const stoneCubeRatio = 103 / 121
-export const stoneCubeWidth = 3
-export const stoneCubeHeight = stoneCubeWidth / stoneCubeRatio
-
-export const dynamiteRatio = 131 / 147
+export const dynamiteRatio = 128 / 128
 export const dynamiteWidth = 1.9
 export const dynamiteHeight = dynamiteWidth / dynamiteRatio * screenRatio
 export const dynamitePositions = [
@@ -170,23 +181,13 @@ export const showdownSelecterRatio = 156 / 300
 export const showdownSelecterWidth = 8.5
 export const showdownSelecterHeight = showdownSelecterWidth / showdownSelecterRatio * screenRatio
 
-export const diceRatio = 236 / 236
-export const diceWidth = 6.5
+export const diceRatio = 64 / 64
+export const diceWidth = 1.8
 export const diceHeight = diceWidth / diceRatio * screenRatio
 
 export const dicePositions = [
-  [218 / boardImageWidth * 100, 500 / boardImageHeight * 100],
-  [1420 / boardImageWidth * 100, 500 / boardImageHeight * 100],
+  [260 / boardImageWidth * 100, 500 / boardImageHeight * 100],
+  [1460 / boardImageWidth * 100, 500 / boardImageHeight * 100],
 ]
 
-export const phaseRatio = 64 / 64
-export const phaseWidth = 6
-export const phaseHeight = phaseWidth / phaseRatio * screenRatio
-export const phasesPositions = [
-  [102, 4],
-  [102, 4 + phaseHeight + 4],
-  [102, 4 + (phaseHeight + 4) * 2],
-  [102, 4 + (phaseHeight + 4) * 3],
-]
-
-export const meeplesInHandPosition = [ 101, 70 ]
+export const meeplesInHandPosition = [playerInfoPositions[0][0] + playerInfoWidth + 1, phasesPositions[3][1] + phaseHeight + 2]

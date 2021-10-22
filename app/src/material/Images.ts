@@ -33,10 +33,19 @@ import playerBlack from '../images/Black.jpg'
 import playerGreen from '../images/Green.jpg'
 import playerOrange from '../images/Orange.jpg'
 import playerGrey from '../images/Grey.jpg'
-import phase1 from '../images/Phase1.jpg'
-import phase2 from '../images/Phase2.jpg'
-import phase3 from '../images/Phase3.jpg'
-import phase4 from '../images/Phase4.jpg'
+import avatar from '../images/Avatar.png'
+import phase1 from '../images/Phase1.png'
+import phase2 from '../images/Phase2.png'
+import phase3 from '../images/Phase3.png'
+import phase4 from '../images/Phase4.png'
+import phase from '../images/Phase.jpg'
+import phaseActive from '../images/PhaseActive.jpg'
+import dice1 from '../images/Dice1.png'
+import dice2 from '../images/Dice2.png'
+import dice3 from '../images/Dice3.png'
+import dice4 from '../images/Dice4.png'
+import dice5 from '../images/Dice5.png'
+import dice6 from '../images/Dice6.png'
 
 const Images = {
   board,
@@ -72,10 +81,19 @@ const Images = {
   playerGreen,
   playerOrange,
   playerGrey,
+  avatar,
   phase1,
   phase2,
   phase3,
   phase4,
+  phase,
+  phaseActive,
+  dice1,
+  dice2,
+  dice3,
+  dice4,
+  dice5,
+  dice6
 }
 
 if (!isSafari) {
