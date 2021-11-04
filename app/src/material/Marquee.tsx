@@ -1,25 +1,22 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
 import { Picture } from '@gamepark/react-components'
+import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import PlayerColor from '../../../rules/src/PlayerColor'
-import { marqueeHeight, marqueeWidth } from '../util/Metrics'
 import Images from './Images'
 
 
 type Props = {
-  position: Array<number>
   owner: PlayerColor
   upgraded: boolean
-  flip: boolean
-}
+} & HTMLAttributes<HTMLImageElement>
 
 
-export default function Marquee(props: Props) {
+export default function Marquee({ owner, upgraded, ...props }: Props) {
   const { t } = useTranslation()
 
   return (
-    <Picture src={getMarqueeImage(props.owner, props.upgraded)} css={getMarqueeStyle(props.position[0], props.position[1], props.flip)} alt={t(getMarqueeName(props.owner, props.upgraded))} />
+    <Picture {...props} src={getMarqueeImage(owner, upgraded)} alt={t(getMarqueeName(owner, upgraded))} />
   )
 }
 
@@ -52,14 +49,4 @@ const getMarqueeImage = (owner: PlayerColor, upgraded: boolean) => {
       return undefined
   }
 }
-
-const getMarqueeStyle = (left: number, top: number, flip: boolean) => css`
-  position: absolute;
-  left: ${left}%;
-  top: ${top}%;
-  width: ${marqueeWidth}%;
-  height: ${marqueeHeight}%;
-  ${flip ? 'transform: rotate(180deg);' : ''}
-`
-
 

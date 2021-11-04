@@ -27,6 +27,7 @@ function getDiceImage(value: number) {
       return Images.dice5
     case 6:
       return Images.dice6
+    default:
+      return undefined
   }
-  return undefined
 }

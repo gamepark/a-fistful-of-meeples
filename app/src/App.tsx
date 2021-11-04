@@ -11,6 +11,7 @@ import GameDisplay from './GameDisplay'
 import HeaderText from './HeaderText'
 import Cover from './images/Cover.jpg'
 import Images from './material/Images'
+import { letterBoxRatio } from './util/Metrics'
 
 export default function App() {
   const game = useGame<GameState>()
@@ -53,8 +54,8 @@ const globalStyle = css`
     margin: 0;
     font-family: 'Oswald', "Roboto Light", serif;
     font-size: 1vh;
-    @media (max-aspect-ratio: 16/9) {
-      font-size: calc(9vw / 16);
+    @media (max-aspect-ratio: ${letterBoxRatio}) {
+      font-size: ${1 / letterBoxRatio}vw;
     }
   }
 

@@ -26,6 +26,7 @@ const miningBagStyle = css`
   background-image: url(${Images.miningBag});
   background-color: #00000000;
   background-size: cover;
+  color: white;
 `
 
 const goldAmountStyle = css`

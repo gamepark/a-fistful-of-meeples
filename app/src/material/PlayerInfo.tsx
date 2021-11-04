@@ -2,7 +2,6 @@
 import { css } from '@emotion/react'
 import PlayerColor from '../../../rules/src/PlayerColor'
 import PlayerState from '../../../rules/src/PlayerState'
-import { stoneCubeRatio, goldCubeRatio, goldBarRatio } from '../util/Metrics'
 import GoldBar from './GoldBar'
 import Images from './Images'
 import StoneCube from './StoneCube'
@@ -22,30 +21,30 @@ type Props = {
 } & HTMLAttributes<HTMLDivElement>
 
 
-export default function PlayerInfo(props: Props) {
+export default function PlayerInfo({ player, playerState, gameState, ...props }: Props) {
   const { t } = useTranslation()
-  const playerInfo = usePlayer<PlayerColor>(props.player)
+  const playerInfo = usePlayer<PlayerColor>(player)
 
 
   return (
-    <div {...props} css={getPlayerInfoStyle(props.playerState.color, props.gameState.activePlayer === props.playerState.color)} >
+    <div {...props} css={getPlayerInfoStyle(playerState.color, gameState.activePlayer === playerState.color)} >
       {playerInfo?.avatar ?
-        <Avatar playerId={props.player} css={avatarStyle} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }} /> :
+        <Avatar playerId={player} css={avatarStyle} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }} /> :
         <Picture alt={t('Player avatar')} src={Images.avatar} css={fallbackAvatarStyle} />
       }
 
       <div css={getItemStyle(82, 10)}>
-        {props.playerState.stones}
+        {playerState.stones}
       </div>
       <div css={getItemStyle(82 , 40)}>
-        {props.playerState.goldPieces}
+        {playerState.goldPieces}
       </div>
       <div css={getItemStyle(62, 72)}>
-        {props.playerState.goldBars}
+        {playerState.goldBars}
       </div>
       <StoneCube style={getStoneCubeStyle} />
-      <GoldCube style={getGoldCubeStyle} />
-      <GoldBar style={getGoldBarStyle} />
+      <GoldCube css={getGoldCubeStyle} />
+      <GoldBar css={getGoldBarStyle} />
     </div>
   )
 }
@@ -70,7 +69,6 @@ const getPlayerInfoStyle = (color: PlayerColor, isActive: boolean) => css`
   background-image: url(${getPlayerImage(color)});
   background-color: #00000000;
   background-size: cover;
-  position: absolute;
   ${isActive && 'filter: drop-shadow(0 0.2em 0.2em black) drop-shadow(0 0 0.2em red)'}
 `
 
@@ -79,23 +77,23 @@ const getItemStyle = (left: number, top: number) => css`
   position: absolute;
   left: ${left}%;
   top: ${top}%;
-  font-size: 1rem;
+  font-size: 3em;
 `
 
 const getStoneCubeStyle = css`
   position: absolute;
   left: 60%;
   top: 5%;
-  width: 20%;
-  height: ${20 / stoneCubeRatio}%;
+  width: 4em;
+  height: 4em;
 `
 
 const getGoldCubeStyle = css`
   position: absolute;
   left: 60%;
   top: 35%;
-  width: 20%;
-  height: ${20 / goldCubeRatio}%;
+  width: 4.5em;
+  height: 4.5em;
 `
 
 const getGoldBarStyle = css`
@@ -103,22 +101,22 @@ const getGoldBarStyle = css`
   transform: rotate(90deg);
   left: 15%;
   top: 55%;
-  width: 30%;
-  height: ${30 / goldBarRatio}%;
+  width: 10em;
+  height: 5em;
 `
 
 const avatarStyle = css`
   position: absolute;
-  width: 50%;
-  height: 50%;
-  top: 5%;
+  width: 15em;
+  height: 15em;
+  top: 5em;
   left: 5%;
 `
 
 const fallbackAvatarStyle = css`
   position: absolute;
-  width: 50%;
-  height: 50%;
+  width: 15em;
+  height: 15em;
   top: 5%;
   left: 5%;
   border: 0.1em solid white;

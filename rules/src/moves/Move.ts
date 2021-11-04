@@ -47,6 +47,10 @@ export function isChooseAnotherPlayerShowdownTokenMove(move: Move): move is Choo
   return move.type === MoveType.ChooseAnotherPlayerShowdownToken
 }
 
+export function isChangeCurrentPhaseMove(move: Move): move is ChangeCurrentPhase {
+  return move.type === MoveType.ChangeCurrentPhase
+}
+
 export function isRerollShowdownDiceMove(move: Move): move is RerollShowdownDice {
   return move.type === MoveType.RerollShowdownDice
 }

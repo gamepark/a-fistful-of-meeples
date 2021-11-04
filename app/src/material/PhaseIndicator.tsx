@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import Images from './Images'
-import GameState from '../../../rules/src/GameState'
 import Phase from '../../../rules/src/Phase'
 import { HTMLAttributes } from 'react'
 import { Picture } from '@gamepark/react-components'
@@ -10,17 +9,16 @@ import { useTranslation } from 'react-i18next'
 
 type Props = {
   phase: Phase
-  gameState: GameState
+  currentPhase: Phase
+  animationDuration?: number
 } & HTMLAttributes<HTMLDivElement>
 
 
-export default function PhaseIndicator(props: Props) {
+export default function PhaseIndicator({ phase, currentPhase, animationDuration, ...props }: Props) {
   const { t } = useTranslation()
 
   return (
-    <div {...props} css={getPhaseStyle(props.gameState.currentPhase === props.phase)} >
-      <Picture src={getPhaseImage(props.phase)} draggable={false} css={getInnerPhaseStyle} alt={t(getPhaseName(props.phase))} />
-    </div>
+      <Picture {...props} src={getPhaseImage(phase)} draggable={false} css={getPhaseStyle(currentPhase === phase, animationDuration ?? 0)} alt={t(getPhaseName(phase))} />
   )
 }
 
@@ -55,13 +53,11 @@ const getPhaseName = (phase: Phase) => {
 }
 
 
-const getPhaseStyle = (isActive: boolean) => css`
-  background-image: url(${isActive ? Images.phaseActive : Images.phase});
+const getPhaseStyle = (visible: boolean, animationDuration: number) => css`
+  background-image: url(${Images.phase});
   background-color: #00000000;
   background-size: cover;
-`
-
-const getInnerPhaseStyle = css`
-  width: 100%;
-  height: 100%;
+  border: 0.4em solid black;
+  opacity: ${visible ? 1 : 0};
+  transition: opacity ${animationDuration}s;
 `

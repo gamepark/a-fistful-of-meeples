@@ -27,11 +27,14 @@ export default function MarqueeSelecter(props: Props) {
 
 const getMarqueeSelecterStyle = (left: number, top: number, flip: boolean) => css`
   position: absolute;
-  left: ${left}%;
-  top: ${top}%;
-  width: ${marqueeWidth}%;
-  height: ${marqueeHeight}%;
+  left: ${left}em;
+  top: ${top}em;
+  width: ${marqueeWidth}em;
+  height: ${marqueeHeight}em;
   cursor: pointer;
   transform: scaleY(${flip ? -1 : 1});
+  &:hover {
+    filter: drop-shadow(0 1em 1em white) drop-shadow(0 0 2em #30FF30FF);
+  }
 `
 

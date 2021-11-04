@@ -4,14 +4,12 @@ import GameState from '@gamepark/a-fistful-of-meeples/GameState'
 import { usePlayerId } from '@gamepark/react-client'
 import {Letterbox} from '@gamepark/react-components'
 import MeepleType from '../../rules/src/MeepleType'
-import Phase from '../../rules/src/Phase'
 import PlayerColor from '../../rules/src/PlayerColor'
 import Board from './material/Board'
 import Meeple from './material/Meeple'
 import MiningBag from './material/MiningBag'
-import PhaseIndicator from './material/PhaseIndicator'
 import PlayerInfo from './material/PlayerInfo'
-import { meepleHeight, meeplesInHandPosition, meepleWidth, miningBagHeight, miningBagLeft, miningBagTop, miningBagWidth, phaseHeight, phasesPositions, phaseWidth, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
+import { letterBoxHeight, letterBoxWidth, meepleHeight, meeplesInHandPosition, meepleWidth, miningBagHeight, miningBagLeft, miningBagTop, miningBagWidth, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
 
 type Props = {
   game: GameState
@@ -21,7 +19,7 @@ export default function GameDisplay({ game }: Props) {
   const playerColor = usePlayerId<PlayerColor>()
 
   return (
-    <Letterbox css={letterBoxStyle} top={0} left={0}>
+    <Letterbox id="letterbox" css={letterBoxStyle} width={letterBoxWidth} height={letterBoxHeight} top={0}>
       <Board game={game} />
       <MiningBag gold={game.goldCubesInMiningBag} stone={game.stoneCubesInMiningBag} dynamite={game.dynamitesInMiningBag} css={miningBagMetrics} />
       <>
@@ -30,14 +28,8 @@ export default function GameDisplay({ game }: Props) {
         )}
       </>
       <>
-        <PhaseIndicator css={getPhaseIndicatorMetrics(0)} phase={Phase.SelectSourceLocation} gameState={game} key='PhaseIndicator1' />
-        <PhaseIndicator css={getPhaseIndicatorMetrics(1)} phase={Phase.PlaceMeeples} gameState={game} key='PhaseIndicator2' />
-        <PhaseIndicator css={getPhaseIndicatorMetrics(2)} phase={Phase.ResolveMeeples} gameState={game} key='PhaseIndicator3' />
-        <PhaseIndicator css={getPhaseIndicatorMetrics(3)} phase={Phase.CheckGoldBars} gameState={game} key='PhaseIndicator4' />
-      </>
-      <>
         {game.meeplesInHand.map((meeple, index) =>
-          (meeple !== MeepleType.None) && <Meeple position={getPositionInHand(index)} type={meeple} draggable={true} key={index} />
+          (meeple !== MeepleType.None) && <Meeple css={getMeepleStyle(getPositionInHand(index))} type={meeple} draggable={true} key={index} />
         )}
       </>
 
@@ -69,25 +61,26 @@ const letterBoxStyle = css`
 
 const miningBagMetrics = css`
 position: absolute;
-left: ${miningBagLeft}%;
-top: ${miningBagTop}%;
-width: ${miningBagWidth}%;
-height: ${miningBagHeight}%;
+left: ${miningBagLeft}em;
+top: ${miningBagTop}em;
+width: ${miningBagWidth}em;
+height: ${miningBagHeight}em;
 `
 
 const getPlayerInfoMetrics = (index: number) => css`
   position: absolute;
-  left: ${playerInfoPositions[index][0]}%;
-  top: ${playerInfoPositions[index][1]}%;
-  width: ${playerInfoWidth}%;
-  height: ${playerInfoHeight}%;
-  font-size: 1rem;
+  left: ${playerInfoPositions[index][0]}em;
+  top: ${playerInfoPositions[index][1]}em;
+  width: ${playerInfoWidth}em;
+  height: ${playerInfoHeight}em;
 `
 
-const getPhaseIndicatorMetrics = (index: number) => css`
-position: absolute;
-left: ${phasesPositions[index][0]}%;
-top: ${phasesPositions[index][1]}%;
-width: ${phaseWidth}%;
-height: ${phaseHeight}%;
+export function getMeepleStyle(position: Array<number>) {
+  return css`
+  position: absolute;
+  left: ${position[0]}em;
+  top: ${position[1]}em;
+  width: ${meepleWidth}em;
+  height: ${meepleHeight}em;
 `
+}

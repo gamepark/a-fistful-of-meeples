@@ -1,8 +1,10 @@
 /** @jsxImportSource @emotion/react */
 import GameState, { PendingEffectType } from '@gamepark/a-fistful-of-meeples/GameState'
-import { Player as PlayerInfo, usePlayers } from '@gamepark/react-client'
+import { Animation, Player as PlayerInfo, useAnimation, usePlayers } from '@gamepark/react-client'
 import {TFunction, useTranslation} from 'react-i18next'
 import { getPlayerName } from '../../rules/src/AFistfulOfMeeplesOptions'
+import Move from '../../rules/src/moves/Move'
+import MoveType from '../../rules/src/moves/MoveType'
 import Phase from '../../rules/src/Phase'
 import PlayerColor from '../../rules/src/PlayerColor'
 
@@ -15,16 +17,30 @@ type Props = {
 export default function HeaderText({loading, game, player}: Props) {
   const { t } = useTranslation()
   const players = usePlayers<PlayerColor>()
+  const animation = useAnimation<Move>()
 
   if (loading) return <>{t('Game loading...')}</>
   if (!game || !player) return null
 
-  return <>{getText(t, game!, player!, players!)}</>
+  return <>{getText(t, game!, player!, players!, animation)}</>
 }
 
-function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[]): string {
+function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[], animation?: Animation<Move>): string {
   const isActivePlayer: boolean = player === game.activePlayer
   const getName = (playerId: PlayerColor) => players.find(p => p.id === playerId)?.name || getPlayerName(playerId, t)
+
+  if (animation !== undefined) {
+    switch (animation.move.type) {
+      case MoveType.PlaceInitialMarqueeTile:
+        return t('Building initial marquee tile')
+      case MoveType.BuildOrUpgradeMarquee:
+        return t('Building or upgrading marquee')
+      case MoveType.ChangeCurrentPhase:
+        return t('Changing current phase')
+      default:
+        return ''
+    }
+  }
 
   if (game.pendingEffects.length > 0) {
     switch (game.pendingEffects[0].type) {

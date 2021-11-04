@@ -1,38 +1,37 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { Draggable, Picture } from '@gamepark/react-components'
+import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import MeepleType from '../../../rules/src/MeepleType'
-import { meepleHeight, meepleWidth } from '../util/Metrics'
 import { MEEPLE_DRAG_TYPE } from '../util/Types'
 import Images from './Images'
 
 
 type Props = {
-  position: Array<number>
   type: MeepleType
   draggable?: boolean
-}
+} & HTMLAttributes<HTMLDivElement>
 
 
-export default function Meeple(props: Props) {
+export default function Meeple({ type, draggable, ...props }:Props) {
   const { t } = useTranslation()
 
-  if (props.draggable === true) {
+  if (draggable === true) {
     return (
       <Draggable
+        {...props}
         type={MEEPLE_DRAG_TYPE}
-        item={{ meeple: props.type }}
+        item={{ meeple: type }}
         draggable={true}
         canDrag={true}
-        css={getMainMeepleStyle(props.position[0], props.position[1])}
       >
 
-        <Picture src={getMeepleImage(props.type)} draggable={false} css={getInnerMeepleStyle} alt={t(getMeepleName(props.type))} />
+        <Picture src={getMeepleImage(type)} draggable={false} css={getInnerMeepleStyle} alt={t(getMeepleName(type))} />
       </Draggable>
     )
   } else {
-    return <Picture src={getMeepleImage(props.type)} css={getMainMeepleStyle(props.position[0], props.position[1])} alt={t(getMeepleName(props.type))} />
+    return <Picture {...props} src={getMeepleImage(type)} alt={t(getMeepleName(type))} />
   }
 }
 
@@ -70,16 +69,14 @@ const getMeepleImage = (type: MeepleType) => {
   }
 }
 
-const getMainMeepleStyle = (left: number, top: number) => css`
-  position: absolute;
-  left: ${left}%;
-  top: ${top}%;
-  width: ${meepleWidth}%;
-  height: ${meepleHeight}%;
-`
-
 const getInnerMeepleStyle = css`
   width: 100%;
   height: 100%;
 `
 
+export function getMeepleTransform(startPosition: Array<number>, endPosition: Array<number>, duration:number) {
+  return css`
+  transform: translate(${endPosition[0] - startPosition[0]}em, ${endPosition[0] - startPosition[0]}em);
+  transition: transform ${duration}s ease-in-out;
+`
+}

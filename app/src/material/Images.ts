@@ -24,10 +24,6 @@ import upgradedGreenMarquee from '../images/UpgradedGreenMarquee.png'
 import upgradedOrangeMarquee from '../images/UpgradedOrangeMarquee.png'
 import upgradedGreyMarquee from '../images/UpgradedGreyMarquee.png'
 import marqueeSelecter from '../images/MarqueeSelecter.png'
-import buildingSelecter from '../images/BuildingSelecter.png'
-import saloonSelecter from '../images/SaloonSelecter.png'
-import jailSelecter from '../images/JailSelecter.png'
-import doorwaySelecter from '../images/DoorwaySelecter.png'
 import showdownSelecter from '../images/ShowdownSelecter.png'
 import playerBlack from '../images/Black.jpg'
 import playerGreen from '../images/Green.jpg'
@@ -39,7 +35,6 @@ import phase2 from '../images/Phase2.png'
 import phase3 from '../images/Phase3.png'
 import phase4 from '../images/Phase4.png'
 import phase from '../images/Phase.jpg'
-import phaseActive from '../images/PhaseActive.jpg'
 import dice1 from '../images/Dice1.png'
 import dice2 from '../images/Dice2.png'
 import dice3 from '../images/Dice3.png'
@@ -72,10 +67,6 @@ const Images = {
   upgradedOrangeMarquee,
   upgradedGreyMarquee,
   marqueeSelecter,
-  buildingSelecter,
-  saloonSelecter,
-  jailSelecter,
-  doorwaySelecter,
   showdownSelecter,
   playerBlack,
   playerGreen,
@@ -87,7 +78,6 @@ const Images = {
   phase3,
   phase4,
   phase,
-  phaseActive,
   dice1,
   dice2,
   dice3,
