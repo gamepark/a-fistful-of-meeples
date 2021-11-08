@@ -154,6 +154,12 @@ export default function Board({ game }: Props) {
       </>
 
       <>
+        {game.meeplesInHand.map((meeple, index) =>
+          (meeple !== MeepleType.None) && <Meeple css={getMeepleStyle(getPositionInHand(index))} type={meeple} indexInHand={index} draggable={true} key={index} />
+        )}
+      </>
+
+      <>
         <PhaseIndicator css={phaseIndicatorMetrics} phase={Phase.SelectSourceLocation} currentPhase={currentPhase} animationDuration={animation?.duration} key='PhaseIndicator1' />
         <PhaseIndicator css={phaseIndicatorMetrics} phase={Phase.PlaceMeeples} currentPhase={currentPhase} animationDuration={animation?.duration} key='PhaseIndicator2' />
         <PhaseIndicator css={phaseIndicatorMetrics} phase={Phase.ResolveMeeples} currentPhase={currentPhase} animationDuration={animation?.duration} key='PhaseIndicator3' />
@@ -191,9 +197,9 @@ export default function Board({ game }: Props) {
             legalMoves.filter((move, index, moves) => isPlaceMeepleMove(move) && moves.findIndex(m => (m as PlaceMeeple).space === move.space) === index).map((move) => {
               const placeMeepleMove = move as PlaceMeeple
               if (isBuildingLocation(placeMeepleMove.space)) {
-                const doorwaySelected = (meeple?: MeepleType) => {
-                  if (meeple !== undefined)
-                    play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
+                const doorwaySelected = (indexInHand?: number) => {
+                  if (indexInHand !== undefined)
+                    play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, indexInHand))
                 }
                 return <DoorwaySelecter css={getDoorwaySelecterStyle(doorwaysPosition[placeMeepleMove.space])} droppable={true} selected={doorwaySelected} key={placeMeepleMove.space} />
               } else if (placeMeepleMove.space === Location_Showdown0 || placeMeepleMove.space === Location_Showdown1) {
@@ -328,6 +334,12 @@ function getMarqueeStyle(position: Array<number>, flip: boolean) {
   height: ${marqueeHeight}em;
   ${flip && 'transform: rotate(180deg);'}
 `
+}
+
+function getPositionInHand(index: number) {
+  let result = [...meeplesInHandPosition]
+  result[0] += index * (meepleWidth + 4)
+  return result
 }
 
 const phaseIndicatorMetrics = css`

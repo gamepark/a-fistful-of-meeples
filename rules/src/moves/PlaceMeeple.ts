@@ -11,14 +11,14 @@ import { getNextEmptySpace, getPreviousEmptySpace, isSpaceEmpty } from '../Locat
 type PlaceMeeple = {
   type: MoveType.PlaceMeeple
   playerId: PlayerColor
-  meeple: MeepleType
+  indexInHand: number
   space: number
 }
 
 export default PlaceMeeple
 
-export function getPlaceMeepleMove(player: PlayerColor, space: number, meeple: MeepleType): PlaceMeeple {
-  return { type: MoveType.PlaceMeeple, playerId: player, space: space, meeple: meeple }
+export function getPlaceMeepleMove(player: PlayerColor, space: number, indexInHand: number): PlaceMeeple {
+  return { type: MoveType.PlaceMeeple, playerId: player, space: space, indexInHand: indexInHand}
 }
 
 export function isValidSpaceToPlaceMeeple(space: number, state: GameState): boolean {
@@ -38,12 +38,12 @@ export function isValidSpaceToPlaceMeeple(space: number, state: GameState): bool
   }
 }
 
-function placeOnShowdownSpace(state: GameState, move: PlaceMeeple, showdownIndex: number) {
+function placeOnShowdownSpace(state: GameState, move: PlaceMeeple, showdownIndex: number, meeple: MeepleType) {
   if (state.showdowns[showdownIndex].meeple != MeepleType.None) return console.error('There is already a meeple on showdown space ', showdownIndex)
-  if (move.meeple == MeepleType.Madame) {
+  if (meeple == MeepleType.Madame) {
     state.saloon.push(MeepleType.Madame)  // shall Madame be placed on a showdown space, send her to saloon instead
   } else {
-    state.showdowns[showdownIndex].meeple = move.meeple;
+    state.showdowns[showdownIndex].meeple = meeple;
     if (state.showdowns[1 - showdownIndex].owner != move.playerId) {
       state.showdowns[showdownIndex].owner = move.playerId;
     } else {
@@ -57,11 +57,11 @@ export function placeMeeple(state: GameState, move: PlaceMeeple) {
   if (state.players.find(player => player.color === move.playerId) === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
   if (!((move.space >= 0 && move.space < 12) || move.space == Location_Showdown0 || move.space == Location_Showdown1)) return console.error('Invalid space ', move.space, ' for placing meeple')
 
-  let index: number = state.meeplesInHand.indexOf(move.meeple);
-  if (index == -1) return console.error('No meeple of type ', move.meeple, ' in hand')
+  if (move.indexInHand < 0 || move.indexInHand >= state.meeplesInHand.length) return console.error('Invalid meeple index ', move.indexInHand, ', no such meeple in hand')
 
   // remove meeple from hand
-  state.meeplesInHand[index] = MeepleType.None
+  const meeple: MeepleType = state.meeplesInHand[move.indexInHand]
+  state.meeplesInHand[move.indexInHand] = MeepleType.None
 
   // update gamestate
   if (state.meeplePlacingDirection === Direction.None) {
@@ -77,13 +77,13 @@ export function placeMeeple(state: GameState, move: PlaceMeeple) {
   // place meeple
   switch (move.space) {
     case Location_Showdown0:
-      placeOnShowdownSpace(state, move, 0)
+      placeOnShowdownSpace(state, move, 0, meeple)
       break
     case Location_Showdown1:
-      placeOnShowdownSpace(state, move, 1)
+      placeOnShowdownSpace(state, move, 1, meeple)
       break
     default:
-      state.doorways[move.space] = move.meeple
+      state.doorways[move.space] = meeple
       break
   }
   state.previousMeepleLocation = move.space

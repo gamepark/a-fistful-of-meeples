@@ -2,17 +2,16 @@
 import { css } from '@emotion/react'
 import { useDrop } from 'react-dnd'
 import { MEEPLE_DRAG_TYPE } from '../util/Types'
-import MeepleType from '../../../rules/src/MeepleType'
 import { HTMLAttributes } from 'react'
 
 
 type Props = {
   droppable: boolean
-  selected: (meeple?: MeepleType) => void
+  selected: (indexInHand?: number) => void
 } & HTMLAttributes<HTMLDivElement>
 
 
-type DropItem = { meeple: MeepleType }
+type DropItem = { indexInHand: number }
 
 
 export default function DoorwaySelecter({ droppable, selected, ...props }: Props) {
@@ -24,7 +23,7 @@ export default function DoorwaySelecter({ droppable, selected, ...props }: Props
         isOver: monitor.isOver()
       }),
       drop: (item: DropItem) => {
-        selected(item.meeple)
+        selected(item.indexInHand)
       }
     })
     return <div {...props} ref={dropRef} css={getDoorwaySelecterStyle(false, isOver)}  />

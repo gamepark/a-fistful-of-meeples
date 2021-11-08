@@ -141,20 +141,13 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
           break
 
         case Phase.PlaceMeeples:
-          // get meeple types in hand (only once for each meeple type)
-          const meeples: MeepleType[] = []
-          this.state.meeplesInHand.forEach(meeple => {
-            if (!meeples.includes(meeple))
-              meeples.push(meeple)
-          })
-
           if (isValidSpaceToPlaceMeeple(Location_Showdown0, this.state))
-            meeples.forEach(meeple => moves.push(getPlaceMeepleMove(this.state.activePlayer, Location_Showdown0, meeple)))
+            this.state.meeplesInHand.forEach((_, index) => moves.push(getPlaceMeepleMove(this.state.activePlayer, Location_Showdown0, index)))
           if (isValidSpaceToPlaceMeeple(Location_Showdown1, this.state))
-            meeples.forEach(meeple => moves.push(getPlaceMeepleMove(this.state.activePlayer, Location_Showdown1, meeple)))
+            this.state.meeplesInHand.forEach((_, index) => moves.push(getPlaceMeepleMove(this.state.activePlayer, Location_Showdown1, index)))
           for (i = 0; i < 12; ++i) {
             if (isValidSpaceToPlaceMeeple(i, this.state))
-              meeples.forEach(meeple => moves.push(getPlaceMeepleMove(this.state.activePlayer, i, meeple)))
+              this.state.meeplesInHand.forEach((_, index) => moves.push(getPlaceMeepleMove(this.state.activePlayer, i, index)))
           }
 
           if (moves.length === 0) {

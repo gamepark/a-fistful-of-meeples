@@ -10,11 +10,12 @@ import Images from './Images'
 
 type Props = {
   type: MeepleType
+  indexInHand?: number
   draggable?: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 
-export default function Meeple({ type, draggable, ...props }:Props) {
+export default function Meeple({ type, indexInHand, draggable, ...props }:Props) {
   const { t } = useTranslation()
 
   if (draggable === true) {
@@ -22,7 +23,7 @@ export default function Meeple({ type, draggable, ...props }:Props) {
       <Draggable
         {...props}
         type={MEEPLE_DRAG_TYPE}
-        item={{ meeple: type }}
+        item={{ indexInHand: indexInHand }}
         draggable={true}
         canDrag={true}
       >

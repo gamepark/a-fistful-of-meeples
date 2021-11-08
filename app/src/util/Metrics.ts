@@ -183,4 +183,4 @@ export const dicePositions = [
   [1400 / boardImageWidth * boardWidth, 560 / boardImageHeight * boardHeight],
 ]
 
-export const meeplesInHandPosition = [30, 47]
+export const meeplesInHandPosition = [32, 44]

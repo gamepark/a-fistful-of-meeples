@@ -3,13 +3,11 @@ import {css, keyframes} from '@emotion/react'
 import GameState from '@gamepark/a-fistful-of-meeples/GameState'
 import { usePlayerId } from '@gamepark/react-client'
 import {Letterbox} from '@gamepark/react-components'
-import MeepleType from '../../rules/src/MeepleType'
 import PlayerColor from '../../rules/src/PlayerColor'
 import Board from './material/Board'
-import Meeple from './material/Meeple'
 import MiningBag from './material/MiningBag'
 import PlayerInfo from './material/PlayerInfo'
-import { letterBoxHeight, letterBoxWidth, meepleHeight, meeplesInHandPosition, meepleWidth, miningBagHeight, miningBagLeft, miningBagTop, miningBagWidth, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
+import { letterBoxHeight, letterBoxWidth, meepleHeight, meepleWidth, miningBagHeight, miningBagLeft, miningBagTop, miningBagWidth, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
 
 type Props = {
   game: GameState
@@ -27,23 +25,11 @@ export default function GameDisplay({ game }: Props) {
           <PlayerInfo css={getPlayerInfoMetrics(index)} playerState={playerState} player={playerColor} gameState={game} key={index} />
         )}
       </>
-      <>
-        {game.meeplesInHand.map((meeple, index) =>
-          (meeple !== MeepleType.None) && <Meeple css={getMeepleStyle(getPositionInHand(index))} type={meeple} draggable={true} key={index} />
-        )}
-      </>
 
     </Letterbox>
   )
 }
 
-
-function getPositionInHand(index: number) {
-  let result = [...meeplesInHandPosition]
-  result[0] += (index % 3) * (meepleWidth + 1)
-  result[1] += Math.floor(index / 3) * (meepleHeight + 1)
-  return result
-}
 
 
 const fadeIn = keyframes`
