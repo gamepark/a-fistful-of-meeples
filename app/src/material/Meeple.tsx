@@ -75,9 +75,3 @@ const getInnerMeepleStyle = css`
   height: 100%;
 `
 
-export function getMeepleTransform(startPosition: Array<number>, endPosition: Array<number>, duration:number) {
-  return css`
-  transform: translate(${endPosition[0] - startPosition[0]}em, ${endPosition[0] - startPosition[0]}em);
-  transition: transform ${duration}s ease-in-out;
-`
-}

@@ -141,6 +141,29 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
           break
 
         case Phase.PlaceMeeples:
+          let validDestinations: number[] = []
+          if (isValidSpaceToPlaceMeeple(Location_Showdown0, this.state))
+            validDestinations.push(Location_Showdown0)
+          if (isValidSpaceToPlaceMeeple(Location_Showdown1, this.state))
+            validDestinations.push(Location_Showdown1)
+          for (i = 0; i < 12; ++i) {
+            if (isValidSpaceToPlaceMeeple(i, this.state))
+              validDestinations.push(i)
+          }
+          if (validDestinations.length === 0) {
+            // no valid space : send remaining meeples to saloon
+            moves.push({ type: MoveType.SendExtraMeeplesToSaloon })
+          } else {
+            this.state.meeplesInHand.forEach((meeple, index) => {
+              if (meeple !== MeepleType.None) {
+                validDestinations.forEach(destination => {
+                  moves.push(getPlaceMeepleMove(this.state.activePlayer, destination, index))
+                })
+              }
+            })
+          }
+
+          /*
           if (isValidSpaceToPlaceMeeple(Location_Showdown0, this.state))
             this.state.meeplesInHand.forEach((_, index) => moves.push(getPlaceMeepleMove(this.state.activePlayer, Location_Showdown0, index)))
           if (isValidSpaceToPlaceMeeple(Location_Showdown1, this.state))
@@ -154,6 +177,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
             // no valid space : send remaining meeples to saloon
             moves.push({ type: MoveType.SendExtraMeeplesToSaloon })
           }
+          */
           break
 
         case Phase.ResolveMeeples:

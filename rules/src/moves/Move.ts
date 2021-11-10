@@ -51,6 +51,10 @@ export function isChangeCurrentPhaseMove(move: Move): move is ChangeCurrentPhase
   return move.type === MoveType.ChangeCurrentPhase
 }
 
+export function isMoveMeeplesMove(move: Move): move is MoveMeeples {
+  return move.type === MoveType.MoveMeeples
+}
+
 export function isRerollShowdownDiceMove(move: Move): move is RerollShowdownDice {
   return move.type === MoveType.RerollShowdownDice
 }

@@ -15,7 +15,7 @@ type Props = {
   selected: (meeple?: MeepleType) => void
 } & HTMLAttributes<HTMLImageElement>
 
-type DropItem = { meeple: MeepleType }
+type DropItem = { indexInHand: number }
 
 
 export default function ShowdownSelecter({ flip, droppable, selected, ...props }: Props) {
@@ -28,7 +28,7 @@ export default function ShowdownSelecter({ flip, droppable, selected, ...props }
         isOver: monitor.isOver()
       }),
       drop: (item: DropItem) => {
-        selected(item.meeple)
+        selected(item.indexInHand)
       }
     })
 

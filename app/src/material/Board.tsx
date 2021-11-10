@@ -1,17 +1,17 @@
 /** @jsxImportSource @emotion/react */
 import { css, keyframes } from '@emotion/react'
-import GameState, { isBuildingLocation, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
+import GameState, { isBuildingLocation, Location_Graveyard, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
 import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, marqueeWidth, marqueeHeight, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, showdownSelecterWidth, showdownSelecterHeight } from '../util/Metrics'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
 import Images from './Images'
-import Meeple, { getMeepleTransform } from './Meeple'
+import Meeple from './Meeple'
 import ShowdownToken from './ShowdownToken'
 import MeepleType from '../../../rules/src/MeepleType'
 import Marquee from './Marquee'
 import AFistfulOfMeeples from '../../../rules/src/AFistfulOfMeeples'
-import { isBuildOrUpgradeMarqueeMove, isChangeCurrentPhaseMove, isChooseAnotherPlayerShowdownTokenMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isRerollShowdownDiceMove, isResolveMeepleMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
+import { isBuildOrUpgradeMarqueeMove, isChangeCurrentPhaseMove, isChooseAnotherPlayerShowdownTokenMove, isMoveMeeplesMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isRerollShowdownDiceMove, isResolveMeepleMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
 import MarqueeSelecter from './MarqueeSelecter'
 import PlaceInitialMarqueeTile from '../../../rules/src/moves/PlaceInitialMarqueeTile'
 import { useAnimation, usePlay, usePlayerId } from '@gamepark/react-client'
@@ -32,6 +32,7 @@ import ChangeCurrentPhase from '../../../rules/src/moves/ChangeCurrentPhase'
 import PhaseIndicator from './PhaseIndicator'
 import Phase from '../../../rules/src/Phase'
 import GenericSelecter from './GenericSelecter'
+import MoveMeeples from '../../../rules/src/moves/MoveMeeples'
 
 
 type Props = {
@@ -48,11 +49,14 @@ export default function Board({ game }: Props) {
   const rerollShowdownDiceMove = legalMoves.find(move => isRerollShowdownDiceMove(move))
   const chooseAnotherPlayerMoves = legalMoves.filter(move => isChooseAnotherPlayerShowdownTokenMove(move)).map(move => (move as ChooseAnotherPlayerShowdownToken).playerId)
   // animations
-  const animation = useAnimation<PlaceInitialMarqueeTile | SelectSourceLocation | BuildOrUpgradeMarquee | ChangeCurrentPhase>(animation => animation?.action.cancelled ?? true)
+  const animation = useAnimation<PlaceInitialMarqueeTile | SelectSourceLocation | PlaceMeeple | ResolveMeeple | BuildOrUpgradeMarquee | ChangeCurrentPhase | MoveMeeples>(animation => animation?.action.cancelled ?? true)
   const placeInitialMarqueeTileAnimation = animation && !animation.action.cancelled && isPlaceInitialMarqueeTileMove(animation.move) ? animation.move : undefined
   const selectSourceLocationAnimation = animation && !animation.action.cancelled && isSelectSourceLocationMove(animation.move) ? animation.move : undefined
+  const placeMeepleAnimation = animation && !animation.action.cancelled && isPlaceMeepleMove(animation.move) ? animation.move : undefined
+  const resolveMeepleAnimation = animation && !animation.action.cancelled && isResolveMeepleMove(animation.move) ? animation.move : undefined
   const buildOrUpgradeMarqueeAnimation = animation && !animation.action.cancelled && isBuildOrUpgradeMarqueeMove(animation.move) ? animation.move : undefined
   const changeCurrentPhaseAnimation = animation && !animation.action.cancelled && isChangeCurrentPhaseMove(animation.move) ? animation.move : undefined
+  const moveMeepleAnimation = animation && !animation.action.cancelled && isMoveMeeplesMove(animation.move) ? animation.move : undefined
   const currentPhase: number = changeCurrentPhaseAnimation ? changeCurrentPhaseAnimation.phase : game.currentPhase
 
   let popup = undefined
@@ -103,35 +107,55 @@ export default function Board({ game }: Props) {
 
       <>
         {game.buildings.map((meeples, building) =>
-          (selectSourceLocationAnimation && selectSourceLocationAnimation.location === building) ?
             meeples.map((meeple, index) => {
               const startPosition = getPositionInBuilding(building, index)
-              return <Meeple css={[getMeepleStyle(startPosition), getMeepleTransform(startPosition, meeplesInHandPosition, animation!.duration)]} type={meeple} key={building * 12 + index} />
+              let style = [getMeepleStyle(startPosition)]
+              if ((animation && selectSourceLocationAnimation && selectSourceLocationAnimation.location === building))
+                style.push(getTransformStyle(startPosition, getPositionInHand(index), animation.duration))
+              if ((animation && moveMeepleAnimation && moveMeepleAnimation.source === building && moveMeepleAnimation.meeples === meeple)) {
+                switch (moveMeepleAnimation.destination) {
+                  case Location_Jail:
+                    style.push(getTransformStyle(startPosition, getPositionInJail(game.jail.length), animation.duration))
+                    break
+                  case Location_Saloon:
+                    style.push(getTransformStyle(startPosition, getPositionInSaloon(game.saloon.length), animation.duration))
+                    break
+                }
+              }
+              return <Meeple css={style} type={meeple} key={building * 12 + index} />
             })
-            :
-          meeples.map((meeple, index) =>
-            <Meeple css={getMeepleStyle(getPositionInBuilding(building, index))} type={meeple} key={building * 12 + index} />
-          )
         )}
       </>
 
       <>
         {game.doorways.map((meeple, index) => {
-          return (meeple !== MeepleType.None) ? <Meeple css={getMeepleStyle(doorwaysPosition[index])} type={meeple} key={index} /> : undefined
+          const startPosition = doorwaysPosition[index]
+          let style = [getMeepleStyle(startPosition)]
+          if ((animation && resolveMeepleAnimation && resolveMeepleAnimation.space === index))
+            style.push(getTransformStyle(startPosition, getPositionInBuilding(index, game.buildings[index].length), animation.duration))
+          return (meeple !== MeepleType.None) ? <Meeple css={style} type={meeple} key={index} /> : undefined
         }
         )}
       </>
 
       <>
-        {game.jail.map((meeple, index) =>
-          <Meeple css={getMeepleStyle(getPositionInJail(index))} type={meeple} key={index} />
-        )}
+        {game.jail.map((meeple, index) => {
+          const startPosition = getPositionInJail(index)
+          let style = [getMeepleStyle(startPosition)]
+          if ((animation && selectSourceLocationAnimation && selectSourceLocationAnimation.location === Location_Jail))
+            style.push(getTransformStyle(startPosition, getPositionInHand(index), animation.duration))
+          return <Meeple css={style} type={meeple} key={index} />
+        })}
       </>
 
       <>
-        {game.saloon.map((meeple, index) =>
-          <Meeple css={getMeepleStyle(getPositionInSaloon(index))} type={meeple} key={index}/>
-        )}
+        {game.saloon.map((meeple, index) => {
+          const startPosition = getPositionInSaloon(index)
+          let style = [getMeepleStyle(startPosition)]
+          if ((animation && selectSourceLocationAnimation && selectSourceLocationAnimation.location === Location_Saloon))
+            style.push(getTransformStyle(startPosition, getPositionInHand(index), animation.duration))
+          return <Meeple css={style} type={meeple} key={index} />
+        })}
       </>
 
       <>
@@ -143,9 +167,21 @@ export default function Board({ game }: Props) {
       <>
         { game.showdowns.map((showdown, index) => {
           if (showdown.meeple !== MeepleType.None) {
+            const startPosition = showdownMeeplePositions[index]
+            let style = [getMeepleStyle(startPosition)]
+            if ((animation && moveMeepleAnimation && moveMeepleAnimation.source === ((index === 0) ? Location_Showdown0 : Location_Showdown1))) {
+              switch (moveMeepleAnimation.destination) {
+                case Location_Graveyard:
+                  style.push(getTransformStyle(startPosition, graveyardPositions[game.graveyard.length], animation.duration))
+                  break
+                case Location_Saloon:
+                  style.push(getTransformStyle(startPosition, getPositionInSaloon(game.saloon.length), animation.duration))
+                  break
+              }
+            }
             return <div key={index}>
               <ShowdownToken playercolor={showdown.owner} css={getShowdownTokenStyle(showdownTokenPositions[index])} />
-              <Meeple css={getMeepleStyle(showdownMeeplePositions[index])} type={showdown.meeple} />
+              <Meeple css={style} type={showdown.meeple} />
               {showdown.dice && <Dice value={showdown.dice} css={getDiceStyle(dicePositions[index])} />}
               </div>
           }
@@ -154,9 +190,28 @@ export default function Board({ game }: Props) {
       </>
 
       <>
-        {game.meeplesInHand.map((meeple, index) =>
-          (meeple !== MeepleType.None) && <Meeple css={getMeepleStyle(getPositionInHand(index))} type={meeple} indexInHand={index} draggable={true} key={index} />
-        )}
+        {game.meeplesInHand.map((meeple, index) => {
+          if (meeple === MeepleType.None)
+            return undefined
+          const startPosition = getPositionInHand(index)
+          let style = [getMeepleStyle(startPosition)]
+          if ((animation && placeMeepleAnimation && placeMeepleAnimation.indexInHand === index)) {
+            let endPosition: number[]
+            switch (placeMeepleAnimation.space) {
+              case Location_Showdown0:
+                endPosition = showdownMeeplePositions[0]
+                break
+              case Location_Showdown1:
+                endPosition = showdownMeeplePositions[1]
+                break
+              default:
+                endPosition = doorwaysPosition[placeMeepleAnimation.space]
+                break
+            }
+            style.push(getTransformStyle(startPosition, endPosition, animation.duration))
+          }
+          return <Meeple css={style} type={meeple} indexInHand={index} draggable={true} key={index} />
+        })}
       </>
 
       <>
@@ -230,12 +285,10 @@ export default function Board({ game }: Props) {
               return undefined
             })
           }
+
+          { popup }
         </>
       }
-
-      <>
-        {popup}
-      </>
 
     </div>
   )
@@ -406,3 +459,10 @@ const getShowdownSelecterStyle = (position: Array<number>) => css`
   width: ${showdownSelecterWidth}em;
   height: ${showdownSelecterHeight}em;
 `
+
+function getTransformStyle(startPosition: Array<number>, endPosition: Array<number>, duration: number) {
+  return css`
+  transform: translate(${endPosition[0] - startPosition[0]}em, ${endPosition[1] - startPosition[1]}em);
+  transition: transform ${duration}s ease-in-out;
+`
+}

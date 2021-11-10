@@ -8,15 +8,22 @@ import PlayerColor from '../../rules/src/PlayerColor'
 // noinspection JSUnusedGlobalSymbols
 const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
   getAnimationDuration(move: Move, { action, state, playerId: currentPlayerId }) {
+    const isActivePlayer = action.playerId === state.activePlayer && action.playerId === currentPlayerId
     switch (move.type) {
       case MoveType.PlaceInitialMarqueeTile:
-        return (action.playerId === state.activePlayer && action.playerId === currentPlayerId) ? 0.5 : 0.1
-      case MoveType.MoveMeeples:
-        return (action.playerId === state.activePlayer && action.playerId === currentPlayerId) ? 0.1 : 0.1
+        return isActivePlayer ? 1 : 2
+      case MoveType.SelectSourceLocation:
+        return isActivePlayer ? 0.5 : 1
+      case MoveType.PlaceMeeple:
+        return isActivePlayer ? 0.1 : 1
+      case MoveType.ResolveMeeple:
+        return isActivePlayer ? 0.5 : 1
       case MoveType.BuildOrUpgradeMarquee:
         if ((move as BuildOrUpgradeMarquee).build)
-          return (action.playerId === state.activePlayer && action.playerId === currentPlayerId) ? 1 : 2
+          return isActivePlayer ? 1 : 2
         return 0
+      case MoveType.MoveMeeples:
+        return isActivePlayer ? 1 : 2
       case MoveType.ChangeCurrentPhase:
         return 0.5
       default:

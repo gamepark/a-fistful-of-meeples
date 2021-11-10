@@ -92,16 +92,16 @@ export const meepleHeight = meepleWidth / meepleRatio
 
 export const buildingsPosition = [
   [203 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
-  [430 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
+  [427 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
   [650 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
-  [877 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
+  [878 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
   [1105 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
   [1332 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
   [1332 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
   [1105 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
-  [877 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
+  [878 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
   [652 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
-  [430 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
+  [427 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
   [203 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
 ]
 
