@@ -6,43 +6,54 @@ import GoldBar from './GoldBar'
 import Images from './Images'
 import StoneCube from './StoneCube'
 import GoldCube from './GoldCube'
-import GameState from '../../../rules/src/GameState'
+import GameState, { getPlayerScore } from '../../../rules/src/GameState'
 import { HTMLAttributes } from 'react'
-import { Avatar, usePlayer } from '@gamepark/react-client'
+import { Avatar, GamePoints, PlayerTimer, usePlayer } from '@gamepark/react-client'
 import { SpeechBubbleDirection } from '@gamepark/react-client/dist/Avatar'
 import { Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
+import { goldBarRatio } from '../util/Metrics'
+import { getPlayerName } from '../../../rules/src/AFistfulOfMeeplesOptions'
+import Phase from '../../../rules/src/Phase'
 
 
 type Props = {
-  player: PlayerColor | undefined
   playerState: PlayerState
   gameState: GameState
 } & HTMLAttributes<HTMLDivElement>
 
 
-export default function PlayerInfo({ player, playerState, gameState, ...props }: Props) {
+export default function PlayerInfo({ playerState, gameState, ...props }: Props) {
   const { t } = useTranslation()
-  const playerInfo = usePlayer<PlayerColor>(player)
+  const playerInfo = usePlayer<PlayerColor>(playerState.color)
 
 
   return (
     <div {...props} css={getPlayerInfoStyle(playerState.color, gameState.activePlayer === playerState.color)} >
       {playerInfo?.avatar ?
-        <Avatar playerId={player} css={avatarStyle} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }} /> :
-        <Picture alt={t('Player avatar')} src={Images.avatar} css={fallbackAvatarStyle} />
+        <Avatar playerId={playerState.color} css={avatarStyle} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }} /> :
+        <Picture alt={t('Player avatar')} src={Images.avatar} css={[avatarStyle, fallbackAvatarStyle]} />
       }
 
-      <div css={getItemStyle(82, 10)}>
+      <div css={getItemStyle(35, 5)}>
+        {playerInfo?.name ?? getPlayerName(playerState.color, t)}
+      </div>
+      <div css={getItemStyle(35, 35)}>
+        {gameState.currentPhase === Phase.GameOver && getPlayerScore(gameState, playerState.color)}
+        {playerInfo?.time?.playing && <PlayerTimer playerId={playerState.color} />}
+        {playerInfo?.gamePointsDelta && < GamePoints playerId={playerState.color} suspense={5} />}
+      </div>
+
+      <div css={getItemStyle(20, 70)}>
         {playerState.stones}
       </div>
-      <div css={getItemStyle(82 , 40)}>
+      <div css={getItemStyle(50 , 70)}>
         {playerState.goldPieces}
       </div>
-      <div css={getItemStyle(62, 72)}>
+      <div css={getItemStyle(85, 70)}>
         {playerState.goldBars}
       </div>
-      <StoneCube style={getStoneCubeStyle} />
+      <StoneCube css={getStoneCubeStyle} />
       <GoldCube css={getGoldCubeStyle} />
       <GoldBar css={getGoldBarStyle} />
     </div>
@@ -82,43 +93,38 @@ const getItemStyle = (left: number, top: number) => css`
 
 const getStoneCubeStyle = css`
   position: absolute;
-  left: 60%;
-  top: 5%;
+  left: 5%;
+  top: 65%;
   width: 4em;
   height: 4em;
 `
 
 const getGoldCubeStyle = css`
   position: absolute;
-  left: 60%;
-  top: 35%;
+  left: 35%;
+  top: 65%;
   width: 4.5em;
   height: 4.5em;
 `
 
 const getGoldBarStyle = css`
   position: absolute;
+  left: 65%;
+  top: 60%;
+  width: 4em;
+  height: ${4 / goldBarRatio}em;
   transform: rotate(90deg);
-  left: 15%;
-  top: 55%;
-  width: 10em;
-  height: 5em;
 `
 
 const avatarStyle = css`
   position: absolute;
-  width: 15em;
-  height: 15em;
-  top: 5em;
+  width: 8em;
+  height: 8em;
+  top: 5%;
   left: 5%;
 `
 
 const fallbackAvatarStyle = css`
-  position: absolute;
-  width: 15em;
-  height: 15em;
-  top: 5%;
-  left: 5%;
   border: 0.1em solid white;
   border-radius: 100%; 
 `

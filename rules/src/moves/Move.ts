@@ -55,6 +55,14 @@ export function isMoveMeeplesMove(move: Move): move is MoveMeeples {
   return move.type === MoveType.MoveMeeples
 }
 
+export function isDrawFromBagMove(move: Move): move is DrawFromBag {
+  return move.type === MoveType.DrawFromBag
+}
+
+export function isRollShowdownDiceMove(move: Move): move is RollShowdownDice {
+  return move.type === MoveType.RollShowdownDice
+}
+
 export function isRerollShowdownDiceMove(move: Move): move is RerollShowdownDice {
   return move.type === MoveType.RerollShowdownDice
 }

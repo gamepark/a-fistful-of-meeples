@@ -162,22 +162,6 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
               }
             })
           }
-
-          /*
-          if (isValidSpaceToPlaceMeeple(Location_Showdown0, this.state))
-            this.state.meeplesInHand.forEach((_, index) => moves.push(getPlaceMeepleMove(this.state.activePlayer, Location_Showdown0, index)))
-          if (isValidSpaceToPlaceMeeple(Location_Showdown1, this.state))
-            this.state.meeplesInHand.forEach((_, index) => moves.push(getPlaceMeepleMove(this.state.activePlayer, Location_Showdown1, index)))
-          for (i = 0; i < 12; ++i) {
-            if (isValidSpaceToPlaceMeeple(i, this.state))
-              this.state.meeplesInHand.forEach((_, index) => moves.push(getPlaceMeepleMove(this.state.activePlayer, i, index)))
-          }
-
-          if (moves.length === 0) {
-            // no valid space : send remaining meeples to saloon
-            moves.push({ type: MoveType.SendExtraMeeplesToSaloon })
-          }
-          */
           break
 
         case Phase.ResolveMeeples:

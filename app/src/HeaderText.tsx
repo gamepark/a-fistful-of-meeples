@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
-import GameState, { PendingEffectType } from '@gamepark/a-fistful-of-meeples/GameState'
-import { Animation, Player as PlayerInfo, useAnimation, usePlayers } from '@gamepark/react-client'
+import GameState, { getPlayerScore, PendingEffectType } from '@gamepark/a-fistful-of-meeples/GameState'
+import { Player as PlayerInfo, usePlayers } from '@gamepark/react-client'
 import {TFunction, useTranslation} from 'react-i18next'
+import AFistfulOfMeeples from '../../rules/src/AFistfulOfMeeples'
 import { getPlayerName } from '../../rules/src/AFistfulOfMeeplesOptions'
-import Move from '../../rules/src/moves/Move'
-import MoveType from '../../rules/src/moves/MoveType'
 import Phase from '../../rules/src/Phase'
 import PlayerColor from '../../rules/src/PlayerColor'
+import PlayerState from '../../rules/src/PlayerState'
 
 type Props = {
   loading: boolean
@@ -17,30 +17,17 @@ type Props = {
 export default function HeaderText({loading, game, player}: Props) {
   const { t } = useTranslation()
   const players = usePlayers<PlayerColor>()
-  const animation = useAnimation<Move>()
 
   if (loading) return <>{t('Game loading...')}</>
   if (!game || !player) return null
 
-  return <>{getText(t, game!, player!, players!, animation)}</>
+  return <>{getText(t, game!, player!, players!)}</>
 }
 
-function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[], animation?: Animation<Move>): string {
-  const isActivePlayer: boolean = player === game.activePlayer
+function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[]): string {
   const getName = (playerId: PlayerColor) => players.find(p => p.id === playerId)?.name || getPlayerName(playerId, t)
-
-  if (animation !== undefined) {
-    switch (animation.move.type) {
-      case MoveType.PlaceInitialMarqueeTile:
-        return t('Building initial marquee tile')
-      case MoveType.BuildOrUpgradeMarquee:
-        return t('Building or upgrading marquee')
-      case MoveType.ChangeCurrentPhase:
-        return t('Changing current phase')
-      default:
-        return ''
-    }
-  }
+  const currentGame = new AFistfulOfMeeples(game)
+  const isActivePlayer: boolean = player === currentGame.getActivePlayer()
 
   if (game.pendingEffects.length > 0) {
     switch (game.pendingEffects[0].type) {
@@ -77,8 +64,70 @@ function getText(t: TFunction, game: GameState, player: PlayerColor, players: Pl
     case Phase.CheckGoldBars:
       return t('Checking for gold bars')
     case Phase.GameOver:
-      return t('Game is over')
+      return getEndOfGameText(t, players, game, player)
     default:
       return game.currentPhase
   }
+}
+
+function getEndOfGameText(t: TFunction, playersInfo: PlayerInfo<PlayerColor>[], game: GameState, playerColor?: PlayerColor) {
+  const player = game.players.find(player => player.color === playerColor)
+  const getName = (color: PlayerColor) => playersInfo.find(p => p.id === color)?.name || getPlayerName(color, t)
+  let highestScore = -1
+  let playersWithHighestScore: PlayerState[] = []
+  for (const player of game.players) {
+    const score = getPlayerScore(game, player.color)
+    if (score > highestScore) {
+      playersWithHighestScore = [player]
+      highestScore = score
+    } else if (score === highestScore) {
+      playersWithHighestScore.push(player)
+    }
+  }
+  if (playersWithHighestScore.length === 1) {
+    return (player === playersWithHighestScore[0]) ?
+      t('Victory! You win the game with {score} points', { score: highestScore })
+      :
+      t('{player} wins the game with {score} points', { player: getName(playersWithHighestScore[0].color), score: highestScore })
+  }
+
+  let highestCubes = -1
+  let playersWithMostCubes: PlayerState[] = []
+  for (const player of playersWithHighestScore) {
+    const nCubes = player.goldPieces + player.stones
+    if (nCubes > highestCubes) {
+      playersWithMostCubes = [player]
+      highestCubes = nCubes
+    } else if (nCubes == highestCubes)
+      playersWithMostCubes.push(player)
+  }
+
+  if (playersWithMostCubes.length === 1) {
+    if (player === playersWithMostCubes[0]) {
+      return t('Victory! You win the game with {score} points and {cubes} remaining gold and stones',
+        { score: highestScore, cubes: highestCubes })
+    } else {
+      return t('{player} wins the game with {score} points and {cubes} remaining gold and stones',
+        { player: getName(playersWithMostCubes[0].color), score: highestScore, cubes: highestCubes })
+    }
+  }
+
+  switch (playersWithMostCubes.length) {
+    case game.players.length:
+      return t('Perfect tie! All players each have {score} points and {cubes} remaining gold and stones',
+        { score: highestScore, cubes: highestCubes })
+    case 2:
+      return t('Perfect tie! {player1} and {player2} each have {score} points and {cubes} remaining gold and stones',
+        {
+          player1: getName(playersWithMostCubes[0].color), player2: getName(playersWithMostCubes[1].color),
+          score: highestScore, cubes: highestCubes
+        })
+    case 3:
+      return t('Perfect tie! {player1}, {player2} and {player3} each have {score} points and {cubes} remaining gold and stones',
+        {
+          player1: getName(playersWithMostCubes[0].color), player2: getName(playersWithMostCubes[1].color),
+          player3: getName(playersWithMostCubes[2].color), score: highestScore, cubes: highestCubes
+        })
+  }
+  return ''
 }

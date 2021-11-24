@@ -4,7 +4,7 @@ import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import Images from './Images'
 
-export default function GoldeCube(props: HTMLAttributes<HTMLImageElement>) {
+export default function GoldCube(props: HTMLAttributes<HTMLDivElement>) {
   const { t } = useTranslation()
 
   return (

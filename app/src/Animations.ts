@@ -13,21 +13,38 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
       case MoveType.PlaceInitialMarqueeTile:
         return isActivePlayer ? 1 : 2
       case MoveType.SelectSourceLocation:
-        return isActivePlayer ? 0.5 : 1
+        return isActivePlayer ? 0.3 : 0.5
       case MoveType.PlaceMeeple:
-        return isActivePlayer ? 0.1 : 1
+        return isActivePlayer ? 0.1 : 0.5
+      case MoveType.ChooseAnotherPlayerShowdownToken:
+        return 0    // TODO
       case MoveType.ResolveMeeple:
-        return isActivePlayer ? 0.5 : 1
+        return isActivePlayer ? 0.3 : 0.5
       case MoveType.BuildOrUpgradeMarquee:
         if ((move as BuildOrUpgradeMarquee).build)
           return isActivePlayer ? 1 : 2
         return 0
+      case MoveType.RerollShowdownDice:
+        return 0    // TODO
+      case MoveType.DrawFromBag:
+        return 1.5
+      case MoveType.SendExtraMeeplesToSaloon:
+        return 0    // TODO
+      case MoveType.DynamiteExplosion:
+        return 0    // TODO
+
       case MoveType.MoveMeeples:
         return isActivePlayer ? 1 : 2
       case MoveType.ChangeCurrentPhase:
         return 0.5
+      case MoveType.ResolveShowdown:
+        return 0    // TODO
+      case MoveType.RollShowdownDice:
+        return 3
+      case MoveType.ConvertGoldBar:
+        return 0    // TODO
       default:
-        return 0
+        return move
     }
   },
 

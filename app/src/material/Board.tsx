@@ -11,7 +11,7 @@ import ShowdownToken from './ShowdownToken'
 import MeepleType from '../../../rules/src/MeepleType'
 import Marquee from './Marquee'
 import AFistfulOfMeeples from '../../../rules/src/AFistfulOfMeeples'
-import { isBuildOrUpgradeMarqueeMove, isChangeCurrentPhaseMove, isChooseAnotherPlayerShowdownTokenMove, isMoveMeeplesMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isRerollShowdownDiceMove, isResolveMeepleMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
+import { isBuildOrUpgradeMarqueeMove, isChangeCurrentPhaseMove, isChooseAnotherPlayerShowdownTokenMove, isMoveMeeplesMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isRerollShowdownDiceMove, isResolveMeepleMove, isRollShowdownDiceMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
 import MarqueeSelecter from './MarqueeSelecter'
 import PlaceInitialMarqueeTile from '../../../rules/src/moves/PlaceInitialMarqueeTile'
 import { useAnimation, usePlay, usePlayerId } from '@gamepark/react-client'
@@ -33,6 +33,8 @@ import PhaseIndicator from './PhaseIndicator'
 import Phase from '../../../rules/src/Phase'
 import GenericSelecter from './GenericSelecter'
 import MoveMeeples from '../../../rules/src/moves/MoveMeeples'
+import RollShowdownDice from '../../../rules/src/moves/RollShowdownDice'
+import { Picture } from '@gamepark/react-components'
 
 
 type Props = {
@@ -49,7 +51,7 @@ export default function Board({ game }: Props) {
   const rerollShowdownDiceMove = legalMoves.find(move => isRerollShowdownDiceMove(move))
   const chooseAnotherPlayerMoves = legalMoves.filter(move => isChooseAnotherPlayerShowdownTokenMove(move)).map(move => (move as ChooseAnotherPlayerShowdownToken).playerId)
   // animations
-  const animation = useAnimation<PlaceInitialMarqueeTile | SelectSourceLocation | PlaceMeeple | ResolveMeeple | BuildOrUpgradeMarquee | ChangeCurrentPhase | MoveMeeples>(animation => animation?.action.cancelled ?? true)
+  const animation = useAnimation<PlaceInitialMarqueeTile | SelectSourceLocation | PlaceMeeple | ResolveMeeple | BuildOrUpgradeMarquee | ChangeCurrentPhase | MoveMeeples | RollShowdownDice>(animation => animation?.action.cancelled ?? true)
   const placeInitialMarqueeTileAnimation = animation && !animation.action.cancelled && isPlaceInitialMarqueeTileMove(animation.move) ? animation.move : undefined
   const selectSourceLocationAnimation = animation && !animation.action.cancelled && isSelectSourceLocationMove(animation.move) ? animation.move : undefined
   const placeMeepleAnimation = animation && !animation.action.cancelled && isPlaceMeepleMove(animation.move) ? animation.move : undefined
@@ -57,6 +59,7 @@ export default function Board({ game }: Props) {
   const buildOrUpgradeMarqueeAnimation = animation && !animation.action.cancelled && isBuildOrUpgradeMarqueeMove(animation.move) ? animation.move : undefined
   const changeCurrentPhaseAnimation = animation && !animation.action.cancelled && isChangeCurrentPhaseMove(animation.move) ? animation.move : undefined
   const moveMeepleAnimation = animation && !animation.action.cancelled && isMoveMeeplesMove(animation.move) ? animation.move : undefined
+  const rollShowdownDiceAnimation = animation && !animation.action.cancelled && isRollShowdownDiceMove(animation.move) ? animation.move : undefined
   const currentPhase: number = changeCurrentPhaseAnimation ? changeCurrentPhaseAnimation.phase : game.currentPhase
 
   let popup = undefined
@@ -95,7 +98,11 @@ export default function Board({ game }: Props) {
         {game.marquees.map((marquee, index) => {
           const existingMarquee: boolean = marquee.owner !== PlayerColor.None
           if (buildOrUpgradeMarqueeAnimation && buildOrUpgradeMarqueeAnimation.space === index) {
-            return <Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={existingMarquee} css={[getMarqueeStyle(marqueesPosition[index], index > 5), getFadeInStyle(animation!.duration)]} key={index} />
+            let result = []
+            if (existingMarquee)
+              result.push(<Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={false} css={getMarqueeStyle(marqueesPosition[index], index > 5)} key={index} />)
+            result.push([<Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={existingMarquee} css={[getMarqueeStyle(marqueesPosition[index], index > 5), getFadeInStyle(animation!.duration)]} key={index} />])
+            return result
           } else if (placeInitialMarqueeTileAnimation && placeInitialMarqueeTileAnimation.location === index) {
             return <Marquee owner={placeInitialMarqueeTileAnimation.playerId} upgraded={existingMarquee} css={[getMarqueeStyle(marqueesPosition[index], index > 5), getFadeInStyle(animation!.duration)]} key={index} />
           } else {
@@ -182,7 +189,11 @@ export default function Board({ game }: Props) {
             return <div key={index}>
               <ShowdownToken playercolor={showdown.owner} css={getShowdownTokenStyle(showdownTokenPositions[index])} />
               <Meeple css={style} type={showdown.meeple} />
-              {showdown.dice && <Dice value={showdown.dice} css={getDiceStyle(dicePositions[index])} />}
+              {(animation && rollShowdownDiceAnimation && index === (rollShowdownDiceAnimation.location === Location_Showdown0 ? 0 : 1)) ?
+                <Picture src={Images.rollingDice} css={getDiceStyle(dicePositions[index])} />
+                :
+                showdown.dice ? <Dice value={showdown.dice} css={getDiceStyle(dicePositions[index])} /> : undefined
+              }
               </div>
           }
           return undefined
@@ -221,7 +232,7 @@ export default function Board({ game }: Props) {
         <PhaseIndicator css={phaseIndicatorMetrics} phase={Phase.CheckGoldBars} currentPhase={currentPhase} animationDuration={animation?.duration} key='PhaseIndicator4' />
       </>
 
-      {(animation === undefined && game.activePlayer === playerColor) &&  // possible moves, only for current player and when no animation is playing
+      {(animation === undefined && currentGame.getActivePlayer() === playerColor) &&  // possible moves, only for current player and when no animation is playing
         <>
           {
             legalMoves.filter(move => isPlaceInitialMarqueeTileMove(move)).map((move) => {
@@ -230,6 +241,11 @@ export default function Board({ game }: Props) {
               }
               return <MarqueeSelecter position={marqueesPosition[(move as PlaceInitialMarqueeTile).location]} flip={(move as PlaceInitialMarqueeTile).location > 5} selected={marqueeSelected} key={(move as PlaceInitialMarqueeTile).location} />
             })
+          }
+
+          {
+            buildOrUpgradeMarqueeMove !== undefined && isBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove) &&
+              <MarqueeSelecter position={marqueesPosition[buildOrUpgradeMarqueeMove.space]} flip={buildOrUpgradeMarqueeMove.space > 5} selected={() => play(getBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove.playerId, buildOrUpgradeMarqueeMove.space, true))} />
           }
 
           {
