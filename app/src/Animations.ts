@@ -17,7 +17,7 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
       case MoveType.PlaceMeeple:
         return isActivePlayer ? 0.1 : 0.5
       case MoveType.ChooseAnotherPlayerShowdownToken:
-        return 0    // TODO
+        return 0
       case MoveType.ResolveMeeple:
         return isActivePlayer ? 0.3 : 0.5
       case MoveType.BuildOrUpgradeMarquee:
@@ -25,13 +25,13 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
           return isActivePlayer ? 1 : 2
         return 0
       case MoveType.RerollShowdownDice:
-        return 0    // TODO
+        return 0
       case MoveType.DrawFromBag:
         return 1.5
       case MoveType.SendExtraMeeplesToSaloon:
         return 0    // TODO
       case MoveType.DynamiteExplosion:
-        return 0    // TODO
+        return 2.5
 
       case MoveType.MoveMeeples:
         return isActivePlayer ? 1 : 2
@@ -50,9 +50,6 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
 
   getUndoAnimationDuration(move: Move) {
     switch (move.type) {
-      case MoveType.MoveMeeples:
-      case MoveType.DrawFromBag:
-        return 0.3
       default:
         return 0
     }

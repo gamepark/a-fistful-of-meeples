@@ -2,14 +2,15 @@
 import {css, keyframes} from '@emotion/react'
 import GameState from '@gamepark/a-fistful-of-meeples/GameState'
 import { useAnimation } from '@gamepark/react-client'
-import {Letterbox} from '@gamepark/react-components'
+import {Letterbox, Picture} from '@gamepark/react-components'
 import MiningBagContent from '../../rules/src/MiningBag'
 import DrawFromBag from '../../rules/src/moves/DrawFromBag'
-import { isDrawFromBagMove } from '../../rules/src/moves/Move'
+import { isDrawFromBagMove, isDynamiteExplosion } from '../../rules/src/moves/Move'
 import RollShowdownDice from '../../rules/src/moves/RollShowdownDice'
 import Board from './material/Board'
 import Dynamite from './material/Dynamite'
 import GoldCube from './material/GoldCube'
+import Images from './material/Images'
 import MiningBag from './material/MiningBag'
 import PlayerInfo from './material/PlayerInfo'
 import StoneCube from './material/StoneCube'
@@ -22,6 +23,7 @@ type Props = {
 export default function GameDisplay({ game }: Props) {
   const animation = useAnimation<DrawFromBag | RollShowdownDice>(animation => animation?.action.cancelled ?? true)
   const drawFromBagAnimation = animation && !animation.action.cancelled && isDrawFromBagMove(animation.move) ? animation.move : undefined
+  const dynamiteExplosionAnimation = animation && !animation.action.cancelled && isDynamiteExplosion(animation.move) ? animation.move : undefined
 
   return (
     <Letterbox id="letterbox" css={letterBoxStyle} width={letterBoxWidth} height={letterBoxHeight} top={0}>
@@ -48,6 +50,9 @@ export default function GameDisplay({ game }: Props) {
               return <StoneCube key={100 + index} css={getStyle(endPosition[0] + 1.7, endPosition[1] + 10.5)} />
           }
         })}
+        {animation && dynamiteExplosionAnimation &&
+          <Picture src={Images.dynamiteExplosion} css={dynamiteExplosionStyle} />
+        }
       </>
     </Letterbox>
   )
@@ -97,5 +102,13 @@ const getCubeStyle = (startPosition: number[], endPosition: number[], animation_
   width: 4em;
   height: 4em;
 	animation: ${translate(startPosition, endPosition)} ${animation_duration}s ease-in-out;
+`
+
+const dynamiteExplosionStyle = css`
+  position: absolute;
+  left: 69em;
+  top: 47.5em;
+  width: 12em;
+  height: 12em;
 `
 

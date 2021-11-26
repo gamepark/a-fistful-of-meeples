@@ -42,6 +42,7 @@ import dice4 from '../images/Dice4.png'
 import dice5 from '../images/Dice5.png'
 import dice6 from '../images/Dice6.png'
 import rollingDice from '../images/RollingDice.gif'
+import dynamiteExplosion from '../images/DynamiteExplosion.gif'
 
 const Images = {
   board,
@@ -85,7 +86,8 @@ const Images = {
   dice4,
   dice5,
   dice6,
-  rollingDice
+  rollingDice,
+  dynamiteExplosion
 }
 
 if (!isSafari) {

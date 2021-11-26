@@ -59,6 +59,10 @@ export function isDrawFromBagMove(move: Move): move is DrawFromBag {
   return move.type === MoveType.DrawFromBag
 }
 
+export function isDynamiteExplosion(move: Move): move is DynamiteExplosion {
+  return move.type === MoveType.DynamiteExplosion
+}
+
 export function isRollShowdownDiceMove(move: Move): move is RollShowdownDice {
   return move.type === MoveType.RollShowdownDice
 }
