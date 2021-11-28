@@ -75,10 +75,6 @@ export function canPayBuildingCost(player: PlayerState, space: number): boolean 
 }
 
 
-
-/**
- * In here, you describe what a GameState will look like at any time during a game.
- */
 type GameState = {
   players: PlayerState[]
 

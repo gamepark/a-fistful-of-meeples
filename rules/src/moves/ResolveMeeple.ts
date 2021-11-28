@@ -6,10 +6,6 @@ import PlayerState from '../PlayerState'
 import { getShowdownHighestShootingSkill, ShowdownResult } from '../Showdown'
 import { getDrawFromBagPendingEffect } from './DrawFromBag'
 
-/**
- * Here is a example a of move involving hidden information
- * On the backend side, there is no need to put the card inside the move. We know what it will be (first card on top of the deck)
- */
 type ResolveMeeple = {
   type: MoveType.ResolveMeeple
   playerId: PlayerColor

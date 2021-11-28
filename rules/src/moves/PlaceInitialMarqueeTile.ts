@@ -2,10 +2,6 @@ import GameState, { getPreviousPlayer } from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
 
-/**
- * Here is a example a of move involving hidden information
- * On the backend side, there is no need to put the card inside the move. We know what it will be (first card on top of the deck)
- */
 type PlaceInitialMarqueeTile = {
   type: MoveType.PlaceInitialMarqueeTile
   playerId: PlayerColor
