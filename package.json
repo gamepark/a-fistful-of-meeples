@@ -13,5 +13,6 @@
   "scripts": {
     "start": "yarn workspace @gamepark/a-fistful-of-meeples-app run start",
     "build": "yarn workspace @gamepark/a-fistful-of-meeples-app run build"
-  }
+  },
+  "dependencies": {}
 }

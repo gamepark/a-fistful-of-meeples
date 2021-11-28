@@ -1,6 +1,5 @@
 import GameState, { Location_Graveyard, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '../GameState'
 import MeepleType from '../MeepleType'
-import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
 
 type MoveMeeples = {
@@ -15,17 +14,14 @@ export default MoveMeeples
 export function moveMeeples(state: GameState, move: MoveMeeples): void {
   let numberOfMeeples: number
 
-  if (move.meeples === MeepleType.None)
-    return console.error('Moving meeple of type "None" from ' + move.source + ' to ' + move.destination)
-
   switch (move.source) {
     case Location_Showdown0:
       numberOfMeeples = 1
-      state.showdowns[0] = { meeple: MeepleType.None, owner: PlayerColor.None, dice: 0 }
+      state.showdowns[0] = { meeple: undefined, owner: undefined, dice: 0 }
       break;
     case Location_Showdown1:
       numberOfMeeples = 1
-      state.showdowns[1] = { meeple: MeepleType.None, owner: PlayerColor.None, dice: 0 }
+      state.showdowns[1] = { meeple: undefined, owner: undefined, dice: 0 }
       break;
     default:
       numberOfMeeples = state.buildings[move.source].filter(meeple => meeple === move.meeples).length

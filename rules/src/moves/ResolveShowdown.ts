@@ -11,51 +11,56 @@ export default ResolveShowdown
 
 
 export function resolveShowdown(state: GameState): void {
+  const meeple0 = state.showdowns[0].meeple
+  const meeple1 = state.showdowns[1].meeple
+  if (meeple0 === undefined || meeple1 === undefined)
+    return console.error('Unable to resolve showdown, meeples are ', meeple0, ' and ', meeple1)
+
   switch (getShowdownWinner(state)) {
     case ShowdownResult.Showdown0:
-      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[0].owner, getShootingSkill(state.showdowns[1].meeple)))
+      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[0].owner!, getShootingSkill(meeple1)))
       state.pendingEffects.unshift({
         type: PendingEffectType.MoveMeeples,
-        meeples: state.showdowns[0].meeple,
+        meeples: meeple0,
         sourceLocation: Location_Showdown0,
         destinationLocation: Location_Saloon
       })
       state.pendingEffects.unshift({
         type: PendingEffectType.MoveMeeples,
-        meeples: state.showdowns[1].meeple,
+        meeples: state.showdowns[1].meeple!,
         sourceLocation: Location_Showdown1,
         destinationLocation: Location_Graveyard
       })
       break
 
     case ShowdownResult.Showdown1:
-      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[1].owner, getShootingSkill(state.showdowns[0].meeple)))
+      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[1].owner!, getShootingSkill(meeple0)))
       state.pendingEffects.unshift({
         type: PendingEffectType.MoveMeeples,
-        meeples: state.showdowns[1].meeple,
+        meeples: meeple1,
         sourceLocation: Location_Showdown1,
         destinationLocation: Location_Saloon
       })
       state.pendingEffects.unshift({
         type: PendingEffectType.MoveMeeples,
-        meeples: state.showdowns[0].meeple,
+        meeples: meeple0,
         sourceLocation: Location_Showdown0,
         destinationLocation: Location_Graveyard
       })
       break
 
     case ShowdownResult.None:
-      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[0].owner, getShootingSkill(state.showdowns[1].meeple)))
-      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[1].owner, getShootingSkill(state.showdowns[0].meeple)))
+      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[0].owner!, getShootingSkill(meeple1)))
+      state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.showdowns[1].owner!, getShootingSkill(meeple0)))
       state.pendingEffects.unshift({
         type: PendingEffectType.MoveMeeples,
-        meeples: state.showdowns[0].meeple,
+        meeples: meeple0,
         sourceLocation: Location_Showdown0,
         destinationLocation: Location_Graveyard
       })
       state.pendingEffects.unshift({
         type: PendingEffectType.MoveMeeples,
-        meeples: state.showdowns[1].meeple,
+        meeples: meeple1,
         sourceLocation: Location_Showdown1,
         destinationLocation: Location_Graveyard
       })

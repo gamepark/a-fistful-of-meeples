@@ -66,7 +66,7 @@ export default function Board({ game }: Props) {
 
   let popup = undefined
   if (buildOrUpgradeMarqueeMove !== undefined && isBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove)) {
-    const text = (game.marquees[buildOrUpgradeMarqueeMove.space].owner === PlayerColor.None) ? t("DoYouWantToBuildAMarquee") : t("DoYouWantToUpgradeYourMarquee")
+    const text = (game.marquees[buildOrUpgradeMarqueeMove.space].owner === undefined) ? t("DoYouWantToBuildAMarquee") : t("DoYouWantToUpgradeYourMarquee")
     popup = <YesNoSelecter text={text} answered={answer => play(getBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove.playerId, buildOrUpgradeMarqueeMove.space, answer))} />
   }
   if (rerollShowdownDiceMove !== undefined && isRerollShowdownDiceMove(rerollShowdownDiceMove)) {
@@ -103,7 +103,7 @@ export default function Board({ game }: Props) {
 
       <>
         {game.marquees.map((marquee, index) => {
-          const existingMarquee: boolean = marquee.owner !== PlayerColor.None
+          const existingMarquee: boolean = marquee.owner !== undefined
           if (buildOrUpgradeMarqueeAnimation && buildOrUpgradeMarqueeAnimation.space === index) {
             let result = []
             if (existingMarquee)
@@ -113,7 +113,7 @@ export default function Board({ game }: Props) {
           } else if (placeInitialMarqueeTileAnimation && placeInitialMarqueeTileAnimation.location === index) {
             return <Marquee owner={placeInitialMarqueeTileAnimation.playerId} upgraded={existingMarquee} css={[getMarqueeStyle(marqueesPosition[index], index > 5), getFadeInStyle(animation!.duration)]} key={index} />
           } else {
-            return (existingMarquee) ? <Marquee owner={marquee.owner} upgraded={marquee.upgraded} css={getMarqueeStyle(marqueesPosition[index], index > 5)} key={index} /> : undefined
+            return (marquee.owner !== undefined) ? <Marquee owner={marquee.owner} upgraded={marquee.upgraded} css={getMarqueeStyle(marqueesPosition[index], index > 5)} key={index} /> : undefined
           }
         }
         )}
@@ -147,7 +147,7 @@ export default function Board({ game }: Props) {
           let style = [getMeepleStyle(startPosition)]
           if ((animation && resolveMeepleAnimation && resolveMeepleAnimation.space === index))
             style.push(getTransformStyle(startPosition, getPositionInBuilding(index, game.buildings[index].length), animation.duration))
-          return (meeple !== MeepleType.None) ? <Meeple css={style} type={meeple} key={index} /> : undefined
+          return (meeple !== null) ? <Meeple css={style} type={meeple} key={index} /> : undefined
         }
         )}
       </>
@@ -179,8 +179,8 @@ export default function Board({ game }: Props) {
       </>
 
       <>
-        { game.showdowns.map((showdown, index) => {
-          if (showdown.meeple !== MeepleType.None) {
+        {game.showdowns.map((showdown, index) => {
+          if (showdown.meeple !== undefined && showdown.owner !== undefined) {
             const startPosition = showdownMeeplePositions[index]
             let style = [getMeepleStyle(startPosition)]
             if ((animation && moveMeepleAnimation && moveMeepleAnimation.source === ((index === 0) ? Location_Showdown0 : Location_Showdown1))) {
@@ -209,7 +209,7 @@ export default function Board({ game }: Props) {
 
       <>
         {game.meeplesInHand.map((meeple, index) => {
-          if (meeple === MeepleType.None)
+          if (meeple === null)
             return undefined
           const startPosition = getPositionInHand(index)
           let style = [getMeepleStyle(startPosition)]

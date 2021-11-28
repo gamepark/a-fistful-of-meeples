@@ -1,6 +1,5 @@
-import GameState, { Direction, getNextPlayer, Location_None } from '../GameState'
+import GameState, { getNextPlayer } from '../GameState'
 import Phase from '../Phase'
-import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
 
 type ChangeCurrentPhase = {
@@ -23,19 +22,19 @@ export function changeCurrentPhase(state: GameState, move: ChangeCurrentPhase): 
       break
     case Phase.SelectSourceLocation:
       if (state.currentPhase !== Phase.PlaceInitialMarqueeTiles)
-        state.activePlayer = getNextPlayer(state, state.activePlayer)
+        state.activePlayer = getNextPlayer(state, state.activePlayer!)
       break
     case Phase.PlaceMeeples:
       break
     case Phase.ResolveMeeples:
-      state.meeplePlacingDirection = Direction.None
-      state.previousMeepleLocation = Location_None
+      state.meeplePlacingDirection = undefined
+      state.previousMeepleLocation = undefined
       state.meeplesInHand = []
       break
     case Phase.CheckGoldBars:
       break
     case Phase.GameOver:
-      state.activePlayer = PlayerColor.None
+      state.activePlayer = undefined
       break;
     default:
       return move.phase	// never guard

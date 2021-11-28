@@ -25,10 +25,10 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
       state.pendingEffects.unshift({ type: PendingEffectType.ResolveShowdown })
       switch (getShowdownHighestShootingSkill(state)) {
         case ShowdownResult.Showdown0:
-          state.pendingEffects.unshift({ type: PendingEffectType.ChooseToRerollShowdownDice, player: state.showdowns[0].owner })
+          state.pendingEffects.unshift({ type: PendingEffectType.ChooseToRerollShowdownDice, player: state.showdowns[0].owner! })
           break
         case ShowdownResult.Showdown1:
-          state.pendingEffects.unshift({ type: PendingEffectType.ChooseToRerollShowdownDice, player: state.showdowns[1].owner })
+          state.pendingEffects.unshift({ type: PendingEffectType.ChooseToRerollShowdownDice, player: state.showdowns[1].owner! })
           break
         case ShowdownResult.None:
           break
@@ -37,16 +37,16 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
       state.pendingEffects.unshift({ type: PendingEffectType.RollShowdownDice, location: Location_Showdown0 })
       break
     default:
-      const meeple: MeepleType = state.doorways[move.space]
-      if (meeple == MeepleType.None) return console.error('No meeple in doorway ', move.space)
+      if (state.doorways[move.space] === null) return console.error('No meeple in doorway ', move.space)
+      const meeple: MeepleType = state.doorways[move.space]!
 
       // remove meeple from doorway
-      state.doorways[move.space] = MeepleType.None
+      state.doorways[move.space] = null
 
       switch (meeple) {
         case MeepleType.Builder:
           let owner: PlayerState | undefined
-          if (state.marquees[move.space].owner === PlayerColor.None) {
+          if (state.marquees[move.space].owner === undefined) {
             // no marquee ? current player may build one
             owner = player
           } else if (state.marquees[move.space].upgraded === false) {
@@ -64,15 +64,15 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
           }
           break;
         case MeepleType.Miner:
-          if (state.marquees[move.space].owner !== PlayerColor.None) {
-            state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.marquees[move.space].owner, state.marquees[move.space].upgraded ? 4 : 2))
+          if (state.marquees[move.space].owner !== undefined) {
+            state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.marquees[move.space].owner!, state.marquees[move.space].upgraded ? 4 : 2))
           }
           break;
         case MeepleType.Robber:
           {
             const numberOfMiners: number = state.buildings[move.space].filter(meeple => meeple === MeepleType.Miner).length
             if (numberOfMiners > 0) {
-              state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.activePlayer, 2 * numberOfMiners))
+              state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.activePlayer!, 2 * numberOfMiners))
             }
           }
           break;
@@ -86,7 +86,7 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
                 sourceLocation: move.space,
                 destinationLocation: Location_Jail
               })
-              state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.activePlayer, 2 * numberOfRobbers))
+              state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.activePlayer!, 2 * numberOfRobbers))
             }
           }
           break;
@@ -100,7 +100,7 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
                 sourceLocation: move.space,
                 destinationLocation: Location_Saloon
               })
-              state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.activePlayer, numberOfBuilders))
+              state.pendingEffects.unshift(getDrawFromBagPendingEffect(state.activePlayer!, numberOfBuilders))
             }
           }
           break;

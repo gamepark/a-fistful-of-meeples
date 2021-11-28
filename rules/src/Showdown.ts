@@ -3,8 +3,8 @@ import MeepleType from './MeepleType'
 import PlayerColor from './PlayerColor'
 
 type ShowdownPlace = {
-  meeple: MeepleType
-  owner: PlayerColor
+  meeple?: MeepleType
+  owner?: PlayerColor
   dice: number
 }
 
@@ -33,8 +33,8 @@ export function getShootingSkill(meeple: MeepleType): number {
 }
 
 export function getShowdownHighestShootingSkill(state: GameState): ShowdownResult {
-  const shootingSkill0 = getShootingSkill(state.showdowns[0].meeple)
-  const shootingSkill1 = getShootingSkill(state.showdowns[1].meeple)
+  const shootingSkill0 = getShootingSkill(state.showdowns[0].meeple!)
+  const shootingSkill1 = getShootingSkill(state.showdowns[1].meeple!)
 
   if (shootingSkill0 > shootingSkill1)
     return ShowdownResult.Showdown0

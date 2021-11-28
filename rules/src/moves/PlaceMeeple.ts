@@ -20,6 +20,10 @@ export function getPlaceMeepleMove(player: PlayerColor, space: number, indexInHa
 export function isValidSpaceToPlaceMeeple(space: number, state: GameState): boolean {
   if (!isSpaceEmpty(space, state))
     return false
+  if (state.previousMeepleLocation === undefined) {
+    console.error('Undefined previous meeple location')
+    return false
+  }
 
   // first meeple to be placed must be placed next to building they were taken from (or any space if taken from jail or saloon)
   // other meeples must follow the current placing direction
@@ -35,7 +39,7 @@ export function isValidSpaceToPlaceMeeple(space: number, state: GameState): bool
 }
 
 function placeOnShowdownSpace(state: GameState, move: PlaceMeeple, showdownIndex: number, meeple: MeepleType) {
-  if (state.showdowns[showdownIndex].meeple != MeepleType.None) return console.error('There is already a meeple on showdown space ', showdownIndex)
+  if (state.showdowns[showdownIndex].meeple != undefined) return console.error('There is already a meeple on showdown space ', showdownIndex)
   if (meeple == MeepleType.Madame) {
     state.saloon.push(MeepleType.Madame)  // shall Madame be placed on a showdown space, send her to saloon instead
   } else {
@@ -52,20 +56,20 @@ function placeOnShowdownSpace(state: GameState, move: PlaceMeeple, showdownIndex
 export function placeMeeple(state: GameState, move: PlaceMeeple) {
   if (state.players.find(player => player.color === move.playerId) === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
   if (!((move.space >= 0 && move.space < 12) || move.space == Location_Showdown0 || move.space == Location_Showdown1)) return console.error('Invalid space ', move.space, ' for placing meeple')
-
   if (move.indexInHand < 0 || move.indexInHand >= state.meeplesInHand.length) return console.error('Invalid meeple index ', move.indexInHand, ', no such meeple in hand')
+  if (state.meeplesInHand[move.indexInHand] === null) return console.error('Invalid meeple index ', move.indexInHand, ', this index is empty')
 
   // remove meeple from hand
-  const meeple: MeepleType = state.meeplesInHand[move.indexInHand]
-  state.meeplesInHand[move.indexInHand] = MeepleType.None
+  const meeple: MeepleType = state.meeplesInHand[move.indexInHand]!
+  state.meeplesInHand[move.indexInHand] = null
 
   // update gamestate
-  if (state.meeplePlacingDirection === Direction.None) {
-    if (getNextEmptySpace(state.previousMeepleLocation, state) === move.space) {
-      state.meeplePlacingDirection = Direction.Clockwise;
-    } else if (getPreviousEmptySpace(state.previousMeepleLocation, state) === move.space) {
-      state.meeplePlacingDirection = Direction.CounterClockwise;
-    } else if (isBuildingLocation(state.previousMeepleLocation)) {
+  if (state.meeplePlacingDirection === undefined) {
+    if (getNextEmptySpace(state.previousMeepleLocation!, state) === move.space) {
+      state.meeplePlacingDirection = Direction.Clockwise
+    } else if (getPreviousEmptySpace(state.previousMeepleLocation!, state) === move.space) {
+      state.meeplePlacingDirection = Direction.CounterClockwise
+    } else if (isBuildingLocation(state.previousMeepleLocation!)) {
       return console.error('Unexpected space ', move.space, ' to place meeple')
     }
   }

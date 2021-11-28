@@ -19,7 +19,7 @@ export function buildOrUpgradeMarquee(state: GameState, move: BuildOrUpgradeMarq
   const player = state.players.find(player => player.color === move.playerId)
   if (player === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
   if (!isBuildingLocation(move.space)) return console.error('Invalid space ', move.space, ' to build or upgrade marquee')
-  if (state.marquees[move.space].owner != PlayerColor.None && state.marquees[move.space].owner != move.playerId) return console.error('Player ', move.playerId, ' cannot upgrade a marquee belonging to ', state.marquees[move.space].owner)
+  if (state.marquees[move.space].owner !== undefined && state.marquees[move.space].owner != move.playerId) return console.error('Player ', move.playerId, ' cannot upgrade a marquee belonging to ', state.marquees[move.space].owner)
 
   if (move.build) {
     if (!canPayBuildingCost(player, move.space)) return console.error('Player ', player, ' doesn\'t have enough resources to build or upgrade marquee in ', move.space)
@@ -30,7 +30,7 @@ export function buildOrUpgradeMarquee(state: GameState, move: BuildOrUpgradeMarq
     player.stones -= BuildingCosts[move.space].stones
     state.stoneCubesInMiningBag += BuildingCosts[move.space].stones
 
-    if (state.marquees[move.space].owner == PlayerColor.None) {
+    if (state.marquees[move.space].owner === undefined) {
       // build marquee
       state.marquees[move.space].owner = player.color
     } else {

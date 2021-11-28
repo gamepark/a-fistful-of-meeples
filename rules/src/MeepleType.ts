@@ -1,5 +1,4 @@
 enum MeepleType {
-  None,
   Madame,
   Builder,
   Miner,

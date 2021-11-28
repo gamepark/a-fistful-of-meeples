@@ -8,11 +8,10 @@ import shuffle from 'lodash.shuffle'
 import ShowdownPlace from './Showdown'
 
 type Marquee = {
-  owner: PlayerColor
+  owner?: PlayerColor
   upgraded: boolean
 }
 
-export const Location_None: number = -1;
 // Locations 0-11 are buildings
 export const Location_Showdown0: number = 12;
 export const Location_Showdown1: number = 13;
@@ -25,7 +24,6 @@ export function isBuildingLocation(location: number): boolean {
 }
 
 export enum Direction {
-    None = 0,
     Clockwise = 1,
     CounterClockwise = -1
 }
@@ -87,16 +85,16 @@ type GameState = {
   jail: MeepleType[]  // array of meeples in jail
   graveyard: MeepleType[] // array of meeples in graveyard
   buildings: MeepleType[][] // 12 arrays of meeples, one for each building
-  doorways: MeepleType[]  // 12 meeple places, one for the doorway of each building
+  doorways: (MeepleType | null)[]  // 12 meeple places, one for the doorway of each building
   showdowns: ShowdownPlace[] // 2 showdown places (meeple + owner)
   marquees: Marquee[] // one Marquee for each building, indicating the owner of the marquee and whether it's upgraded or not
 
   startingPlayer: PlayerColor // which was the first player
-  activePlayer: PlayerColor  // None if game is over
+  activePlayer?: PlayerColor  // undefined if game is over
   currentPhase: Phase // current phase of the game (see Phase)
-  meeplesInHand: MeepleType[] // Meeples player took from source location, waiting to be placed
-  meeplePlacingDirection: Direction // Direction in which meeples are being placed
-  previousMeepleLocation: number // Space where previous meeple was placed (or location where meeples where taken from)
+  meeplesInHand: (MeepleType | null)[] // Meeples player took from source location, waiting to be placed
+  meeplePlacingDirection?: Direction // Direction in which meeples are being placed
+  previousMeepleLocation?: number // Space where previous meeple was placed (or location where meeples where taken from)
 
   pendingEffects: PendingEffect[] // effects which must be resolved before going on with the game. 
 }
@@ -116,16 +114,16 @@ export function initialiseGameState(options: AFistfulOfMeeplesOptions): GameStat
     jail: [],
     graveyard: [],
     buildings: new Array<MeepleType[]>(12),
-    doorways: new Array<MeepleType>(12).fill(MeepleType.None),
-    showdowns: [{ meeple: MeepleType.None, owner: PlayerColor.None, dice: 0 }, { meeple: MeepleType.None, owner: PlayerColor.None, dice: 0 }],
-    marquees: new Array<Marquee>(12).fill({ owner: PlayerColor.None, upgraded: false }, 0, 12),
+    doorways: new Array<(MeepleType|null)>(12).fill(null),
+    showdowns: [{ meeple: undefined, owner: undefined, dice: 0 }, { meeple: undefined, owner: undefined, dice: 0 }],
+    marquees: new Array<Marquee>(12).fill({ owner: undefined, upgraded: false }, 0, 12),
 
     startingPlayer: options.players[0].id,
     activePlayer: options.players[options.players.length - 1].id,
     currentPhase: Phase.PlaceInitialMarqueeTiles,
     meeplesInHand: [],
-    meeplePlacingDirection: Direction.None,
-    previousMeepleLocation: Location_None,
+    meeplePlacingDirection: undefined,
+    previousMeepleLocation: undefined,
 
     pendingEffects: [],
   }

@@ -1,10 +1,9 @@
 import { Action, SequentialGame, Undo } from '@gamepark/rules-api'
-import GameState, { initialiseGameState, Location_Saloon, Location_Jail, PendingEffectType, Location_Showdown0, Location_Showdown1, Location_None, getNextPlayer, endOfGameTriggered } from './GameState'
+import GameState, { initialiseGameState, Location_Saloon, Location_Jail, PendingEffectType, Location_Showdown0, Location_Showdown1, getNextPlayer, endOfGameTriggered } from './GameState'
 import Move, { isDrawFromBagMove, isRollShowdownDiceMove } from './moves/Move'
 import MoveType from './moves/MoveType'
 import PlayerColor from './PlayerColor'
 import Phase from './Phase'
-import MeepleType from './MeepleType'
 import { isGameOptions, AFistfulOfMeeplesOptions } from './AFistfulOfMeeplesOptions'
 import { placeInitialMarqueeTile } from './moves/PlaceInitialMarqueeTile'
 import { selectSourceLocation } from './moves/SelectSourceLocation'
@@ -51,7 +50,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
    * @return True when game is over
    */
   isOver(): boolean {
-    return this.state.activePlayer === PlayerColor.None
+    return this.state.activePlayer === undefined
   }
 
   /**
@@ -61,7 +60,7 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
   getActivePlayer(): PlayerColor | undefined {
     if (this.state.pendingEffects.length > 0) {
       let effect = this.state.pendingEffects[0]
-      if (effect.type === PendingEffectType.BuildOrUpgradeMarquee && this.state.marquees[effect.location].owner != PlayerColor.None) {
+      if (effect.type === PendingEffectType.BuildOrUpgradeMarquee && this.state.marquees[effect.location].owner !== undefined) {
         return this.state.marquees[effect.location].owner
       }
       if (effect.type === PendingEffectType.ChooseToRerollShowdownDice)
@@ -105,15 +104,16 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
           moves.push(getRerollShowdownDiceMove(false))
           break
       }
-    } else {
+    } else if (this.state.activePlayer !== undefined) {
+      const activePlayer: PlayerColor = this.state.activePlayer
 
       // no relevant pending effect : allowed moves depend on current phase
       switch (this.state.currentPhase) {
 
         case Phase.PlaceInitialMarqueeTiles:
           [0, 5, 6, 11].forEach(i => {
-            if (this.state.marquees[i].owner === PlayerColor.None) {
-              moves.push({ type: MoveType.PlaceInitialMarqueeTile, playerId: this.state.activePlayer, location: i })
+            if (this.state.marquees[i].owner === undefined) {
+              moves.push({ type: MoveType.PlaceInitialMarqueeTile, playerId: activePlayer, location: i })
             }
           })
           break
@@ -121,14 +121,14 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
         case Phase.SelectSourceLocation:
           for (i = 0; i < 12; ++i) {
             if (this.state.buildings[i].length > 0) {
-              moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: i })
+              moves.push({ type: MoveType.SelectSourceLocation, playerId: activePlayer, location: i })
             }
           }
           if (this.state.saloon.length > 0) {
-            moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: Location_Saloon })
+            moves.push({ type: MoveType.SelectSourceLocation, playerId: activePlayer, location: Location_Saloon })
           }
           if (this.state.jail.length > 0) {
-            moves.push({ type: MoveType.SelectSourceLocation, playerId: this.state.activePlayer, location: Location_Jail })
+            moves.push({ type: MoveType.SelectSourceLocation, playerId: activePlayer, location: Location_Jail })
           }
           break
 
@@ -147,9 +147,9 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
             moves.push({ type: MoveType.SendExtraMeeplesToSaloon })
           } else {
             this.state.meeplesInHand.forEach((meeple, index) => {
-              if (meeple !== MeepleType.None) {
+              if (meeple !== null) {
                 validDestinations.forEach(destination => {
-                  moves.push(getPlaceMeepleMove(this.state.activePlayer, destination, index))
+                  moves.push(getPlaceMeepleMove(activePlayer, destination, index))
                 })
               }
             })
@@ -157,13 +157,13 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
           break
 
         case Phase.ResolveMeeples:
-          if (this.state.showdowns[0].meeple != MeepleType.None && this.state.showdowns[1].meeple != MeepleType.None) {
-            moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: Location_Showdown0 })
-            moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: Location_Showdown1 })
+          if (this.state.showdowns[0].meeple !== undefined && this.state.showdowns[1].meeple !== undefined) {
+            moves.push({ type: MoveType.ResolveMeeple, playerId: activePlayer, space: Location_Showdown0 })
+            moves.push({ type: MoveType.ResolveMeeple, playerId: activePlayer, space: Location_Showdown1 })
           }
           for (i = 0; i < 12; ++i) {
-            if (this.state.doorways[i] != MeepleType.None) {
-              moves.push({ type: MoveType.ResolveMeeple, playerId: this.state.activePlayer, space: i })
+            if (this.state.doorways[i] !== null) {
+              moves.push({ type: MoveType.ResolveMeeple, playerId: activePlayer, space: i })
             }
           }
           break
@@ -219,7 +219,7 @@ export function getCanUndo(action: Action < Move, PlayerColor >, consecutiveActi
   if (consecutiveActions.length > 0)
     return false
 
-  if (action.consequences.findIndex(move => isDrawFromBagMove(move) || isRollShowdownDiceMove(move)) >= 0)
+  if (action.consequences.some(move => isDrawFromBagMove(move) || isRollShowdownDiceMove(move)))
     return false;
 
   return true
@@ -247,32 +247,34 @@ export function getPredictableMove(state: GameState, serverSide: boolean): void 
     }
   } else switch (state.currentPhase) {
     case Phase.PlaceInitialMarqueeTiles:
-      if (state.marquees.filter(marquee => marquee.owner !== PlayerColor.None).length === state.players.length)
+      if (state.marquees.filter(marquee => marquee.owner !== undefined).length === state.players.length)
         return getChangeCurrentPhaseMove(Phase.SelectSourceLocation)  // all players have placed their initial marquee, begin first turn of the game
       break
 
     case Phase.SelectSourceLocation:
-      if (state.previousMeepleLocation !== Location_None)
+      if (state.previousMeepleLocation !== undefined)
         return getChangeCurrentPhaseMove(Phase.PlaceMeeples)  // source location has been chosen, time to place meeples
       break
 
     case Phase.PlaceMeeples:
-      if (state.meeplesInHand.every(meeple => meeple === MeepleType.None)) {
+      if (state.meeplesInHand.every(meeple => meeple === null)) {
         return getChangeCurrentPhaseMove(Phase.ResolveMeeples)  // no more meeples to place, time to resolve
       }
       break
 
     case Phase.ResolveMeeples:
-      if ((state.showdowns[0].meeple === MeepleType.None || state.showdowns[1].meeple === MeepleType.None) && state.doorways.every(doorway => doorway === MeepleType.None)) {
+      if ((state.showdowns[0].meeple === undefined || state.showdowns[1].meeple === undefined) && state.doorways.every(doorway => doorway === null)) {
         return getChangeCurrentPhaseMove(Phase.CheckGoldBars) // no meeple to resolve : advance to next phase
       }
       break
 
     case Phase.CheckGoldBars:
-      if (canTradeGoldBar(state, state.activePlayer))
-        return { type: MoveType.ConvertGoldBar }
-      if (getNextPlayer(state, state.activePlayer) === state.startingPlayer && endOfGameTriggered(state))
-        return getChangeCurrentPhaseMove(Phase.GameOver)  // game is over : all players have played the same number of turns
+      if (state.activePlayer !== undefined) {
+        if (canTradeGoldBar(state, state.activePlayer))
+          return { type: MoveType.ConvertGoldBar }
+        if (getNextPlayer(state, state.activePlayer) === state.startingPlayer && endOfGameTriggered(state))
+          return getChangeCurrentPhaseMove(Phase.GameOver)  // game is over : all players have played the same number of turns
+      }
       return getChangeCurrentPhaseMove(Phase.SelectSourceLocation)
 
     case Phase.GameOver:
