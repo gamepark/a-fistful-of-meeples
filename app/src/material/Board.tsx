@@ -2,7 +2,7 @@
 import { css, keyframes } from '@emotion/react'
 import GameState, { isBuildingLocation, Location_Graveyard, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, marqueeWidth, marqueeHeight, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, showdownSelecterWidth, showdownSelecterHeight } from '../util/Metrics'
+import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, marqueeWidth, marqueeHeight, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, showdownSelecterWidth, showdownSelecterHeight, playerInfoPositions } from '../util/Metrics'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
 import Images from './Images'
@@ -11,7 +11,7 @@ import ShowdownToken from './ShowdownToken'
 import MeepleType from '../../../rules/src/MeepleType'
 import Marquee from './Marquee'
 import AFistfulOfMeeples from '../../../rules/src/AFistfulOfMeeples'
-import { isBuildOrUpgradeMarqueeMove, isChangeCurrentPhaseMove, isChooseAnotherPlayerShowdownTokenMove, isMoveMeeplesMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isRerollShowdownDiceMove, isResolveMeepleMove, isRollShowdownDiceMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
+import { isBuildOrUpgradeMarqueeMove, isChangeCurrentPhaseMove, isChooseAnotherPlayerShowdownTokenMove, isConvertGoldBar, isMoveMeeplesMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isRerollShowdownDiceMove, isResolveMeepleMove, isRollShowdownDiceMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
 import MarqueeSelecter from './MarqueeSelecter'
 import PlaceInitialMarqueeTile from '../../../rules/src/moves/PlaceInitialMarqueeTile'
 import { useAnimation, usePlay, usePlayerId } from '@gamepark/react-client'
@@ -35,6 +35,7 @@ import GenericSelecter from './GenericSelecter'
 import MoveMeeples from '../../../rules/src/moves/MoveMeeples'
 import RollShowdownDice from '../../../rules/src/moves/RollShowdownDice'
 import { Picture } from '@gamepark/react-components'
+import ConvertGoldBar from '../../../rules/src/moves/ConvertGoldBar'
 
 
 type Props = {
@@ -51,7 +52,7 @@ export default function Board({ game }: Props) {
   const rerollShowdownDiceMove = legalMoves.find(move => isRerollShowdownDiceMove(move))
   const chooseAnotherPlayerMoves = legalMoves.filter(move => isChooseAnotherPlayerShowdownTokenMove(move)).map(move => (move as ChooseAnotherPlayerShowdownToken).playerId)
   // animations
-  const animation = useAnimation<PlaceInitialMarqueeTile | SelectSourceLocation | PlaceMeeple | ResolveMeeple | BuildOrUpgradeMarquee | ChangeCurrentPhase | MoveMeeples | RollShowdownDice>(animation => animation?.action.cancelled ?? true)
+  const animation = useAnimation<PlaceInitialMarqueeTile | SelectSourceLocation | PlaceMeeple | ResolveMeeple | BuildOrUpgradeMarquee | ChangeCurrentPhase | MoveMeeples | RollShowdownDice | ConvertGoldBar>(animation => animation?.action.cancelled ?? true)
   const placeInitialMarqueeTileAnimation = animation && !animation.action.cancelled && isPlaceInitialMarqueeTileMove(animation.move) ? animation.move : undefined
   const selectSourceLocationAnimation = animation && !animation.action.cancelled && isSelectSourceLocationMove(animation.move) ? animation.move : undefined
   const placeMeepleAnimation = animation && !animation.action.cancelled && isPlaceMeepleMove(animation.move) ? animation.move : undefined
@@ -60,6 +61,7 @@ export default function Board({ game }: Props) {
   const changeCurrentPhaseAnimation = animation && !animation.action.cancelled && isChangeCurrentPhaseMove(animation.move) ? animation.move : undefined
   const moveMeepleAnimation = animation && !animation.action.cancelled && isMoveMeeplesMove(animation.move) ? animation.move : undefined
   const rollShowdownDiceAnimation = animation && !animation.action.cancelled && isRollShowdownDiceMove(animation.move) ? animation.move : undefined
+  const convertGoldBarAnimation = animation && !animation.action.cancelled && isConvertGoldBar(animation.move) ? animation.move : undefined
   const currentPhase: number = changeCurrentPhaseAnimation ? changeCurrentPhaseAnimation.phase : game.currentPhase
 
   let popup = undefined
@@ -80,9 +82,14 @@ export default function Board({ game }: Props) {
     <div css={style}>
       {game.goldBarsInBank > 0 &&
         <>
-        {[...Array(game.goldBarsInBank)].map((_, index) =>
-          <GoldBar css={getGoldBarStyle(goldBarPositions[index])} key={index} />
-          )}
+        {[...Array(game.goldBarsInBank)].map((_, index) => {
+          const startPosition = goldBarPositions[index]
+          const playerIndex = game.players.findIndex(state => state.color === game.activePlayer)
+          let style = [getGoldBarStyle(startPosition)]
+          if ((animation && convertGoldBarAnimation && index === game.goldBarsInBank - 1))
+            style.push(getTransformStyle(startPosition, playerInfoPositions[playerIndex], animation.duration))
+          return <GoldBar css={style} key={index} />
+          })}
         </>
       }
 

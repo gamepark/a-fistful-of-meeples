@@ -70,3 +70,7 @@ export function isRollShowdownDiceMove(move: Move): move is RollShowdownDice {
 export function isRerollShowdownDiceMove(move: Move): move is RerollShowdownDice {
   return move.type === MoveType.RerollShowdownDice
 }
+
+export function isConvertGoldBar(move: Move): move is ConvertGoldBar {
+  return move.type === MoveType.ConvertGoldBar
+}

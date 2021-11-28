@@ -1,9 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import GameState, { getPlayerScore, PendingEffectType } from '@gamepark/a-fistful-of-meeples/GameState'
-import { Player as PlayerInfo, usePlayers } from '@gamepark/react-client'
+import { Player as PlayerInfo, useAnimation, usePlayers, Animation } from '@gamepark/react-client'
 import {TFunction, useTranslation} from 'react-i18next'
 import AFistfulOfMeeples from '../../rules/src/AFistfulOfMeeples'
 import { getPlayerName } from '../../rules/src/AFistfulOfMeeplesOptions'
+import ConvertGoldBar, { getNextGoldBarPrice } from '../../rules/src/moves/ConvertGoldBar'
+import MoveType from '../../rules/src/moves/MoveType'
 import Phase from '../../rules/src/Phase'
 import PlayerColor from '../../rules/src/PlayerColor'
 import PlayerState from '../../rules/src/PlayerState'
@@ -17,17 +19,25 @@ type Props = {
 export default function HeaderText({loading, game, player}: Props) {
   const { t } = useTranslation()
   const players = usePlayers<PlayerColor>()
+  const animation = useAnimation<ConvertGoldBar>(animation => animation?.action.cancelled ?? true)
 
   if (loading) return <>{t('Game loading...')}</>
   if (!game || !player) return null
 
-  return <>{getText(t, game!, player!, players!)}</>
+  return <>{getText(t, game!, player!, players!, animation)}</>
 }
 
-function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[]): string {
+function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[], animation?: Animation<ConvertGoldBar, any>): string {
   const getName = (playerId: PlayerColor) => players.find(p => p.id === playerId)?.name || getPlayerName(playerId, t)
   const currentGame = new AFistfulOfMeeples(game)
   const isActivePlayer: boolean = player === currentGame.getActivePlayer()
+
+  if (animation !== undefined) {
+    switch (animation.move.type) {
+      case MoveType.ConvertGoldBar:
+        return t('Trading {amount} gold cubes for a gold bar', { amount: getNextGoldBarPrice(game) })
+    }
+  }
 
   if (game.pendingEffects.length > 0) {
     switch (game.pendingEffects[0].type) {
@@ -98,7 +108,7 @@ function getEndOfGameText(t: TFunction, playersInfo: PlayerInfo<PlayerColor>[], 
     if (nCubes > highestCubes) {
       playersWithMostCubes = [player]
       highestCubes = nCubes
-    } else if (nCubes == highestCubes)
+    } else if (nCubes === highestCubes)
       playersWithMostCubes.push(player)
   }
 

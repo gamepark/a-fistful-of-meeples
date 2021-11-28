@@ -1,7 +1,8 @@
-import { Game } from '@gamepark/rules-api'
+import { Game, Undo, Action } from '@gamepark/rules-api'
 import GameState from '../../rules/src/GameState'
-import { getPredictableMove, playMove } from '../../rules/src/AFistfulOfMeeples'
+import { getCanUndo, getPredictableMove, playMove } from '../../rules/src/AFistfulOfMeeples'
 import Move from '../../rules/src/moves/Move'
+import PlayerColor from '../../rules/src/PlayerColor'
 
 /**
  * Your Board Game rules must extend either "SequentialGame" or "SimultaneousGame".
@@ -10,7 +11,7 @@ import Move from '../../rules/src/moves/Move'
  * If the game contains information that some players know, but the other players does not, it must implement "SecretInformation" instead.
  * Later on, you can also implement "Competitive", "Undo", "TimeLimit" and "Eliminations" to add further features to the game.
  */
-export default class AFistfulOfMeeplesView implements Game<GameState, Move> {
+export default class AFistfulOfMeeplesView implements Game<GameState, Move>, Undo<GameState, Move, PlayerColor> {
   state: GameState
   /**
    * This constructor is called when the game "restarts" from a previously saved state.
@@ -28,6 +29,11 @@ export default class AFistfulOfMeeplesView implements Game<GameState, Move> {
   play(move: Move): void {
     playMove(this.state, move)
   }
+
+  canUndo(action: Action<Move, PlayerColor>, consecutiveActions: Action<Move, PlayerColor>[]): boolean {
+    return getCanUndo(action, consecutiveActions)
+  }
+
 
   /**
    * Here you can return the moves that should be automatically played when the game is in a specific state.

@@ -20,18 +20,17 @@ type DropItem = { indexInHand: number }
 
 export default function ShowdownSelecter({ flip, droppable, selected, ...props }: Props) {
   const { t } = useTranslation()
+  const [{ isOver }, dropRef] = useDrop({
+    accept: MEEPLE_DRAG_TYPE,
+    collect: monitor => ({
+      isOver: monitor.isOver()
+    }),
+    drop: (item: DropItem) => {
+      selected(item.indexInHand)
+    }
+  })
 
   if (droppable) {
-    const [{ isOver }, dropRef] = useDrop({
-      accept: MEEPLE_DRAG_TYPE,
-      collect: monitor => ({
-        isOver: monitor.isOver()
-      }),
-      drop: (item: DropItem) => {
-        selected(item.indexInHand)
-      }
-    })
-
     return <Picture {...props} ref={dropRef} src={Images.showdownSelecter} css={getShowdownSelecterStyle(flip, false, isOver)} alt={t("SelectThisShodownPlace")} />
   } else {
     return <Picture {...props} onClick={() => selected()} src={Images.showdownSelecter} css={getShowdownSelecterStyle(flip, true, false)} alt={t("SelectThisShodownPlace")} />

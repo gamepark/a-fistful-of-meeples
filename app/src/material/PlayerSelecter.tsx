@@ -18,7 +18,7 @@ export default function PlayerSelecter(props: Props) {
         <tr><td colSpan={2}>{props.text}</td></tr>
         <tr>
           {props.players.map(player =>
-            <td key={player}><a onClick={() => props.selected(player)} ><ShowdownToken playercolor={player} css={showdownTokenStyle} /></a></td>
+            <td key={player}><button onClick={() => props.selected(player)} ><ShowdownToken playercolor={player} css={showdownTokenStyle} /></button></td>
           )}
         </tr>
       </tbody>

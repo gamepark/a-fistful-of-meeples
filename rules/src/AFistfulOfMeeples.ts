@@ -1,6 +1,6 @@
-import { SequentialGame } from '@gamepark/rules-api'
+import { Action, SequentialGame, Undo } from '@gamepark/rules-api'
 import GameState, { initialiseGameState, Location_Saloon, Location_Jail, PendingEffectType, Location_Showdown0, Location_Showdown1, Location_None, getNextPlayer, endOfGameTriggered } from './GameState'
-import Move from './moves/Move'
+import Move, { isDrawFromBagMove, isRollShowdownDiceMove } from './moves/Move'
 import MoveType from './moves/MoveType'
 import PlayerColor from './PlayerColor'
 import Phase from './Phase'
@@ -31,7 +31,7 @@ import { convertGoldBar } from './moves/ConvertGoldBar'
  * If the game contains information that some players know, but the other players does not, it must implement "SecretInformation" instead.
  * Later on, you can also implement "Competitive", "Undo", "TimeLimit" and "Eliminations" to add further features to the game.
  */
-export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, PlayerColor> {
+export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, PlayerColor> implements Undo<GameState, Move, PlayerColor> {
   /**
    * This constructor is called when the game "restarts" from a previously saved state.
    * @param state The state of the game
@@ -200,6 +200,10 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
     playMove(this.state, move)
   }
 
+  canUndo(action: Action<Move, PlayerColor>, consecutiveActions: Action<Move, PlayerColor>[]): boolean {
+    return getCanUndo(action, consecutiveActions)
+  }
+
   /**
    * Here you can return the moves that should be automatically played when the game is in a specific state.
    * Here is an example from monopoly: you roll a dice, then move you pawn accordingly.
@@ -216,6 +220,17 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
   getAutomaticMove(): void | Move {
     return getPredictableMove(this.state, true)
   }
+}
+
+
+export function getCanUndo(action: Action < Move, PlayerColor >, consecutiveActions: Action < Move, PlayerColor > []): boolean {
+  if (consecutiveActions.length > 0)
+    return false
+
+  if (action.consequences.findIndex(move => isDrawFromBagMove(move) || isRollShowdownDiceMove(move)) >= 0)
+    return false;
+
+  return true
 }
 
 

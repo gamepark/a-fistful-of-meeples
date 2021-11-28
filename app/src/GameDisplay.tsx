@@ -27,13 +27,13 @@ export default function GameDisplay({ game }: Props) {
 
   return (
     <Letterbox id="letterbox" css={letterBoxStyle} width={letterBoxWidth} height={letterBoxHeight} top={0}>
-      <Board game={game} />
       <MiningBag gold={game.goldCubesInMiningBag} stone={game.stoneCubesInMiningBag} dynamite={game.dynamitesInMiningBag} css={miningBagMetrics} />
       <>
         {game.players.map((playerState, index) =>
           <PlayerInfo css={getPlayerInfoMetrics(index)} playerState={playerState} gameState={game} key={index} />
         )}
       </>
+      <Board game={game} />
 
       <>
         {animation && drawFromBagAnimation && drawFromBagAnimation.content.map((cube, index) => {
@@ -49,6 +49,7 @@ export default function GameDisplay({ game }: Props) {
             case MiningBagContent.Stone:
               return <StoneCube key={100 + index} css={getStyle(endPosition[0] + 1.7, endPosition[1] + 10.5)} />
           }
+          return undefined
         })}
         {animation && dynamiteExplosionAnimation &&
           <Picture src={Images.dynamiteExplosion} css={dynamiteExplosionStyle} />

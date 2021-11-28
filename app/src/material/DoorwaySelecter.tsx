@@ -15,17 +15,17 @@ type DropItem = { indexInHand: number }
 
 
 export default function DoorwaySelecter({ droppable, selected, ...props }: Props) {
+  const [{ isOver }, dropRef] = useDrop({
+    accept: MEEPLE_DRAG_TYPE,
+    collect: monitor => ({
+      isOver: monitor.isOver()
+    }),
+    drop: (item: DropItem) => {
+      selected(item.indexInHand)
+    }
+  })
 
   if (droppable) {
-    const [{ isOver }, dropRef] = useDrop({
-      accept: MEEPLE_DRAG_TYPE,
-      collect: monitor => ({
-        isOver: monitor.isOver()
-      }),
-      drop: (item: DropItem) => {
-        selected(item.indexInHand)
-      }
-    })
     return <div {...props} ref={dropRef} css={getDoorwaySelecterStyle(false, isOver)}  />
   } else {
     return <div {...props} onClick={() => selected()} css={getDoorwaySelecterStyle(true, false)} />

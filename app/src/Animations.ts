@@ -42,7 +42,7 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
       case MoveType.RollShowdownDice:
         return 3
       case MoveType.ConvertGoldBar:
-        return 0    // TODO
+        return 3
       default:
         return move
     }

@@ -32,6 +32,6 @@ export function canTradeGoldBar(state: GameState, playerColor: PlayerColor): boo
   return false
 }
 
-function getNextGoldBarPrice(state: GameState): number {
+export function getNextGoldBarPrice(state: GameState): number {
   return 9 - Math.ceil(state.goldBarsInBank * 0.5)
 }
