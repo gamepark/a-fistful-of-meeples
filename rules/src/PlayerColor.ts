@@ -1,5 +1,5 @@
 enum PlayerColor {
-	Orange = 0,
+	Orange = 1,
 	Green,
 	Grey,
 	Black

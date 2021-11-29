@@ -27,7 +27,7 @@ export function resolveShowdown(state: GameState): void {
       })
       state.pendingEffects.unshift({
         type: PendingEffectType.MoveMeeples,
-        meeples: state.showdowns[1].meeple!,
+        meeples: meeple1,
         sourceLocation: Location_Showdown1,
         destinationLocation: Location_Graveyard
       })

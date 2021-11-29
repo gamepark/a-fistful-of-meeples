@@ -47,7 +47,5 @@ export function getPlayerName(playerId: PlayerColor, t: TFunction): string {
       return t('Grey player')
     case PlayerColor.Black:
       return t('Black player')
-    default:
-      return playerId
   }
 }
