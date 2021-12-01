@@ -1,6 +1,9 @@
 /** @jsxImportSource @emotion/react */
+//import { css } from '@emotion/react'
 import { css } from '@emotion/react'
+import { Dialog, Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
+import Images from '../material/Images'
 
 
 type Props = {
@@ -9,34 +12,35 @@ type Props = {
 }
 
 
-export default function YesNoSelecter(props: Props) {
+export default function YesNoSelecter({ text, answered, ...props }: Props) {
   const { t } = useTranslation()
 
   return (
-    <table css={popupStyle}>
-      <tbody>
-        <tr><td colSpan={2}>{props.text}</td></tr>
-        <tr>
-          <td><button onClick={() => props.answered(true)} > { t('Yes') }</button></td>
-          <td><button onClick={() => props.answered(false)} > {t('No')}</button></td>
-        </tr>
-      </tbody>
-    </table>
+    <Dialog open={true} css={dialogStyle} {...props} >
+      <h3>{text}</h3>
+      <p css={buttonLineStyle}>
+        <button css={buttonStyle} onClick={() => answered(true)} ><Picture src={Images.buttonYes} alt={t('Yes')} /></button>
+        <button css={buttonStyle} onClick={() => answered(false)} ><Picture src={Images.buttonNo} alt={t('No')} /></button>
+      </p>
+    </Dialog>
+
     )
 }
 
-const popupStyle = css`
-  position: absolute;
-  left: 40%;
-  top: 35%;
-  width: 10%;
-  height: 15%;
-  padding: 1em;
-  background-color: #6a2e12;
-  border-radius: 2em;
-  border-style: solid;
-  border-color: black;
-  text-align: center;
-  font-family: 'Oswald', "Roboto Light", serif;
-  font-size: 1.5em;
+const dialogStyle = css`
+  border-color: lightgreen;
+  background: black;
+  color: white;
+`
+const buttonLineStyle = css`
+  display: flex;
+  justify-content: space-around;
+`
+
+const buttonStyle = css`
+  border: none;
+  background: none;
+  &:hover {
+    filter: drop-shadow(0 0 1em white);
+  }
 `

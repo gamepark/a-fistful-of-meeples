@@ -40,10 +40,17 @@ export function isValidSpaceToPlaceMeeple(space: number, state: GameState): bool
 
 function placeOnShowdownSpace(state: GameState, move: PlaceMeeple, showdownIndex: number, meeple: MeepleType) {
   if (state.showdowns[showdownIndex].meeple != undefined) return console.error('There is already a meeple on showdown space ', showdownIndex)
+
+  state.showdowns[showdownIndex].meeple = meeple;
   if (meeple == MeepleType.Madame) {
-    state.saloon.push(MeepleType.Madame)  // shall Madame be placed on a showdown space, send her to saloon instead
+    // shall Madame be placed on a showdown space, send her to saloon instead
+    state.pendingEffects.unshift({
+      type: PendingEffectType.MoveMeeples,
+      meeples: MeepleType.Madame,
+      sourceLocation: move.space,
+      destinationLocation: Location_Saloon
+    })
   } else {
-    state.showdowns[showdownIndex].meeple = meeple;
     if (state.showdowns[1 - showdownIndex].owner != move.playerId) {
       state.showdowns[showdownIndex].owner = move.playerId;
     } else {

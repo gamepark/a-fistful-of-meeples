@@ -15,6 +15,7 @@ import MiningBag from './material/MiningBag'
 import PlayerInfo from './material/PlayerInfo'
 import StoneCube from './material/StoneCube'
 import { letterBoxHeight, letterBoxWidth, miningBagHeight, miningBagLeft, miningBagTop, miningBagWidth, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
+import { getTranslationAnimationStyle } from './util/Styles'
 
 type Props = {
   game: GameState
@@ -90,20 +91,14 @@ const getPlayerInfoMetrics = (index: number) => css`
   height: ${playerInfoHeight}em;
 `
 
-const translate = (startPosition: number[], endPosition: number[]) => keyframes`
-	0%	{ transform: translate(0, 0); }
-	100%	{ transform: translate(${endPosition[0] - startPosition[0]}em, ${endPosition[1] - startPosition[1]}em); }
-`
-
 const getCubeStyle = (startPosition: number[], endPosition: number[], animation_duration: number) =>
-  css`
+  [css`
   position: absolute;
   left: ${startPosition[0]}em;
   top: ${startPosition[1]}em;
-  width: 4em;
+  width: 4em; 
   height: 4em;
-	animation: ${translate(startPosition, endPosition)} ${animation_duration}s ease-in-out;
-`
+`, getTranslationAnimationStyle(startPosition, endPosition, animation_duration)]
 
 const dynamiteExplosionStyle = css`
   position: absolute;

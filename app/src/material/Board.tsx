@@ -36,6 +36,7 @@ import MoveMeeples from '../../../rules/src/moves/MoveMeeples'
 import RollShowdownDice from '../../../rules/src/moves/RollShowdownDice'
 import { Picture } from '@gamepark/react-components'
 import ConvertGoldBar from '../../../rules/src/moves/ConvertGoldBar'
+import { getTranslationAnimationStyle } from '../util/Styles'
 
 
 type Props = {
@@ -180,21 +181,21 @@ export default function Board({ game }: Props) {
 
       <>
         {game.showdowns.map((showdown, index) => {
-          if (showdown.meeple !== undefined && showdown.owner !== undefined) {
+          if (showdown.meeple !== undefined) {
             const startPosition = showdownMeeplePositions[index]
             let style = [getMeepleStyle(startPosition)]
             if ((animation && moveMeepleAnimation && moveMeepleAnimation.source === ((index === 0) ? Location_Showdown0 : Location_Showdown1))) {
               switch (moveMeepleAnimation.destination) {
                 case Location_Graveyard:
-                  style.push(getTransformStyle(startPosition, graveyardPositions[game.graveyard.length], animation.duration))
+                  style.push(getTranslationAnimationStyle(startPosition, graveyardPositions[game.graveyard.length], animation.duration))
                   break
                 case Location_Saloon:
-                  style.push(getTransformStyle(startPosition, getPositionInSaloon(game.saloon.length), animation.duration))
+                  style.push(getTranslationAnimationStyle(startPosition, getPositionInSaloon(game.saloon.length), animation.duration))
                   break
               }
             }
             return <div key={index}>
-              <ShowdownToken playercolor={showdown.owner} css={getShowdownTokenStyle(showdownTokenPositions[index])} />
+              {showdown.owner !== undefined ? <ShowdownToken playercolor={showdown.owner} css={getShowdownTokenStyle(showdownTokenPositions[index])} /> : undefined}
               <Meeple css={style} type={showdown.meeple} />
               {(animation && rollShowdownDiceAnimation && index === (rollShowdownDiceAnimation.location === Location_Showdown0 ? 0 : 1)) ?
                 <Picture src={Images.rollingDice} css={getDiceStyle(dicePositions[index])} />
