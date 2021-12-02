@@ -8,3 +8,10 @@ export const translate = (startPosition: number[], endPosition: number[]) => key
 export const getTranslationAnimationStyle = (startPosition: number[], endPosition: number[], animation_duration: number) => css`
 	animation: ${translate(startPosition, endPosition)} ${animation_duration}s ease-in-out;
 `
+
+export const dialogStyle = css`
+  border-color: lightgreen;
+  background: black;
+  color: white;
+  text-align: center;
+`

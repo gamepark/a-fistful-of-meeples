@@ -4,6 +4,7 @@ import { css } from '@emotion/react'
 import { Dialog, Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import Images from '../material/Images'
+import { dialogStyle } from './Styles'
 
 
 type Props = {
@@ -27,11 +28,6 @@ export default function YesNoSelecter({ text, answered, ...props }: Props) {
     )
 }
 
-const dialogStyle = css`
-  border-color: lightgreen;
-  background: black;
-  color: white;
-`
 const buttonLineStyle = css`
   display: flex;
   justify-content: space-around;
