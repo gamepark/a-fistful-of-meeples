@@ -154,7 +154,7 @@ export default function Board({ gameState, currentGame }: Props) {
 
       <>
         {gameState.graveyard.map((meeple, index) =>
-          <Meeple css={getMeepleStyle(graveyardPositions[index])} type={meeple} key={index}/>
+          <Meeple css={getMeepleStyle(getPositionInGraveyard(index))} type={meeple} key={index}/>
         )}
       </>
 
@@ -166,7 +166,7 @@ export default function Board({ gameState, currentGame }: Props) {
             if ((animation && moveMeepleAnimation && moveMeepleAnimation.source === ((index === 0) ? Location_Showdown0 : Location_Showdown1))) {
               switch (moveMeepleAnimation.destination) {
                 case Location_Graveyard:
-                  style.push(getTranslationAnimationStyle(startPosition, graveyardPositions[gameState.graveyard.length], animation.duration))
+                  style.push(getTranslationAnimationStyle(startPosition, getPositionInGraveyard(gameState.graveyard.length), animation.duration))
                   break
                 case Location_Saloon:
                   style.push(getTranslationAnimationStyle(startPosition, getPositionInSaloon(gameState.saloon.length), animation.duration))
@@ -327,6 +327,9 @@ function getPositionInJail(index: number) {
   return result
 }
 
+function getPositionInGraveyard(index: number): Array<number> {
+  return graveyardPositions[(index < 6) ? index : 5]
+}
 
 function getGoldBarStyle(position: Array<number>) {
   return css`
@@ -467,3 +470,4 @@ function getTransformStyle(startPosition: Array<number>, endPosition: Array<numb
   transition: transform ${duration}s ease-in-out;
 `
 }
+

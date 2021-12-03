@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import {css, keyframes} from '@emotion/react'
 import GameState from '@gamepark/a-fistful-of-meeples/GameState'
-import { useAnimation, usePlay } from '@gamepark/react-client'
+import { useAnimation, usePlay, usePlayerId } from '@gamepark/react-client'
 import {Letterbox, Picture} from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import AFistfulOfMeeples from '../../rules/src/AFistfulOfMeeples'
@@ -12,6 +12,7 @@ import DrawFromBag from '../../rules/src/moves/DrawFromBag'
 import DynamiteExplosion from '../../rules/src/moves/DynamiteExplosion'
 import { isBuildOrUpgradeMarqueeMove, isChooseAnotherPlayerShowdownTokenMove, isDrawFromBagMove, isDynamiteExplosion, isRerollShowdownDiceMove } from '../../rules/src/moves/Move'
 import { getRerollShowdownDiceMove } from '../../rules/src/moves/RerollShowdownDice'
+import PlayerColor from '../../rules/src/PlayerColor'
 import Board from './material/Board'
 import Dynamite from './material/Dynamite'
 import GoldCube from './material/GoldCube'
@@ -31,28 +32,31 @@ type Props = {
 export default function GameDisplay({ game }: Props) {
   const { t } = useTranslation()
   const play = usePlay()
+  const playerColor = usePlayerId<PlayerColor>()
   const currentGame = new AFistfulOfMeeples(game)
   const animation = useAnimation<DrawFromBag | DynamiteExplosion>(animation => animation?.action.cancelled ?? true)
   const drawFromBagAnimation = animation && !animation.action.cancelled && isDrawFromBagMove(animation.move) ? animation.move : undefined
   const dynamiteExplosionAnimation = animation && !animation.action.cancelled && isDynamiteExplosion(animation.move) ? animation.move : undefined
 
-  const legalMoves = currentGame.getLegalMoves()
-  const buildOrUpgradeMarqueeMove = legalMoves.find(move => isBuildOrUpgradeMarqueeMove(move))
-  const rerollShowdownDiceMove = legalMoves.find(move => isRerollShowdownDiceMove(move))
-  const chooseAnotherPlayerMoves = legalMoves.filter(move => isChooseAnotherPlayerShowdownTokenMove(move)).map(move => (move as ChooseAnotherPlayerShowdownToken).playerId)
-
   let popup = undefined
-  if (buildOrUpgradeMarqueeMove !== undefined && isBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove)) {
-    const text = (game.marquees[buildOrUpgradeMarqueeMove.space].owner === undefined) ? t("DoYouWantToBuildAMarquee") : t("DoYouWantToUpgradeYourMarquee")
-    popup = <YesNoSelecter text={text} answered={answer => play(getBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove.playerId, buildOrUpgradeMarqueeMove.space, answer))} />
-  }
-  if (rerollShowdownDiceMove !== undefined) {
-    const text = t("DoYouWantToRerollYourShowdownDice")
-    popup = <YesNoSelecter text={text} answered={answer => play(getRerollShowdownDiceMove(answer))} />
-  }
-  if (chooseAnotherPlayerMoves.length > 0) {
-    const text = t('ChooseAnotherPlayerShowdownToken')
-    popup = <PlayerSelecter text={text} players={chooseAnotherPlayerMoves} selected={player => play(getChooseAnotherPlayerShowdownTokenMove(player))} />
+  if (animation === undefined && currentGame.getActivePlayer() === playerColor) {
+    const legalMoves = currentGame.getLegalMoves()
+    const buildOrUpgradeMarqueeMove = legalMoves.find(move => isBuildOrUpgradeMarqueeMove(move))
+    const rerollShowdownDiceMove = legalMoves.find(move => isRerollShowdownDiceMove(move))
+    const chooseAnotherPlayerMoves = legalMoves.filter(move => isChooseAnotherPlayerShowdownTokenMove(move)).map(move => (move as ChooseAnotherPlayerShowdownToken).playerId)
+
+    if (buildOrUpgradeMarqueeMove !== undefined && isBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove)) {
+      const text = (game.marquees[buildOrUpgradeMarqueeMove.space].owner === undefined) ? t("DoYouWantToBuildAMarquee") : t("DoYouWantToUpgradeYourMarquee")
+      popup = <YesNoSelecter text={text} answered={answer => play(getBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove.playerId, buildOrUpgradeMarqueeMove.space, answer))} />
+    }
+    if (rerollShowdownDiceMove !== undefined) {
+      const text = t("DoYouWantToRerollYourShowdownDice")
+      popup = <YesNoSelecter text={text} answered={answer => play(getRerollShowdownDiceMove(answer))} />
+    }
+    if (chooseAnotherPlayerMoves.length > 0) {
+      const text = t('ChooseAnotherPlayerShowdownToken')
+      popup = <PlayerSelecter text={text} players={chooseAnotherPlayerMoves} selected={player => play(getChooseAnotherPlayerShowdownTokenMove(player))} />
+    }
   }
 
 
@@ -85,9 +89,9 @@ export default function GameDisplay({ game }: Props) {
 
         {animation && dynamiteExplosionAnimation && <Picture src={Images.dynamiteExplosion} css={dynamiteExplosionStyle} />}
 
-        {!animation && popup}
-
+        {popup}
       </>
+
     </Letterbox>
   )
 }
