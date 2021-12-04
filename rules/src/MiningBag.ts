@@ -21,7 +21,7 @@ export function drawCubesFromBag(state: GameState, amount: number): MiningBagCon
     } else if (value < nGold + nStones) {
       result.push(MiningBagContent.Stone)
       --nStones
-    } else {
+    } else if (value < nGold + nStones + nDynamites) {
       result.push(MiningBagContent.Dynamite)
       --nDynamites
     }

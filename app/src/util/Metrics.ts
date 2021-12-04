@@ -66,6 +66,11 @@ export const dynamitePositions = [
   [78 / boardImageWidth * boardWidth, 88 / boardImageHeight * boardHeight],
   [138 / boardImageWidth * boardWidth, 88 / boardImageHeight * boardHeight]
 ]
+export const removedDynamitePositions = [
+  [820 / boardImageWidth * boardWidth, 565 / boardImageHeight * boardHeight],
+  [800 / boardImageWidth * boardWidth, 480 / boardImageHeight * boardHeight],
+  [897 / boardImageWidth * boardWidth, 500 / boardImageHeight * boardHeight],
+]
 
 export const marqueeRatio = 484 / 167
 export const marqueeWidth = 20

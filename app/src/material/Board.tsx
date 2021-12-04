@@ -2,7 +2,7 @@
 import { css, keyframes } from '@emotion/react'
 import GameState, { isBuildingLocation, Location_Graveyard, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, marqueeWidth, marqueeHeight, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, showdownSelecterWidth, showdownSelecterHeight, playerInfoPositions } from '../util/Metrics'
+import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, marqueeWidth, marqueeHeight, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, showdownSelecterWidth, showdownSelecterHeight, playerInfoPositions, removedDynamitePositions } from '../util/Metrics'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
 import Images from './Images'
@@ -57,6 +57,7 @@ export default function Board({ gameState, currentGame }: Props) {
   const convertGoldBarAnimation = animation && !animation.action.cancelled && isConvertGoldBar(animation.move) ? animation.move : undefined
 
   const currentPhase: number = changeCurrentPhaseAnimation ? changeCurrentPhaseAnimation.phase : gameState.currentPhase
+  const removedDynamites: number = 3 - gameState.dynamitesInJail - gameState.dynamitesInMiningBag
 
   return (
     <div css={style}>
@@ -77,6 +78,14 @@ export default function Board({ gameState, currentGame }: Props) {
         <>
         {[...Array(gameState.dynamitesInJail)].map((_, index) =>
           <Dynamite css={getDynamiteStyle(dynamitePositions[index])} key={index} />
+          )}
+        </>
+      }
+
+      {removedDynamites > 0 &&
+        <>
+        {[...Array(removedDynamites)].map((_, index) =>
+          <Dynamite css={getDynamiteStyle(removedDynamitePositions[index])} key={index} />
           )}
         </>
       }
