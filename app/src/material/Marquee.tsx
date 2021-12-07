@@ -3,6 +3,7 @@ import { Picture } from '@gamepark/react-components'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import PlayerColor from '../../../rules/src/PlayerColor'
+import { outlineStyle } from '../util/Styles'
 import Images from './Images'
 
 
@@ -16,7 +17,7 @@ export default function Marquee({ owner, upgraded, ...props }: Props) {
   const { t } = useTranslation()
 
   return (
-    <Picture {...props} src={getMarqueeImage(owner, upgraded)} alt={t(getMarqueeName(owner, upgraded))} />
+    <Picture {...props} css={outlineStyle} src={getMarqueeImage(owner, upgraded)} alt={t(getMarqueeName(owner, upgraded))} />
   )
 }
 

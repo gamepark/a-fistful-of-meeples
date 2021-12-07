@@ -15,3 +15,7 @@ export const dialogStyle = css`
   color: white;
   text-align: center;
 `
+
+export const outlineStyle = css`
+  filter: drop-shadow(0 -0.2em 0 white) drop-shadow(0 0.2em 0 white) drop-shadow(-0.2em 0 0 white) drop-shadow(0.2em 0 0 white);
+`

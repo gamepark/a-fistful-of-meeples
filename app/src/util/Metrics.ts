@@ -92,83 +92,83 @@ export const marqueesPosition = [
 ]
 
 export const meepleRatio = 286 / 350
-export const meepleWidth = 3.5
+export const meepleWidth = 5
 export const meepleHeight = meepleWidth / meepleRatio
 
 export const buildingsPosition = [
-  [203 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
-  [427 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
-  [650 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
-  [878 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
-  [1105 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
-  [1332 / boardImageWidth * boardWidth, 190 / boardImageHeight * boardHeight],
-  [1332 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
-  [1105 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
-  [878 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
-  [652 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
-  [427 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
-  [203 / boardImageWidth * boardWidth, 710 / boardImageHeight * boardHeight],
+  [203 / boardImageWidth * boardWidth, 185 / boardImageHeight * boardHeight],
+  [427 / boardImageWidth * boardWidth, 185 / boardImageHeight * boardHeight],
+  [650 / boardImageWidth * boardWidth, 185 / boardImageHeight * boardHeight],
+  [878 / boardImageWidth * boardWidth, 185 / boardImageHeight * boardHeight],
+  [1105 / boardImageWidth * boardWidth, 185 / boardImageHeight * boardHeight],
+  [1332 / boardImageWidth * boardWidth, 185 / boardImageHeight * boardHeight],
+  [1332 / boardImageWidth * boardWidth, 705 / boardImageHeight * boardHeight],
+  [1105 / boardImageWidth * boardWidth, 705 / boardImageHeight * boardHeight],
+  [878 / boardImageWidth * boardWidth, 705 / boardImageHeight * boardHeight],
+  [652 / boardImageWidth * boardWidth, 705 / boardImageHeight * boardHeight],
+  [427 / boardImageWidth * boardWidth, 705 / boardImageHeight * boardHeight],
+  [203 / boardImageWidth * boardWidth, 705 / boardImageHeight * boardHeight],
 ]
 
 export const buildingRatio = 251 / 245
 export const buildingWidth = 18.5
 export const buildingHeight = buildingWidth / buildingRatio
 export const buildingSelecterDeltaX = -1
-export const buildingSelecterDeltaY = -1.8
+export const buildingSelecterDeltaY = -1.3
 
 export const doorwaysPosition = [
-  [272 / boardImageWidth * boardWidth, 395 / boardImageHeight * boardHeight],
-  [498 / boardImageWidth * boardWidth, 395 / boardImageHeight * boardHeight],
-  [724 / boardImageWidth * boardWidth, 395 / boardImageHeight * boardHeight],
-  [950 / boardImageWidth * boardWidth, 395 / boardImageHeight * boardHeight],
-  [1180 / boardImageWidth * boardWidth, 395 / boardImageHeight * boardHeight],
-  [1406 / boardImageWidth * boardWidth, 395 / boardImageHeight * boardHeight],
-  [1406 / boardImageWidth * boardWidth, 630 / boardImageHeight * boardHeight],
-  [1180 / boardImageWidth * boardWidth, 630 / boardImageHeight * boardHeight],
-  [950 / boardImageWidth * boardWidth, 630 / boardImageHeight * boardHeight],
-  [724 / boardImageWidth * boardWidth, 630 / boardImageHeight * boardHeight],
-  [498 / boardImageWidth * boardWidth, 630 / boardImageHeight * boardHeight],
-  [272 / boardImageWidth * boardWidth, 630 / boardImageHeight * boardHeight],
+  [270 / boardImageWidth * boardWidth, 380 / boardImageHeight * boardHeight],
+  [494 / boardImageWidth * boardWidth, 380 / boardImageHeight * boardHeight],
+  [719 / boardImageWidth * boardWidth, 380 / boardImageHeight * boardHeight],
+  [945 / boardImageWidth * boardWidth, 380 / boardImageHeight * boardHeight],
+  [1174 / boardImageWidth * boardWidth, 380 / boardImageHeight * boardHeight],
+  [1400 / boardImageWidth * boardWidth, 380 / boardImageHeight * boardHeight],
+  [1406 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
+  [1174 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
+  [945 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
+  [719 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
+  [494 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
+  [270 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
 ]
 
-export const doorwayRatio = 66 / 67
-export const doorwayWidth = 5.8
+export const doorwayRatio = 300 / 320
+export const doorwayWidth = 6
 export const doorwayHeight = doorwayWidth / doorwayRatio
-export const doorwaySelecterDeltaX = -1
-export const doorwaySelecterDeltaY = -1
+export const doorwaySelecterDeltaX = -0.6
+export const doorwaySelecterDeltaY = 0
 
-export const saloonPosition = [1550 / boardImageWidth * boardWidth, 90 / boardImageHeight * boardHeight]
+export const saloonPosition = [1542 / boardImageWidth * boardWidth, 86 / boardImageHeight * boardHeight]
 export const saloonSelecterPosition = [1540 / boardImageWidth * boardWidth, 80 / boardImageHeight * boardHeight]
 export const saloonSelecterRatio = 169 / 301
 export const saloonSelecterWidth = 14.5
 export const saloonSelecterHeight = saloonSelecterWidth / saloonSelecterRatio
 
 export const graveyardPositions = [
-  [25 / boardImageWidth * boardWidth, 902 / boardImageHeight * boardHeight],
-  [90 / boardImageWidth * boardWidth, 885 / boardImageHeight * boardHeight],
-  [25 / boardImageWidth * boardWidth, 804 / boardImageHeight * boardHeight],
-  [90 / boardImageWidth * boardWidth, 787 / boardImageHeight * boardHeight],
-  [25 / boardImageWidth * boardWidth, 706 / boardImageHeight * boardHeight],
-  [90 / boardImageWidth * boardWidth, 689 / boardImageHeight * boardHeight],
+  [16 / boardImageWidth * boardWidth, 885 / boardImageHeight * boardHeight],
+  [82 / boardImageWidth * boardWidth, 870 / boardImageHeight * boardHeight],
+  [18 / boardImageWidth * boardWidth, 790 / boardImageHeight * boardHeight],
+  [82 / boardImageWidth * boardWidth, 771 / boardImageHeight * boardHeight],
+  [18 / boardImageWidth * boardWidth, 681 / boardImageHeight * boardHeight],
+  [82 / boardImageWidth * boardWidth, 667 / boardImageHeight * boardHeight],
 ]
 
-export const jailPosition = [20 / boardImageWidth * boardWidth, 240 / boardImageHeight * boardHeight]
-export const jailSelecterPosition = [8 / boardImageWidth * boardWidth, 80 / boardImageHeight * boardHeight]
+export const jailPosition = [16 / boardImageWidth * boardWidth, 230 / boardImageHeight * boardHeight]
+export const jailSelecterPosition = [8 / boardImageWidth * boardWidth, 82 / boardImageHeight * boardHeight]
 export const jailSelecterRatio = 177 / 287
 export const jailSelecterWidth = 15
 export const jailSelecterHeight = jailSelecterWidth / jailSelecterRatio
 
 export const showdownTokenRatio = 236 / 236
-export const showdownTokenWidth = 6.5
+export const showdownTokenWidth = 10
 export const showdownTokenHeight = showdownTokenWidth / showdownTokenRatio
 export const showdownTokenPositions = [
-  [218 / boardImageWidth * boardWidth, 475 / boardImageHeight * boardHeight],
-  [1434 / boardImageWidth * boardWidth, 475 / boardImageHeight * boardHeight],
+  [202 / boardImageWidth * boardWidth, 475 / boardImageHeight * boardHeight],
+  [1406 / boardImageWidth * boardWidth, 475 / boardImageHeight * boardHeight],
 ]
 
 export const showdownMeeplePositions = [
-  [234 / boardImageWidth * boardWidth, 535 / boardImageHeight * boardHeight],
-  [1450 / boardImageWidth * boardWidth, 535 / boardImageHeight * boardHeight],
+  [230 / boardImageWidth * boardWidth, 480 / boardImageHeight * boardHeight],
+  [1435 / boardImageWidth * boardWidth, 480 / boardImageHeight * boardHeight],
 ]
 
 export const showdownSelecterPositions = [

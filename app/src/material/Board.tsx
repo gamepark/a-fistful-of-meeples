@@ -110,8 +110,8 @@ export default function Board({ gameState, currentGame }: Props) {
 
       <>
         {gameState.buildings.map((meeples, building) =>
-            meeples.map((meeple, index) => {
-              const startPosition = getPositionInBuilding(building, index)
+          meeples.map((meeple, index) => {
+            const startPosition = getPositionInBuilding(building, index, gameState.buildings[building].length)
               let style = [getMeepleStyle(startPosition)]
               if ((animation && selectSourceLocationAnimation && selectSourceLocationAnimation.location === building))
                 style.push(getTransformStyle(startPosition, getPositionInHand(index), animation.duration))
@@ -121,7 +121,7 @@ export default function Board({ gameState, currentGame }: Props) {
                     style.push(getTransformStyle(startPosition, getPositionInJail(gameState.jail.length), animation.duration))
                     break
                   case Location_Saloon:
-                    style.push(getTransformStyle(startPosition, getPositionInSaloon(gameState.saloon.length), animation.duration))
+                    style.push(getTransformStyle(startPosition, getPositionInSaloon(gameState.saloon.length, gameState.saloon.length + 1), animation.duration))
                     break
                 }
               }
@@ -135,7 +135,7 @@ export default function Board({ gameState, currentGame }: Props) {
           const startPosition = doorwaysPosition[index]
           let style = [getMeepleStyle(startPosition)]
           if ((animation && resolveMeepleAnimation && resolveMeepleAnimation.space === index))
-            style.push(getTransformStyle(startPosition, getPositionInBuilding(index, gameState.buildings[index].length), animation.duration))
+            style.push(getTransformStyle(startPosition, getPositionInBuilding(index, gameState.buildings[index].length, gameState.buildings[index].length), animation.duration))
           return (meeple !== null) ? <Meeple css={style} type={meeple} key={index} /> : undefined
         }
         )}
@@ -153,7 +153,7 @@ export default function Board({ gameState, currentGame }: Props) {
 
       <>
         {gameState.saloon.map((meeple, index) => {
-          const startPosition = getPositionInSaloon(index)
+          const startPosition = getPositionInSaloon(index, gameState.saloon.length)
           let style = [getMeepleStyle(startPosition)]
           if ((animation && selectSourceLocationAnimation && selectSourceLocationAnimation.location === Location_Saloon))
             style.push(getTransformStyle(startPosition, getPositionInHand(index), animation.duration))
@@ -178,7 +178,7 @@ export default function Board({ gameState, currentGame }: Props) {
                   style.push(getTranslationAnimationStyle(startPosition, getPositionInGraveyard(gameState.graveyard.length), animation.duration))
                   break
                 case Location_Saloon:
-                  style.push(getTranslationAnimationStyle(startPosition, getPositionInSaloon(gameState.saloon.length), animation.duration))
+                  style.push(getTranslationAnimationStyle(startPosition, getPositionInSaloon(gameState.saloon.length, gameState.saloon.length + 1), animation.duration))
                   break
               }
             }
@@ -315,24 +315,42 @@ const style = css`
   left: ${boardLeft}em;
 `
 
-function getPositionInBuilding(building: number, index: number) {
+function getPositionInBuilding(building: number, index: number, numberOfMeeples: number) {
   let result = [...buildingsPosition[building]]
-  result[0] += (index % 4) * (meepleWidth + 1)
-  result[1] += Math.floor(index / 4) * (meepleHeight + 1)
+  result[0] += (index % 3) * (meepleWidth + 0.5)
+  if (numberOfMeeples < 7)
+    result[1] += Math.floor(index / 3) * (meepleHeight + 1)
+  else if (numberOfMeeples < 10)
+    result[1] += Math.floor(index / 3) * (meepleHeight * 0.75)
+  else if (numberOfMeeples < 13)
+    result[1] += Math.floor(index / 3) * (meepleHeight * 0.50)
+  else
+    result[1] += Math.floor(index / 3) * (meepleHeight * 0.40)
   return result
 }
 
-function getPositionInSaloon(index: number) {
+function getPositionInSaloon(index: number, numberOfMeeples: number) {
   let result = [...saloonPosition]
-  result[0] += (index % 3) * (meepleWidth + 1)
-  result[1] += Math.floor(index / 3) * (meepleHeight + 1)
+  if (numberOfMeeples < 7) {
+    result[0] += (index % 2) * (meepleWidth * 1.4) + 1
+    result[1] += Math.floor(index / 2) * (meepleHeight + 1) + 1
+  } else if (numberOfMeeples < 13) {
+    result[0] += (index % 3) * (meepleWidth * 0.9)
+    result[1] += Math.floor(index / 3) * (meepleHeight) + 0.5
+  } else if (numberOfMeeples < 16) {
+    result[0] += (index % 3) * (meepleWidth * 0.9)
+    result[1] += Math.floor(index / 3) * (meepleHeight * 0.75)
+  } else {
+    result[0] += (index % 3) * (meepleWidth * 0.9)
+    result[1] += Math.floor(index / 3) * (meepleHeight * 0.50)
+  }
   return result
 }
 
 function getPositionInJail(index: number) {
   let result = [...jailPosition]
-  result[0] += (index % 3) * (meepleWidth + 1)
-  result[1] += Math.floor(index / 3) * (meepleHeight + 1)
+  result[0] += (index % 3) * (meepleWidth * 0.9)
+  result[1] += Math.floor(index / 3) * (meepleHeight * 0.85)
   return result
 }
 
