@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import {css, keyframes} from '@emotion/react'
-import GameState from '@gamepark/a-fistful-of-meeples/GameState'
+import GameState, { getPlayerRemainingMarquees } from '@gamepark/a-fistful-of-meeples/GameState'
 import { useAnimation, usePlay, usePlayerId } from '@gamepark/react-client'
 import {Letterbox, Picture} from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import AFistfulOfMeeples from '../../rules/src/AFistfulOfMeeples'
 import MiningBagContent from '../../rules/src/MiningBag'
-import { getBuildOrUpgradeMarqueeMove } from '../../rules/src/moves/BuildOrUpgradeMarquee'
+import BuildOrUpgradeMarquee, { getBuildOrUpgradeMarqueeMove } from '../../rules/src/moves/BuildOrUpgradeMarquee'
 import ChooseAnotherPlayerShowdownToken, { getChooseAnotherPlayerShowdownTokenMove } from '../../rules/src/moves/ChooseAnotherPlayerShowdownToken'
 import DrawFromBag from '../../rules/src/moves/DrawFromBag'
 import DynamiteExplosion from '../../rules/src/moves/DynamiteExplosion'
@@ -17,11 +17,12 @@ import Board from './material/Board'
 import Dynamite from './material/Dynamite'
 import GoldCube from './material/GoldCube'
 import Images from './material/Images'
+import Marquee from './material/Marquee'
 import MiningBag from './material/MiningBag'
-import PlayerInfo from './material/PlayerInfo'
+import PlayerInfo, { getMarqueePositionInPlayerInfo } from './material/PlayerInfo'
 import PlayerSelecter from './material/PlayerSelecter'
 import StoneCube from './material/StoneCube'
-import { letterBoxHeight, letterBoxWidth, miningBagHeight, miningBagLeft, miningBagTop, miningBagWidth, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
+import { letterBoxHeight, letterBoxWidth, marqueesPosition, miningBagHeight, miningBagLeft, miningBagTop, miningBagWidth, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
 import { getTranslationAnimationStyle } from './util/Styles'
 import YesNoSelecter from './util/YesNoSelecter'
 
@@ -34,9 +35,11 @@ export default function GameDisplay({ game }: Props) {
   const play = usePlay()
   const playerColor = usePlayerId<PlayerColor>()
   const currentGame = new AFistfulOfMeeples(game)
-  const animation = useAnimation<DrawFromBag | DynamiteExplosion>(animation => animation?.action.cancelled ?? true)
+  const animation = useAnimation<DrawFromBag | DynamiteExplosion | BuildOrUpgradeMarquee>(animation => animation?.action.cancelled ?? true)
   const drawFromBagAnimation = animation && !animation.action.cancelled && isDrawFromBagMove(animation.move) ? animation.move : undefined
   const dynamiteExplosionAnimation = animation && !animation.action.cancelled && isDynamiteExplosion(animation.move) ? animation.move : undefined
+  const buildOrUpgradeMarqueeAnimation = animation && !animation.action.cancelled && isBuildOrUpgradeMarqueeMove(animation.move) ? animation.move : undefined
+  const playerBuildingMarquee = (buildOrUpgradeMarqueeAnimation && game.marquees[buildOrUpgradeMarqueeAnimation.space].owner === undefined) ? buildOrUpgradeMarqueeAnimation.playerId : undefined
 
   let popup = undefined
   if (animation === undefined && currentGame.getActivePlayer() === playerColor) {
@@ -65,7 +68,7 @@ export default function GameDisplay({ game }: Props) {
       <MiningBag gold={game.goldCubesInMiningBag} stone={game.stoneCubesInMiningBag} dynamite={game.dynamitesInMiningBag} css={miningBagMetrics} />
       <>
         {game.players.map((playerState, index) =>
-          <PlayerInfo css={getPlayerInfoMetrics(index)} playerState={playerState} gameState={game} key={index} />
+          <PlayerInfo css={getPlayerInfoMetrics(index)} playerState={playerState} gameState={game} key={index} buildingMarqueeAnimation={playerBuildingMarquee === playerState.color} />
         )}
       </>
       <Board gameState={game} currentGame={currentGame} />
@@ -88,6 +91,11 @@ export default function GameDisplay({ game }: Props) {
         })}
 
         {animation && dynamiteExplosionAnimation && <Picture src={Images.dynamiteExplosion} css={dynamiteExplosionStyle} />}
+
+        {animation && buildOrUpgradeMarqueeAnimation && playerBuildingMarquee &&
+          <Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={false}
+          css={getMarqueeStyle(game, playerBuildingMarquee, buildOrUpgradeMarqueeAnimation.space, animation.duration)} />
+        }
 
         {popup}
       </>
@@ -144,3 +152,27 @@ const dynamiteExplosionStyle = css`
   height: 12em;
 `
 
+
+const getMarqueeAnimation = (startPosition: number[], endPosition: number[], flip: boolean) => keyframes`
+	0%	{ transform: translate(0, 0); }
+  30% { transform: translate(0, -7.5em); }
+  100% { transform: translate(${endPosition[0] - startPosition[0]}em, ${endPosition[1] - startPosition[1]}em) ${flip && 'rotate(180deg)'}; }
+`
+
+function getMarqueeStyle(gamestate: GameState, playerColor: PlayerColor, location: number, animation_duration: number) {
+  let startPosition = [...playerInfoPositions[(gamestate.players.findIndex(player => player.color === playerColor))]]
+  const marqueeIndex = getPlayerRemainingMarquees(gamestate, playerColor)
+  const marqueeDelta = getMarqueePositionInPlayerInfo(marqueeIndex)
+  startPosition[0] += marqueeDelta[0]
+  startPosition[1] += marqueeDelta[1]
+  let endPosition = [...marqueesPosition[location]]
+  endPosition[1] += 7
+
+  return css`
+  position: absolute;
+  left: ${startPosition[0]}em;
+  top: ${startPosition[1]}em;
+  animation: ${getMarqueeAnimation(startPosition, endPosition, location > 5)} ${animation_duration}s;
+`
+}
+  

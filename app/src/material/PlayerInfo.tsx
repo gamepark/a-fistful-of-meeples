@@ -6,7 +6,7 @@ import GoldBar from './GoldBar'
 import Images from './Images'
 import StoneCube from './StoneCube'
 import GoldCube from './GoldCube'
-import GameState, { getPlayerScore } from '../../../rules/src/GameState'
+import GameState, { getPlayerRemainingMarquees, getPlayerScore } from '../../../rules/src/GameState'
 import { HTMLAttributes } from 'react'
 import { Avatar, GamePoints, PlayerTimer, usePlayer } from '@gamepark/react-client'
 import { SpeechBubbleDirection } from '@gamepark/react-client/dist/Avatar'
@@ -15,116 +15,131 @@ import { useTranslation } from 'react-i18next'
 import { goldBarRatio } from '../util/Metrics'
 import { getPlayerName } from '../../../rules/src/AFistfulOfMeeplesOptions'
 import Phase from '../../../rules/src/Phase'
+import Marquee from './Marquee'
 
 
 type Props = {
   playerState: PlayerState
   gameState: GameState
+  buildingMarqueeAnimation: boolean
 } & HTMLAttributes<HTMLDivElement>
 
 
-export default function PlayerInfo({ playerState, gameState, ...props }: Props) {
+export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnimation, ...props }: Props) {
   const { t } = useTranslation()
   const playerInfo = usePlayer<PlayerColor>(playerState.color)
+  const marquees = getPlayerRemainingMarquees(gameState, playerState.color) - (buildingMarqueeAnimation ? 1 : 0)
 
 
   return (
-    <div {...props} css={getPlayerInfoStyle(playerState.color, gameState.activePlayer === playerState.color)} >
-      {playerInfo?.avatar ?
-        <Avatar playerId={playerState.color} css={avatarStyle} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }} /> :
-        <Picture alt={t('Player avatar')} src={Images.avatar} css={[avatarStyle, fallbackAvatarStyle]} />
+    <div {...props} css={getPlayerInfoStyle(gameState.activePlayer === playerState.color, playerState.color)} >
+      {marquees > 0 &&
+        <>
+        {[...Array(marquees)].map((_, index) =>
+          <Marquee owner={playerState.color} upgraded={false} css={getMarqueeStyle(index)} key={index} />
+          )}
+        </>
       }
 
-      <div css={getItemStyle(35, 5)}>
-        {playerInfo?.name ?? getPlayerName(playerState.color, t)}
-      </div>
-      <div css={getItemStyle(35, 35)}>
-        {gameState.currentPhase === Phase.GameOver && getPlayerScore(gameState, playerState.color)}
-        {playerInfo?.time?.playing && <PlayerTimer playerId={playerState.color} />}
-        {playerInfo?.gamePointsDelta && < GamePoints playerId={playerState.color} suspense={5} />}
+      {playerInfo?.avatar ?
+        <Avatar playerId={playerState.color} css={avatarStyle} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }} /> :
+        <Picture alt={t('Player avatar')} src={Images.avatar} css={[avatarStyle, fallbackAvatarStyle(playerState.color)]} />
+      }
+
+      <div css={getItemStyle(2, 46, 90)}>
+        <div>{playerInfo?.name ?? getPlayerName(playerState.color, t)}</div>
+        <div>
+          {playerInfo?.time?.playing && <PlayerTimer playerId={playerState.color} />}
+          {gameState.currentPhase === Phase.GameOver && getPlayerScore(gameState, playerState.color)}
+          {playerInfo?.gamePointsDelta && < GamePoints playerId={playerState.color} suspense={5} />}
+        </div>
       </div>
 
-      <div css={getItemStyle(20, 70)}>
+      <div css={getItemStyle(4, 60, 90)}>
+        <StoneCube css={getStoneCubeStyle} />
         {playerState.stones}
-      </div>
-      <div css={getItemStyle(50 , 70)}>
+        <GoldCube css={getGoldCubeStyle} />
         {playerState.goldPieces}
-      </div>
-      <div css={getItemStyle(85, 70)}>
+        <GoldBar css={getGoldBarStyle} />
         {playerState.goldBars}
       </div>
-      <StoneCube css={getStoneCubeStyle} />
-      <GoldCube css={getGoldCubeStyle} />
-      <GoldBar css={getGoldBarStyle} />
     </div>
   )
 }
 
-const getPlayerImage = (color: PlayerColor) => {
-  switch (color) {
+function getPlayerColor(playerColor: PlayerColor): number {
+  switch (playerColor) {
     case PlayerColor.Black:
-      return Images.playerBlack
+      return 0x353437
     case PlayerColor.Green:
-      return Images.playerGreen
-    case PlayerColor.Orange:
-      return Images.playerOrange
+      return 0x92b849
     case PlayerColor.Grey:
-      return Images.playerGrey
-    default:
-      return undefined
+      return 0xb5a792
+    case PlayerColor.Orange:
+      return 0xe1822d
   }
 }
 
-
-const getPlayerInfoStyle = (color: PlayerColor, isActive: boolean) => css`
-  background-image: url(${getPlayerImage(color)});
-  background-color: #00000000;
-  background-size: cover;
-  ${isActive && 'filter: drop-shadow(0 0.2em 0.2em black) drop-shadow(0 0 0.2em red)'}
+function getPlayerInfoStyle(isActive: boolean, playerColor: PlayerColor) {
+  const color = getPlayerColor(playerColor)
+  return css`
+  background-color: #${color.toString(16) + (isActive ? 'D0' : '60')};
+  border-radius: 4em;
+  border: 0.3em solid #${color.toString(16)};
 `
-
-
-const getItemStyle = (left: number, top: number) => css`
-  position: absolute;
-  left: ${left}%;
-  top: ${top}%;
-  font-size: 3em;
-`
-
-const getStoneCubeStyle = css`
-  position: absolute;
-  left: 5%;
-  top: 65%;
-  width: 4em;
-  height: 4em;
-`
-
-const getGoldCubeStyle = css`
-  position: absolute;
-  left: 35%;
-  top: 65%;
-  width: 4.5em;
-  height: 4.5em;
-`
-
-const getGoldBarStyle = css`
-  position: absolute;
-  left: 65%;
-  top: 60%;
-  width: 4em;
-  height: ${4 / goldBarRatio}em;
-  transform: rotate(90deg);
-`
+}
 
 const avatarStyle = css`
   position: absolute;
   width: 8em;
   height: 8em;
-  top: 5%;
-  left: 5%;
+  top: 0.5em;
+  left: 0.5em;
 `
 
-const fallbackAvatarStyle = css`
-  border: 0.1em solid white;
+const fallbackAvatarStyle = (playerColor: PlayerColor) => css`
+  border: 0.1em solid #${getPlayerColor(playerColor).toString(16)};
   border-radius: 100%; 
 `
+
+export function getMarqueePositionInPlayerInfo(index: number) {
+  return [(10 + (index * 0.3)), 1.2 - index * 0.1]
+}
+
+function getMarqueeStyle(index: number) {
+  const position = getMarqueePositionInPlayerInfo(index)
+  return css`
+  position: absolute;
+  left: ${position[0]}em;
+  top: ${position[1]}em;
+`
+}
+
+const getItemStyle = (left: number, top: number, width: number) => css`
+  position: absolute;
+  left: ${left}%;
+  top: ${top}%;
+  width: ${width}%;
+  font-size: 3em;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`
+
+const getStoneCubeStyle = css`
+  width: 1.3em;
+  height: 1.3em;
+`
+
+const getGoldCubeStyle = css`
+  width: 1.5em;
+  height: 1.5em;
+`
+
+const getGoldBarStyle = css`
+  width: 1.5em;
+  height: ${1.5 / goldBarRatio}em;
+  transform: rotate(270deg);
+`
+

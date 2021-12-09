@@ -17,5 +17,5 @@ export const dialogStyle = css`
 `
 
 export const outlineStyle = css`
-  filter: drop-shadow(0 -0.2em 0 white) drop-shadow(0 0.2em 0 white) drop-shadow(-0.2em 0 0 white) drop-shadow(0.2em 0 0 white);
+  filter: drop-shadow(0 -0.2em 0 black) drop-shadow(0 0.2em 0 black) drop-shadow(-0.2em 0 0 black) drop-shadow(0.2em 0 0 black);
 `

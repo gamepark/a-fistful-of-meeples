@@ -1,8 +1,10 @@
 /** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react'
 import { Picture } from '@gamepark/react-components'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import PlayerColor from '../../../rules/src/PlayerColor'
+import { marqueeHeight, marqueeWidth } from '../util/Metrics'
 import { outlineStyle } from '../util/Styles'
 import Images from './Images'
 
@@ -17,7 +19,7 @@ export default function Marquee({ owner, upgraded, ...props }: Props) {
   const { t } = useTranslation()
 
   return (
-    <Picture {...props} css={outlineStyle} src={getMarqueeImage(owner, upgraded)} alt={t(getMarqueeName(owner, upgraded))} />
+    <Picture {...props} css={[marqueeStyle, outlineStyle]} src={getMarqueeImage(owner, upgraded)} alt={t(getMarqueeName(owner, upgraded))} />
   )
 }
 
@@ -50,4 +52,9 @@ const getMarqueeImage = (owner: PlayerColor, upgraded: boolean) => {
       return undefined
   }
 }
+
+const marqueeStyle = css`
+  width: ${marqueeWidth}em;
+  height: ${marqueeHeight}em;
+`
 

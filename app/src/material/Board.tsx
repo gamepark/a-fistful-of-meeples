@@ -2,7 +2,7 @@
 import { css, keyframes } from '@emotion/react'
 import GameState, { isBuildingLocation, Location_Graveyard, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, marqueeWidth, marqueeHeight, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, showdownSelecterWidth, showdownSelecterHeight, playerInfoPositions, removedDynamitePositions } from '../util/Metrics'
+import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, showdownSelecterWidth, showdownSelecterHeight, playerInfoPositions, removedDynamitePositions } from '../util/Metrics'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
 import Images from './Images'
@@ -92,17 +92,17 @@ export default function Board({ gameState, currentGame }: Props) {
 
       <>
         {gameState.marquees.map((marquee, index) => {
-          const existingMarquee: boolean = marquee.owner !== undefined
           if (buildOrUpgradeMarqueeAnimation && buildOrUpgradeMarqueeAnimation.space === index) {
-            let result = []
-            if (existingMarquee)
-              result.push(<Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={false} css={getMarqueeStyle(marqueesPosition[index], index > 5)} key={index} />)
-            result.push([<Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={existingMarquee} css={[getMarqueeStyle(marqueesPosition[index], index > 5), getFadeInStyle(animation!.duration)]} key={index} />])
-            return result
+            if (marquee.owner === undefined)
+              return undefined
+            return [
+              <Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={false} css={getMarqueeStyle(marqueesPosition[index], index)} key={index} />,
+              <Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={true} css={[getMarqueeStyle(marqueesPosition[index], index), getFadeInStyle(animation!.duration)]} key={index} />
+            ]
           } else if (placeInitialMarqueeTileAnimation && placeInitialMarqueeTileAnimation.location === index) {
-            return <Marquee owner={placeInitialMarqueeTileAnimation.playerId} upgraded={existingMarquee} css={[getMarqueeStyle(marqueesPosition[index], index > 5), getFadeInStyle(animation!.duration)]} key={index} />
+            return <Marquee owner={placeInitialMarqueeTileAnimation.playerId} upgraded={false} css={[getMarqueeStyle(marqueesPosition[index], index), getFadeInStyle(animation!.duration)]} key={index} />
           } else {
-            return (marquee.owner !== undefined) ? <Marquee owner={marquee.owner} upgraded={marquee.upgraded} css={getMarqueeStyle(marqueesPosition[index], index > 5)} key={index} /> : undefined
+            return (marquee.owner !== undefined) ? <Marquee owner={marquee.owner} upgraded={marquee.upgraded} css={getMarqueeStyle(marqueesPosition[index], index)} key={index} /> : undefined
           }
         }
         )}
@@ -409,14 +409,12 @@ function getShowdownTokenStyle(position: Array<number>) {
 `
 }
 
-function getMarqueeStyle(position: Array<number>, flip: boolean) {
+function getMarqueeStyle(position: Array<number>, index: number) {
   return css`
   position: absolute;
   left: ${position[0]}em;
   top: ${position[1]}em;
-  width: ${marqueeWidth}em;
-  height: ${marqueeHeight}em;
-  ${flip && 'transform: rotate(180deg);'}
+  ${(index > 5) && 'transform: rotate(180deg);'}
 `
 }
 

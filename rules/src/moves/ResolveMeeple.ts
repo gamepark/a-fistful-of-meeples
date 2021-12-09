@@ -1,4 +1,4 @@
-import GameState, { Location_Showdown0, Location_Showdown1, canPayBuildingCost, PendingEffectType, Location_Jail, Location_Saloon, isBuildingLocation } from '../GameState'
+import GameState, { Location_Showdown0, Location_Showdown1, canPayBuildingCost, PendingEffectType, Location_Jail, Location_Saloon, isBuildingLocation, getPlayerRemainingMarquees } from '../GameState'
 import PlayerColor from '../PlayerColor'
 import MoveType from './MoveType'
 import MeepleType from '../MeepleType'
@@ -47,8 +47,9 @@ export function resolveMeeple(state: GameState, move: ResolveMeeple) {
         case MeepleType.Builder:
           let owner: PlayerState | undefined
           if (state.marquees[move.space].owner === undefined) {
-            // no marquee ? current player may build one
-            owner = player
+            // no marquee ? current player may build one if he has got any marquee left on his board
+            if (getPlayerRemainingMarquees(state, player.color) > 0)
+              owner = player
           } else if (state.marquees[move.space].upgraded === false) {
             // basic marquee ? owner may want to upgrade it
             owner = state.players.find(player => player.color === state.marquees[move.space].owner)

@@ -150,6 +150,11 @@ export function getPreviousPlayer(state: GameState, playerColor: PlayerColor): P
   return state.players[state.players.length - 1].color
 }
 
+export function getPlayerRemainingMarquees(state: GameState, playerColor: PlayerColor): number {
+  return 8 - state.marquees.filter(marquee => marquee.owner === playerColor).length
+}
+
+
 export function endOfGameTriggered(state: GameState): boolean {
   return state.goldBarsInBank == 0 || state.graveyard.length >= 6 || (state.dynamitesInJail == 0 && state.dynamitesInMiningBag == 0)
 }

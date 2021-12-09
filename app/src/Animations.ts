@@ -1,7 +1,6 @@
 import {Animations} from '@gamepark/react-client'
 import GameState from '../../rules/src/GameState'
-import BuildOrUpgradeMarquee from '../../rules/src/moves/BuildOrUpgradeMarquee'
-import Move from '../../rules/src/moves/Move'
+import Move, { isBuildOrUpgradeMarqueeMove } from '../../rules/src/moves/Move'
 import MoveType from '../../rules/src/moves/MoveType'
 import PlayerColor from '../../rules/src/PlayerColor'
 
@@ -21,8 +20,12 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
       case MoveType.ResolveMeeple:
         return isActivePlayer ? 0.3 : 0.5
       case MoveType.BuildOrUpgradeMarquee:
-        if ((move as BuildOrUpgradeMarquee).build)
-          return isActivePlayer ? 1 : 2
+        if (isBuildOrUpgradeMarqueeMove(move) && move.build) {
+          if (state.marquees[move.space].owner === undefined) // build
+            return isActivePlayer ? 2 : 3
+          else // upgrade
+            return isActivePlayer ? 1 : 2
+        }
         return 0
       case MoveType.RerollShowdownDice:
         return 0

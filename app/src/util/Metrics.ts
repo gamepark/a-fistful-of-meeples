@@ -18,14 +18,13 @@ export const miningBagHeight = miningBagWidth / miningBagRatio
 export const miningBagLeft = boardWidth + 1
 export const miningBagTop = boardTop + 1
 
-export const playerInfoRatio = 64 / 32
-export const playerInfoWidth = 32
-export const playerInfoHeight = playerInfoWidth / playerInfoRatio
+export const playerInfoWidth = 34
+export const playerInfoHeight = 18
 export const playerInfoPositions = [
-  [boardWidth + 1, miningBagTop + miningBagHeight + 2],
-  [boardWidth + 1, miningBagTop + miningBagHeight + playerInfoHeight + 4],
-  [boardWidth + 1, miningBagTop + miningBagHeight + playerInfoHeight * 2 + 6],
-  [boardWidth + 1, miningBagTop + miningBagHeight + playerInfoHeight * 3 + 8],
+  [boardWidth + 1, miningBagTop + miningBagHeight + 1],
+  [boardWidth + 1, miningBagTop + miningBagHeight + playerInfoHeight + 2],
+  [boardWidth + 1, miningBagTop + miningBagHeight + playerInfoHeight * 2 + 3],
+  [boardWidth + 1, miningBagTop + miningBagHeight + playerInfoHeight * 3 + 4],
 ]
 
 export const phaseWidth = 15

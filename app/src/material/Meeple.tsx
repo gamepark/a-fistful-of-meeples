@@ -22,17 +22,18 @@ export default function Meeple({ type, indexInHand, draggable, ...props }:Props)
     return (
       <Draggable
         {...props}
+        css={meepleStyle} 
         type={MEEPLE_DRAG_TYPE}
         item={{ indexInHand: indexInHand }}
         draggable={true}
         canDrag={true}
       >
 
-        <Picture src={getMeepleImage(type)} draggable={false} css={getInnerMeepleStyle} alt={t(getMeepleName(type))} />
+        <Picture src={getMeepleImage(type)} draggable={false} css={innerMeepleStyle} alt={t(getMeepleName(type))} />
       </Draggable>
     )
   } else {
-    return <Picture {...props} src={getMeepleImage(type)} alt={t(getMeepleName(type))} />
+    return <Picture {...props} css={meepleStyle} src={getMeepleImage(type)} alt={t(getMeepleName(type))} />
   }
 }
 
@@ -70,8 +71,12 @@ const getMeepleImage = (type: MeepleType) => {
   }
 }
 
-const getInnerMeepleStyle = css`
+const innerMeepleStyle = css`
   width: 100%;
   height: 100%;
+`
+
+const meepleStyle = css`
+  filter: drop-shadow(0 0 0.2em white) drop-shadow(0 0 0.2em white);
 `
 
