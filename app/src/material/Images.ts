@@ -24,7 +24,9 @@ import upgradedGreenMarquee from '../images/UpgradedGreenMarquee.png'
 import upgradedOrangeMarquee from '../images/UpgradedOrangeMarquee.png'
 import upgradedGreyMarquee from '../images/UpgradedGreyMarquee.png'
 import marqueeSelecter from '../images/MarqueeSelecter.png'
+import marqueeSelecterHover from '../images/MarqueeSelecterHover.png'
 import showdownSelecter from '../images/ShowdownSelecter.png'
+import showdownSelecterHover from '../images/ShowdownSelecterHover.png'
 import playerBlack from '../images/Black.jpg'
 import playerGreen from '../images/Green.jpg'
 import playerOrange from '../images/Orange.jpg'
@@ -71,7 +73,9 @@ const Images = {
   upgradedOrangeMarquee,
   upgradedGreyMarquee,
   marqueeSelecter,
+  marqueeSelecterHover,
   showdownSelecter,
+  showdownSelecterHover,
   playerBlack,
   playerGreen,
   playerOrange,
