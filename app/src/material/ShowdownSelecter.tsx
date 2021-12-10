@@ -31,15 +31,15 @@ export default function ShowdownSelecter({ flip, droppable, selected, ...props }
   })
 
   if (droppable) {
-    return <Picture {...props} ref={dropRef} src={Images.showdownSelecter} css={getShowdownSelecterStyle(flip, false, isOver)} alt={t("SelectThisShodownPlace")} />
+    return <Picture {...props} ref={dropRef} src={isOver ? Images.showdownSelecterHover : Images.showdownSelecter} css={getShowdownSelecterStyle(flip, false)} alt={t("SelectThisShodownPlace")} />
   } else {
-    return <Picture {...props} onClick={() => selected()} src={Images.showdownSelecter} css={getShowdownSelecterStyle(flip, true, false)} alt={t("SelectThisShodownPlace")} />
+    return <Picture {...props} onClick={() => selected()} src={Images.showdownSelecter} css={getShowdownSelecterStyle(flip, true)} alt={t("SelectThisShodownPlace")} />
   }
 }
 
-const getShowdownSelecterStyle = (flip: boolean, clickable: boolean, isOver: boolean) => css`
+const getShowdownSelecterStyle = (flip: boolean, clickable: boolean) => css`
   transform: scaleX(${flip ? -1 : 1});
   ${clickable && 'cursor: pointer'}
-  ${isOver && 'filter: drop-shadow(0 1em 1em white) drop-shadow(0 0 2em #30FF30FF);'}
 `
+//  ${ isOver && 'filter: drop-shadow(0 1em 1em white) drop-shadow(0 0 2em #30FF30FF);' }
 

@@ -4,6 +4,7 @@ import { Draggable, Picture } from '@gamepark/react-components'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import MeepleType from '../../../rules/src/MeepleType'
+import { fullSizeStyle } from '../util/Styles'
 import { MEEPLE_DRAG_TYPE } from '../util/Types'
 import Images from './Images'
 
@@ -29,7 +30,7 @@ export default function Meeple({ type, indexInHand, draggable, ...props }:Props)
         canDrag={true}
       >
 
-        <Picture src={getMeepleImage(type)} draggable={false} css={innerMeepleStyle} alt={t(getMeepleName(type))} />
+        <Picture src={getMeepleImage(type)} draggable={false} css={fullSizeStyle} alt={t(getMeepleName(type))} />
       </Draggable>
     )
   } else {
@@ -70,11 +71,6 @@ const getMeepleImage = (type: MeepleType) => {
       return undefined
   }
 }
-
-const innerMeepleStyle = css`
-  width: 100%;
-  height: 100%;
-`
 
 const meepleStyle = css`
   filter: drop-shadow(0 0 0.2em white) drop-shadow(0 0 0.2em white);

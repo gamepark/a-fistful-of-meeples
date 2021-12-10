@@ -1,40 +1,36 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { Picture } from '@gamepark/react-components'
+import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import { marqueeHeight, marqueeWidth } from '../util/Metrics'
+import { fullSizeStyle, getSize, hideWhenHoverStyle, showWhenHoverStyle } from '../util/Styles'
 import Images from './Images'
 
 
 type Props = {
-  position: Array<number>
   flip: boolean
   selected: () => void
-}
+} & HTMLAttributes<HTMLDivElement>
 
 
-export default function MarqueeSelecter(props: Props) {
+export default function MarqueeSelecter({ flip, selected, ...props }: Props) {
   const { t } = useTranslation()
 
   const onSelectMarquee = () => {
-    props.selected()
+    selected()
   };
 
   return (
-    <Picture src={Images.marqueeSelecter} onClick={onSelectMarquee} css={getMarqueeSelecterStyle(props.position[0], props.position[1], props.flip)} alt={t("SelectThisMarqueePlace")} />
+    <div {...props} css={[getMarqueeSelecterStyle(flip), getSize(marqueeWidth, marqueeHeight)]} onClick={onSelectMarquee} >
+      <Picture src={Images.marqueeSelecter} css={[fullSizeStyle, hideWhenHoverStyle]} alt={t("SelectThisMarqueePlace")} />
+      <Picture src={Images.marqueeSelecterHover} css={[fullSizeStyle, showWhenHoverStyle] } alt={t("SelectThisMarqueePlace")} />
+    </div>
   )
 }
 
-const getMarqueeSelecterStyle = (left: number, top: number, flip: boolean) => css`
-  position: absolute;
-  left: ${left}em;
-  top: ${top}em;
-  width: ${marqueeWidth}em;
-  height: ${marqueeHeight}em;
+const getMarqueeSelecterStyle = (flip: boolean) => css`
   cursor: pointer;
   transform: scaleY(${flip ? -1 : 1});
-  &:hover {
-    filter: drop-shadow(0 1em 1em white) drop-shadow(0 0 2em #30FF30FF);
-  }
 `
 

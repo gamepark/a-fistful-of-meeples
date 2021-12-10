@@ -30,7 +30,7 @@ import MoveMeeples from '../../../rules/src/moves/MoveMeeples'
 import RollShowdownDice from '../../../rules/src/moves/RollShowdownDice'
 import { Picture } from '@gamepark/react-components'
 import ConvertGoldBar from '../../../rules/src/moves/ConvertGoldBar'
-import { getTranslationAnimationStyle } from '../util/Styles'
+import { getPosition, getTranslationAnimationStyle } from '../util/Styles'
 
 
 type Props = {
@@ -235,13 +235,13 @@ export default function Board({ gameState, currentGame }: Props) {
               const marqueeSelected = () => {
                 play(move)
               }
-              return <MarqueeSelecter position={marqueesPosition[(move as PlaceInitialMarqueeTile).location]} flip={(move as PlaceInitialMarqueeTile).location > 5} selected={marqueeSelected} key={(move as PlaceInitialMarqueeTile).location} />
+              return <MarqueeSelecter css={getPosition(marqueesPosition[(move as PlaceInitialMarqueeTile).location])} flip={(move as PlaceInitialMarqueeTile).location > 5} selected={marqueeSelected} key={(move as PlaceInitialMarqueeTile).location} />
             })
           }
 
           {
             buildOrUpgradeMarqueeMove !== undefined && isBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove) &&
-              <MarqueeSelecter position={marqueesPosition[buildOrUpgradeMarqueeMove.space]} flip={buildOrUpgradeMarqueeMove.space > 5} selected={() => play(getBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove.playerId, buildOrUpgradeMarqueeMove.space, true))} />
+              <MarqueeSelecter css={getPosition(marqueesPosition[buildOrUpgradeMarqueeMove.space])} flip={buildOrUpgradeMarqueeMove.space > 5} selected={() => play(getBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove.playerId, buildOrUpgradeMarqueeMove.space, true))} />
           }
 
           {
