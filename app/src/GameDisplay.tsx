@@ -10,7 +10,8 @@ import BuildOrUpgradeMarquee, { getBuildOrUpgradeMarqueeMove } from '../../rules
 import ChooseAnotherPlayerShowdownToken, { getChooseAnotherPlayerShowdownTokenMove } from '../../rules/src/moves/ChooseAnotherPlayerShowdownToken'
 import DrawFromBag from '../../rules/src/moves/DrawFromBag'
 import DynamiteExplosion from '../../rules/src/moves/DynamiteExplosion'
-import { isBuildOrUpgradeMarqueeMove, isChooseAnotherPlayerShowdownTokenMove, isDrawFromBagMove, isDynamiteExplosion, isRerollShowdownDiceMove } from '../../rules/src/moves/Move'
+import { isBuildOrUpgradeMarqueeMove, isChooseAnotherPlayerShowdownTokenMove, isDrawFromBagMove, isDynamiteExplosion, isPlaceInitialMarqueeTileMove, isRerollShowdownDiceMove } from '../../rules/src/moves/Move'
+import PlaceInitialMarqueeTile from '../../rules/src/moves/PlaceInitialMarqueeTile'
 import { getRerollShowdownDiceMove } from '../../rules/src/moves/RerollShowdownDice'
 import PlayerColor from '../../rules/src/PlayerColor'
 import Board from './material/Board'
@@ -35,11 +36,17 @@ export default function GameDisplay({ game }: Props) {
   const play = usePlay()
   const playerColor = usePlayerId<PlayerColor>()
   const currentGame = new AFistfulOfMeeples(game)
-  const animation = useAnimation<DrawFromBag | DynamiteExplosion | BuildOrUpgradeMarquee>(animation => animation?.action.cancelled ?? true)
+  const animation = useAnimation<DrawFromBag | DynamiteExplosion | BuildOrUpgradeMarquee | PlaceInitialMarqueeTile>(animation => animation?.action.cancelled ?? true)
   const drawFromBagAnimation = animation && !animation.action.cancelled && isDrawFromBagMove(animation.move) ? animation.move : undefined
   const dynamiteExplosionAnimation = animation && !animation.action.cancelled && isDynamiteExplosion(animation.move) ? animation.move : undefined
+  const placeInitalMarqueeTileAnimation = animation && !animation.action.cancelled && isPlaceInitialMarqueeTileMove(animation.move) ? animation.move : undefined
   const buildOrUpgradeMarqueeAnimation = animation && !animation.action.cancelled && isBuildOrUpgradeMarqueeMove(animation.move) ? animation.move : undefined
-  const playerBuildingMarquee = (buildOrUpgradeMarqueeAnimation && game.marquees[buildOrUpgradeMarqueeAnimation.space].owner === undefined) ? buildOrUpgradeMarqueeAnimation.playerId : undefined
+  let buildingMarqueeOwner: PlayerColor | undefined = undefined
+  let buildingMarqueeLocation: number = 0
+  if (placeInitalMarqueeTileAnimation)
+    [buildingMarqueeOwner, buildingMarqueeLocation] = [placeInitalMarqueeTileAnimation.playerId, placeInitalMarqueeTileAnimation.location]
+  else if (buildOrUpgradeMarqueeAnimation && buildOrUpgradeMarqueeAnimation.build && game.marquees[buildOrUpgradeMarqueeAnimation.space].owner === undefined)
+    [buildingMarqueeOwner, buildingMarqueeLocation] = [buildOrUpgradeMarqueeAnimation.playerId, buildOrUpgradeMarqueeAnimation.space]
 
   let popup = undefined
   if (animation === undefined && currentGame.getActivePlayer() === playerColor) {
@@ -68,7 +75,7 @@ export default function GameDisplay({ game }: Props) {
       <MiningBag gold={game.goldCubesInMiningBag} stone={game.stoneCubesInMiningBag} dynamite={game.dynamitesInMiningBag} css={miningBagMetrics} />
       <>
         {game.players.map((playerState, index) =>
-          <PlayerInfo css={getPlayerInfoMetrics(index)} playerState={playerState} gameState={game} key={index} buildingMarqueeAnimation={playerBuildingMarquee === playerState.color} />
+          <PlayerInfo css={getPlayerInfoMetrics(index)} playerState={playerState} gameState={game} key={index} buildingMarqueeAnimation={buildingMarqueeOwner === playerState.color} />
         )}
       </>
       <Board gameState={game} currentGame={currentGame} />
@@ -92,9 +99,9 @@ export default function GameDisplay({ game }: Props) {
 
         {animation && dynamiteExplosionAnimation && <Picture src={Images.dynamiteExplosion} css={dynamiteExplosionStyle} />}
 
-        {animation && buildOrUpgradeMarqueeAnimation && playerBuildingMarquee &&
-          <Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={false}
-          css={getMarqueeStyle(game, playerBuildingMarquee, buildOrUpgradeMarqueeAnimation.space, animation.duration)} />
+        {animation && buildingMarqueeOwner &&
+          <Marquee owner={buildingMarqueeOwner} upgraded={false}
+          css={getMarqueeStyle(game, buildingMarqueeOwner, buildingMarqueeLocation, animation.duration)} />
         }
 
         {popup}

@@ -10,7 +10,7 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
     const isActivePlayer = action.playerId === state.activePlayer && action.playerId === currentPlayerId
     switch (move.type) {
       case MoveType.PlaceInitialMarqueeTile:
-        return isActivePlayer ? 1 : 2
+        return isActivePlayer ? 2 : 3
       case MoveType.SelectSourceLocation:
         return isActivePlayer ? 0.3 : 0.5
       case MoveType.PlaceMeeple:
