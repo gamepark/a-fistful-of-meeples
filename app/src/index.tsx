@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import {css, Global} from '@emotion/react'
 import AFistfulOfMeeples from '@gamepark/a-fistful-of-meeples/AFistfulOfMeeples'
-import {AFistfulOfMeeplesOptionsDescription} from '@gamepark/a-fistful-of-meeples/AFistfulOfMeeplesOptions'
+import {AFistfulOfMeeplesOptionsSpec} from '@gamepark/a-fistful-of-meeples/AFistfulOfMeeplesOptions'
 import {GameProvider, setupTranslation} from '@gamepark/react-client'
 import {StrictMode} from 'react'
 import ReactDOM from 'react-dom'
@@ -61,7 +61,7 @@ const style = css`
 
 ReactDOM.render(
   <StrictMode>
-    <GameProvider game="a-fistful-of-meeples" Rules={AFistfulOfMeeples} RulesView={AFistfulOfMeeplesView} optionsSpec={AFistfulOfMeeplesOptionsDescription}
+    <GameProvider game="a-fistful-of-meeples" Rules={AFistfulOfMeeples} RulesView={AFistfulOfMeeplesView} optionsSpec={AFistfulOfMeeplesOptionsSpec}
                   animations={AFistfulOfMeeplesAnimations}>
       <App/>
     </GameProvider>

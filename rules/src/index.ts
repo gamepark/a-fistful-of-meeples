@@ -1,2 +1,2 @@
 export {default} from './AFistfulOfMeeples'
-export {AFistfulOfMeeplesOptionsDescription} from './AFistfulOfMeeplesOptions'
+export {AFistfulOfMeeplesOptionsSpec} from './AFistfulOfMeeplesOptions'
