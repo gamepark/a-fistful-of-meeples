@@ -2,13 +2,12 @@
 import { css, keyframes } from '@emotion/react'
 import GameState, { isBuildingLocation, Location_Graveyard, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, showdownSelecterWidth, showdownSelecterHeight, playerInfoPositions, removedDynamitePositions } from '../util/Metrics'
+import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, playerInfoPositions, removedDynamitePositions } from '../util/Metrics'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
 import Images from './Images'
 import Meeple from './Meeple'
 import ShowdownToken from './ShowdownToken'
-import MeepleType from '../../../rules/src/MeepleType'
 import Marquee from './Marquee'
 import AFistfulOfMeeples from '../../../rules/src/AFistfulOfMeeples'
 import { isBuildOrUpgradeMarqueeMove, isChangeCurrentPhaseMove, isConvertGoldBar, isMoveMeeplesMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isResolveMeepleMove, isRollShowdownDiceMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
@@ -31,6 +30,7 @@ import RollShowdownDice from '../../../rules/src/moves/RollShowdownDice'
 import { Picture } from '@gamepark/react-components'
 import ConvertGoldBar from '../../../rules/src/moves/ConvertGoldBar'
 import { getPosition, getTranslationAnimationStyle } from '../util/Styles'
+import { useState } from 'react'
 
 
 type Props = {
@@ -43,6 +43,7 @@ export default function Board({ gameState, currentGame }: Props) {
   const play = usePlay()
   const playerColor = usePlayerId<PlayerColor>()
   const buildOrUpgradeMarqueeMove = legalMoves.find(move => isBuildOrUpgradeMarqueeMove(move))
+  const [selectedMeepleIndex, setSelectedMeepleIndex] = useState<number>()
 
   // animations
   const animation = useAnimation<PlaceInitialMarqueeTile | SelectSourceLocation | PlaceMeeple | ResolveMeeple | BuildOrUpgradeMarquee | ChangeCurrentPhase | MoveMeeples | RollShowdownDice | ConvertGoldBar>(animation => animation?.action.cancelled ?? true)
@@ -217,7 +218,7 @@ export default function Board({ gameState, currentGame }: Props) {
             }
             style.push(getTransformStyle(startPosition, endPosition, animation.duration))
           }
-          return <Meeple css={style} type={meeple} indexInHand={index} draggable={true} key={index} />
+          return <Meeple css={style} type={meeple} indexInHand={index} draggable={true} key={index} isSelected={index === selectedMeepleIndex} onSelect={() => setSelectedMeepleIndex(index)} />
         })}
       </>
 
@@ -260,22 +261,20 @@ export default function Board({ gameState, currentGame }: Props) {
             })
           }
 
-          {
+        {
+          selectedMeepleIndex !== undefined && 
             legalMoves.filter((move, index, moves) => isPlaceMeepleMove(move) && moves.findIndex(m => (m as PlaceMeeple).space === move.space) === index).map((move) => {
               const placeMeepleMove = move as PlaceMeeple
+              const spaceSelected = () => {
+                play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, selectedMeepleIndex))
+                setSelectedMeepleIndex(undefined)
+              }
+
               if (isBuildingLocation(placeMeepleMove.space)) {
-                const doorwaySelected = (indexInHand?: number) => {
-                  if (indexInHand !== undefined)
-                    play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, indexInHand))
-                }
-                return <DoorwaySelecter css={getDoorwaySelecterStyle(doorwaysPosition[placeMeepleMove.space])} droppable={true} selected={doorwaySelected} key={placeMeepleMove.space} />
+                return <DoorwaySelecter css={getDoorwaySelecterStyle(doorwaysPosition[placeMeepleMove.space])} droppable={true} selected={spaceSelected} key={placeMeepleMove.space} />
               } else if (placeMeepleMove.space === Location_Showdown0 || placeMeepleMove.space === Location_Showdown1) {
-                const showdownSelected = (meeple?: MeepleType) => {
-                  if (meeple !== undefined)
-                    play(getPlaceMeepleMove(placeMeepleMove.playerId, placeMeepleMove.space, meeple))
-                }
                 const isShowdown1 = placeMeepleMove.space === Location_Showdown1
-                return <ShowdownSelecter css={getShowdownSelecterStyle(showdownSelecterPositions[isShowdown1 ? 1 : 0])} flip={isShowdown1} droppable={true} selected={showdownSelected} key={placeMeepleMove.space} />
+                return <ShowdownSelecter css={getShowdownSelecterStyle(showdownSelecterPositions[isShowdown1 ? 1 : 0])} flip={isShowdown1} droppable={true} selected={spaceSelected} key={placeMeepleMove.space} />
               }
               return undefined
             })
@@ -485,8 +484,6 @@ const getShowdownSelecterStyle = (position: Array<number>) => css`
   position: absolute;
   left: ${position[0]}em;
   top: ${position[1]}em;
-  width: ${showdownSelecterWidth}em;
-  height: ${showdownSelecterHeight}em;
 `
 
 function getTransformStyle(startPosition: Array<number>, endPosition: Array<number>, duration: number) {

@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react'
 import { HTMLAttributes } from 'react'
+import { selecterStyle } from '../util/Styles';
 
 
 type Props = {
@@ -14,16 +14,7 @@ export default function GenericSelecter({ selected, ...props }: Props) {
   };
 
   return (
-    <div {...props} onClick={onSelect} css={genericSelecterStyle} />
+    <div {...props} onClick={onSelect} css={selecterStyle} />
   )
 }
-
-const genericSelecterStyle = css`
-  cursor: pointer;
-  background-color: #FFFFFF20;
-  border: 0.4em solid #30FF30FF;
-  &:hover {
-    background-color: #29db0680;
-  }
-`
 

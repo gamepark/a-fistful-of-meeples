@@ -122,7 +122,7 @@ export const doorwaysPosition = [
   [945 / boardImageWidth * boardWidth, 380 / boardImageHeight * boardHeight],
   [1174 / boardImageWidth * boardWidth, 380 / boardImageHeight * boardHeight],
   [1400 / boardImageWidth * boardWidth, 380 / boardImageHeight * boardHeight],
-  [1406 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
+  [1400 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
   [1174 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
   [945 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
   [719 / boardImageWidth * boardWidth, 614 / boardImageHeight * boardHeight],
@@ -171,11 +171,11 @@ export const showdownMeeplePositions = [
 ]
 
 export const showdownSelecterPositions = [
-  [180 / boardImageWidth * boardWidth, 375 / boardImageHeight * boardHeight],
-  [1384 / boardImageWidth * boardWidth, 375 / boardImageHeight * boardHeight],
+  [188 / boardImageWidth * boardWidth, 385 / boardImageHeight * boardHeight],
+  [1394 / boardImageWidth * boardWidth, 385 / boardImageHeight * boardHeight],
 ]
-export const showdownSelecterRatio = 156 / 316
-export const showdownSelecterWidth = 13.5
+export const showdownSelecterRatio = 142 / 302
+export const showdownSelecterWidth = 12.2
 export const showdownSelecterHeight = showdownSelecterWidth / showdownSelecterRatio
 
 export const diceRatio = 64 / 64

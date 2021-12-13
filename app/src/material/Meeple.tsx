@@ -13,28 +13,31 @@ type Props = {
   type: MeepleType
   indexInHand?: number
   draggable?: boolean
+  isSelected?: boolean
+  onSelect?: () => void
 } & HTMLAttributes<HTMLDivElement>
 
 
-export default function Meeple({ type, indexInHand, draggable, ...props }:Props) {
+export default function Meeple({ type, indexInHand, draggable, isSelected, onSelect, ...props }:Props) {
   const { t } = useTranslation()
 
   if (draggable === true) {
     return (
       <Draggable
         {...props}
-        css={meepleStyle} 
+        css={(isSelected === true) ? selectedMeepleStyle : meepleStyle}
         type={MEEPLE_DRAG_TYPE}
         item={{ indexInHand: indexInHand }}
         draggable={true}
         canDrag={true}
+        onDragStart={onSelect}
       >
 
-        <Picture src={getMeepleImage(type)} draggable={false} css={fullSizeStyle} alt={t(getMeepleName(type))} />
+        <Picture src={getMeepleImage(type)} onClick={onSelect} draggable={false} css={fullSizeStyle} alt={t(getMeepleName(type))} />
       </Draggable>
     )
   } else {
-    return <Picture {...props} css={meepleStyle} src={getMeepleImage(type)} alt={t(getMeepleName(type))} />
+    return <Picture {...props} onClick={onSelect} css={(isSelected === true) ? selectedMeepleStyle : meepleStyle} src={getMeepleImage(type)} alt={t(getMeepleName(type))} />
   }
 }
 
@@ -73,6 +76,10 @@ const getMeepleImage = (type: MeepleType) => {
 }
 
 const meepleStyle = css`
-  filter: drop-shadow(0 0 0.2em white) drop-shadow(0 0 0.2em white);
+  filter: drop-shadow(0 0 0.2em white);
+`
+
+const selectedMeepleStyle = css`
+  filter: drop-shadow(0 0 0.2em #30FF30FF) drop-shadow(0 0 0.2em #30FF30FF) drop-shadow(0 0 0.2em #30FF30FF) drop-shadow(0 0 0.2em #30FF30FF);
 `
 

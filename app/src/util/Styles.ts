@@ -53,3 +53,11 @@ export const dialogStyle = css`
 export const outlineStyle = css`
   filter: drop-shadow(0 -0.2em 0 black) drop-shadow(0 0.2em 0 black) drop-shadow(-0.2em 0 0 black) drop-shadow(0.2em 0 0 black);
 `
+
+export const selecterStyle = css`
+  cursor: pointer;
+  border: 0.4em solid #29db06FF;
+  border-radius: 15%;
+  &:hover { background-color: #29db0680; }
+`
+

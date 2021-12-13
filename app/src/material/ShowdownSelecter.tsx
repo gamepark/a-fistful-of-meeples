@@ -4,18 +4,17 @@ import { useTranslation } from 'react-i18next'
 import { useDrop } from 'react-dnd'
 import Images from './Images'
 import { MEEPLE_DRAG_TYPE } from '../util/Types'
-import MeepleType from '../../../rules/src/MeepleType'
 import { Picture } from '@gamepark/react-components'
 import { HTMLAttributes } from 'react'
+import { showdownSelecterHeight, showdownSelecterWidth } from '../util/Metrics'
+import { fullSizeStyle, getSize, hideWhenHoverStyle, showWhenHoverStyle } from '../util/Styles'
 
 
 type Props = {
   flip: boolean
   droppable: boolean
-  selected: (meeple?: MeepleType) => void
+  selected: () => void
 } & HTMLAttributes<HTMLImageElement>
-
-type DropItem = { indexInHand: number }
 
 
 export default function ShowdownSelecter({ flip, droppable, selected, ...props }: Props) {
@@ -25,21 +24,31 @@ export default function ShowdownSelecter({ flip, droppable, selected, ...props }
     collect: monitor => ({
       isOver: monitor.isOver()
     }),
-    drop: (item: DropItem) => {
-      selected(item.indexInHand)
-    }
+    drop: () => { selected() }
   })
 
   if (droppable) {
-    return <Picture {...props} ref={dropRef} src={isOver ? Images.showdownSelecterHover : Images.showdownSelecter} css={getShowdownSelecterStyle(flip, false)} alt={t("SelectThisShodownPlace")} />
+    return <div {...props} css={[getShowdownSelecterStyle(flip), getSize(showdownSelecterWidth, showdownSelecterHeight)]} onClick={selected} ref={dropRef}>
+      <Picture src={Images.showdownSelecter} css={[fullSizeStyle, getShowdownSelecterVisibility(!isOver)]} alt={t("SelectThisShowdownPlace")} />
+      <Picture src={Images.showdownSelecterHover} css={[fullSizeStyle, getShowdownSelecterVisibility(isOver)]} alt={t("SelectThisShowdownPlace")} />
+    </div>
   } else {
-    return <Picture {...props} onClick={() => selected()} src={Images.showdownSelecter} css={getShowdownSelecterStyle(flip, true)} alt={t("SelectThisShodownPlace")} />
+    return <div {...props} css={[getShowdownSelecterStyle(flip), getSize(showdownSelecterWidth, showdownSelecterHeight)]} onClick={selected} >
+      <Picture src={Images.showdownSelecter} css={[fullSizeStyle, hideWhenHoverStyle]} alt={t("SelectThisShowdownPlace")} />
+      <Picture src={Images.showdownSelecterHover} css={[fullSizeStyle, showWhenHoverStyle]} alt={t("SelectThisShowdownPlace")} />
+    </div>
   }
 }
 
-const getShowdownSelecterStyle = (flip: boolean, clickable: boolean) => css`
+const getShowdownSelecterStyle = (flip: boolean) => css`
   transform: scaleX(${flip ? -1 : 1});
-  ${clickable && 'cursor: pointer'}
+  cursor: pointer;
 `
-//  ${ isOver && 'filter: drop-shadow(0 1em 1em white) drop-shadow(0 0 2em #30FF30FF);' }
+
+const getShowdownSelecterVisibility = (visible: boolean) => css`
+  opacity: ${visible ? 1 : 0};
+  &:hover {
+    opacity: ${visible ? 0 : 1};
+  }
+`
 
