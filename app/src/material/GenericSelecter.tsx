@@ -23,7 +23,7 @@ const genericSelecterStyle = css`
   background-color: #FFFFFF20;
   border: 0.4em solid #30FF30FF;
   &:hover {
-    filter: drop-shadow(0 1em 1em white) drop-shadow(0 0 2em #30FF30FF);
+    background-color: #29db0680;
   }
 `
 

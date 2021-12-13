@@ -34,8 +34,8 @@ export default function DoorwaySelecter({ droppable, selected, ...props }: Props
 
 const getDoorwaySelecterStyle = (clickable: boolean, isOver: boolean) => css`
   ${clickable && 'cursor: pointer;'}
-  ${isOver && 'filter: drop-shadow(0 1em 1em white) drop-shadow(0 0 2em #30FF30FF);'}
+  ${isOver && 'background-color: #29db0680;'}
   border: 0.4em solid #30FF30FF;
-  ${clickable && '&:hover { filter: drop-shadow(0 1em 1em white) drop-shadow(0 0 2em #30FF30FF); }'}
+  ${clickable && '&:hover { background-color: #29db0680; }'}
 `
 
