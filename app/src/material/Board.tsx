@@ -2,7 +2,7 @@
 import { css, keyframes } from '@emotion/react'
 import GameState, { isBuildingLocation, Location_Graveyard, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, playerInfoPositions, removedDynamitePositions, getMarqueeSelecterPosition } from '../util/Metrics'
+import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, playerInfoPositions, removedDynamitePositions, getMarqueeSelecterPosition } from '../util/Metrics'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
 import Images from './Images'
@@ -10,7 +10,7 @@ import Meeple, { SelectionStatus } from './Meeple'
 import ShowdownToken from './ShowdownToken'
 import Marquee from './Marquee'
 import AFistfulOfMeeples from '../../../rules/src/AFistfulOfMeeples'
-import { isBuildOrUpgradeMarqueeMove, isChangeCurrentPhaseMove, isConvertGoldBar, isMoveMeeplesMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isResolveMeepleMove, isRollShowdownDiceMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
+import { isBuildOrUpgradeMarqueeMove, isConvertGoldBar, isMoveMeeplesMove, isPlaceInitialMarqueeTileMove, isPlaceMeepleMove, isResolveMeepleMove, isRollShowdownDiceMove, isSelectSourceLocationMove } from '../../../rules/src/moves/Move'
 import MarqueeSelecter from './MarqueeSelecter'
 import PlaceInitialMarqueeTile from '../../../rules/src/moves/PlaceInitialMarqueeTile'
 import { useAnimation, usePlay, usePlayerId } from '@gamepark/react-client'
@@ -22,8 +22,6 @@ import ResolveMeeple from '../../../rules/src/moves/ResolveMeeple'
 import BuildOrUpgradeMarquee, { getBuildOrUpgradeMarqueeMove } from '../../../rules/src/moves/BuildOrUpgradeMarquee'
 import Dice from './Dice'
 import ChangeCurrentPhase from '../../../rules/src/moves/ChangeCurrentPhase'
-import PhaseIndicator from './PhaseIndicator'
-import Phase from '../../../rules/src/Phase'
 import GenericSelecter from './GenericSelecter'
 import MoveMeeples from '../../../rules/src/moves/MoveMeeples'
 import RollShowdownDice from '../../../rules/src/moves/RollShowdownDice'
@@ -52,12 +50,10 @@ export default function Board({ gameState, currentGame }: Props) {
   const placeMeepleAnimation = animation && !animation.action.cancelled && isPlaceMeepleMove(animation.move) ? animation.move : undefined
   const resolveMeepleAnimation = animation && !animation.action.cancelled && isResolveMeepleMove(animation.move) ? animation.move : undefined
   const buildOrUpgradeMarqueeAnimation = animation && !animation.action.cancelled && isBuildOrUpgradeMarqueeMove(animation.move) ? animation.move : undefined
-  const changeCurrentPhaseAnimation = animation && !animation.action.cancelled && isChangeCurrentPhaseMove(animation.move) ? animation.move : undefined
   const moveMeepleAnimation = animation && !animation.action.cancelled && isMoveMeeplesMove(animation.move) ? animation.move : undefined
   const rollShowdownDiceAnimation = animation && !animation.action.cancelled && isRollShowdownDiceMove(animation.move) ? animation.move : undefined
   const convertGoldBarAnimation = animation && !animation.action.cancelled && isConvertGoldBar(animation.move) ? animation.move : undefined
 
-  const currentPhase: number = changeCurrentPhaseAnimation ? changeCurrentPhaseAnimation.phase : gameState.currentPhase
   const removedDynamites: number = 3 - gameState.dynamitesInJail - gameState.dynamitesInMiningBag
 
   return (
@@ -220,13 +216,6 @@ export default function Board({ gameState, currentGame }: Props) {
           }
           return <Meeple css={style} type={meeple} indexInHand={index} draggable={true} key={index} selectionStatus={(index === selectedMeepleIndex) ? SelectionStatus.Selected : SelectionStatus.Selectable} onSelect={() => setSelectedMeepleIndex(index)} />
         })}
-      </>
-
-      <>
-        <PhaseIndicator css={phaseIndicatorMetrics} phase={Phase.SelectSourceLocation} currentPhase={currentPhase} animationDuration={animation?.duration} key='PhaseIndicator1' />
-        <PhaseIndicator css={phaseIndicatorMetrics} phase={Phase.PlaceMeeples} currentPhase={currentPhase} animationDuration={animation?.duration} key='PhaseIndicator2' />
-        <PhaseIndicator css={phaseIndicatorMetrics} phase={Phase.ResolveMeeples} currentPhase={currentPhase} animationDuration={animation?.duration} key='PhaseIndicator3' />
-        <PhaseIndicator css={phaseIndicatorMetrics} phase={Phase.CheckGoldBars} currentPhase={currentPhase} animationDuration={animation?.duration} key='PhaseIndicator4' />
       </>
 
       {(animation === undefined && currentGame.getActivePlayer() === playerColor) &&  // possible moves, only for current player and when no animation is playing
@@ -423,13 +412,6 @@ function getPositionInHand(index: number) {
   return result
 }
 
-const phaseIndicatorMetrics = css`
-position: absolute;
-left: ${phasePosition[0]}em;
-top: ${phasePosition[1]}em;
-width: ${phaseWidth}em;
-height: ${phaseHeight}em;
-`
 
 function getFadeInStyle(duration: number) {
   return css`

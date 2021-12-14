@@ -27,10 +27,6 @@ export const playerInfoPositions = [
   [boardWidth + 1, miningBagTop + miningBagHeight + playerInfoHeight * 3 + 4],
 ]
 
-export const phaseWidth = 15
-export const phaseHeight = 15
-export const phasePosition = [0.6, 33]
-
 export const goldCubeRatio = 128 / 128
 export const goldCubeWidth = 3
 export const goldCubeHeight = goldCubeWidth / goldCubeRatio

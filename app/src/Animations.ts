@@ -39,7 +39,7 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
       case MoveType.MoveMeeples:
         return isActivePlayer ? 1 : 2
       case MoveType.ChangeCurrentPhase:
-        return 0.5
+        return 0
       case MoveType.ResolveShowdown:
         return 0    // TODO
       case MoveType.RollShowdownDice:
