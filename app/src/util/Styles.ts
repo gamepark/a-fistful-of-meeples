@@ -1,4 +1,5 @@
 import { css, keyframes } from "@emotion/react";
+import { dialogHeight, dialogLeft, dialogTop, dialogWidth } from "./Metrics";
 
 export const getPosition = (position: number[]) => css`
   position: absolute;
@@ -43,12 +44,30 @@ export const getTranslationAnimationStyle = (startPosition: number[], endPositio
 	animation: ${translate(startPosition, endPosition)} ${animation_duration}s ease-in-out;
 `
 
+export const dialogArea = css`
+  position: absolute;
+  left: ${dialogLeft}em;
+  top: ${dialogTop}em;
+  width: ${dialogWidth}em;
+  height: ${dialogHeight}em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 export const dialogStyle = css`
   border-color: lightgreen;
+  border: 0.4em solid #29db06FF;
+  border-radius: 2em;
   background: black;
   color: white;
-  text-align: center;
+  padding: 3em;
 `
+
+export const dialogTitleStyle = css`
+  font-size: 4em;
+`
+
 
 export const selecterStyle = css`
   cursor: pointer;

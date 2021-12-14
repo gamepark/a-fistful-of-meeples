@@ -1,10 +1,9 @@
 /** @jsxImportSource @emotion/react */
-//import { css } from '@emotion/react'
 import { css } from '@emotion/react'
-import { Dialog, Picture } from '@gamepark/react-components'
+import { Picture } from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import Images from '../material/Images'
-import { dialogStyle } from './Styles'
+import { dialogArea, dialogStyle, dialogTitleStyle, getSize } from './Styles'
 
 
 type Props = {
@@ -13,18 +12,20 @@ type Props = {
 }
 
 
-export default function YesNoSelecter({ text, answered, ...props }: Props) {
+export default function YesNoSelecter({ text, answered }: Props) {
   const { t } = useTranslation()
 
   return (
-    <Dialog open={true} css={dialogStyle} {...props} >
-      <h3>{text}</h3>
-      <p css={buttonLineStyle}>
-        <button css={buttonStyle} onClick={() => answered(true)} ><Picture src={Images.buttonYes} alt={t('Yes')} /></button>
-        <button css={buttonStyle} onClick={() => answered(false)} ><Picture src={Images.buttonNo} alt={t('No')} /></button>
-      </p>
-    </Dialog>
-
+    <div css={dialogArea} >
+      <div css={dialogStyle}>
+        <div css={dialogTitleStyle}>{text}</div>
+        <div css={getSize(1, 2)} />
+        <div css={buttonLineStyle}>
+          <button css={buttonStyle} onClick={() => answered(true)} ><Picture src={Images.buttonYes} alt={t('Yes')} /></button>
+          <button css={buttonStyle} onClick={() => answered(false)} ><Picture src={Images.buttonNo} alt={t('No')} /></button>
+        </div>
+      </div>
+    </div>
     )
 }
 

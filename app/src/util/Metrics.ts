@@ -27,6 +27,11 @@ export const playerInfoPositions = [
   [boardWidth + 1, miningBagTop + miningBagHeight + playerInfoHeight * 3 + 4],
 ]
 
+export const dialogLeft = 29
+export const dialogTop = 40
+export const dialogWidth = 91.2
+export const dialogHeight = 26.5
+
 export const goldCubeRatio = 128 / 128
 export const goldCubeWidth = 3
 export const goldCubeHeight = goldCubeWidth / goldCubeRatio

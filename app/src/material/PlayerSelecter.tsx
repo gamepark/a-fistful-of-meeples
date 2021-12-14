@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { Dialog } from '@gamepark/react-components'
 import PlayerColor from '../../../rules/src/PlayerColor'
-import { dialogStyle } from '../util/Styles'
+import { dialogArea, dialogStyle, dialogTitleStyle, getSize } from '../util/Styles'
 import ShowdownToken from './ShowdownToken'
 
 
@@ -13,23 +12,27 @@ type Props = {
 }
 
 
-export default function PlayerSelecter({ text, players, selected, ...props }: Props) {
+export default function PlayerSelecter({ text, players, selected }: Props) {
   return (
-    <Dialog open={true} css={dialogStyle} {...props} >
-
-      <h3>{text}</h3>
-      <p css={buttonLineStyle}>
-        {players.map(player =>
-          <button css={buttonStyle} onClick={() => selected(player)} key={player}><ShowdownToken playercolor={player} css={showdownTokenStyle} /></button>
-        )}
-      </p>
-    </Dialog>
+    <div css={dialogArea}>
+      <div css={dialogStyle}>
+        <div css={dialogTitleStyle}>{text}</div>
+        <div css={getSize(1, 2)} />
+        <div css={buttonLineStyle}>
+          {players.map(player =>
+            <button css={buttonStyle} onClick={() => selected(player)} key={player}>
+              <ShowdownToken playercolor={player} css={showdownTokenStyle} />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
   )
 }
 
 const showdownTokenStyle = css`
-  width: 15em;
-  height: 15em;
+  width: 8em;
+  height: 8em;
 `
 
 const buttonStyle = css`
