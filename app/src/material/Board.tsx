@@ -2,11 +2,11 @@
 import { css, keyframes } from '@emotion/react'
 import GameState, { isBuildingLocation, Location_Graveyard, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, playerInfoPositions, removedDynamitePositions } from '../util/Metrics'
+import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, phasePosition, phaseWidth, phaseHeight, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, playerInfoPositions, removedDynamitePositions, getMarqueeSelecterPosition } from '../util/Metrics'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
 import Images from './Images'
-import Meeple from './Meeple'
+import Meeple, { SelectionStatus } from './Meeple'
 import ShowdownToken from './ShowdownToken'
 import Marquee from './Marquee'
 import AFistfulOfMeeples from '../../../rules/src/AFistfulOfMeeples'
@@ -218,7 +218,7 @@ export default function Board({ gameState, currentGame }: Props) {
             }
             style.push(getTransformStyle(startPosition, endPosition, animation.duration))
           }
-          return <Meeple css={style} type={meeple} indexInHand={index} draggable={true} key={index} isSelected={index === selectedMeepleIndex} onSelect={() => setSelectedMeepleIndex(index)} />
+          return <Meeple css={style} type={meeple} indexInHand={index} draggable={true} key={index} selectionStatus={(index === selectedMeepleIndex) ? SelectionStatus.Selected : SelectionStatus.Selectable} onSelect={() => setSelectedMeepleIndex(index)} />
         })}
       </>
 
@@ -236,13 +236,13 @@ export default function Board({ gameState, currentGame }: Props) {
               const marqueeSelected = () => {
                 play(move)
               }
-              return <MarqueeSelecter css={getPosition(marqueesPosition[(move as PlaceInitialMarqueeTile).location])} flip={(move as PlaceInitialMarqueeTile).location > 5} selected={marqueeSelected} key={(move as PlaceInitialMarqueeTile).location} />
+              return <MarqueeSelecter css={getPosition(getMarqueeSelecterPosition((move as PlaceInitialMarqueeTile).location))} flip={(move as PlaceInitialMarqueeTile).location > 5} selected={marqueeSelected} key={(move as PlaceInitialMarqueeTile).location} />
             })
           }
 
           {
             buildOrUpgradeMarqueeMove !== undefined && isBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove) &&
-              <MarqueeSelecter css={getPosition(marqueesPosition[buildOrUpgradeMarqueeMove.space])} flip={buildOrUpgradeMarqueeMove.space > 5} selected={() => play(getBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove.playerId, buildOrUpgradeMarqueeMove.space, true))} />
+              <MarqueeSelecter css={getPosition(getMarqueeSelecterPosition(buildOrUpgradeMarqueeMove.space))} flip={buildOrUpgradeMarqueeMove.space > 5} selected={() => play(getBuildOrUpgradeMarqueeMove(buildOrUpgradeMarqueeMove.playerId, buildOrUpgradeMarqueeMove.space, true))} />
           }
 
           {

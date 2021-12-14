@@ -8,24 +8,29 @@ import { fullSizeStyle } from '../util/Styles'
 import { MEEPLE_DRAG_TYPE } from '../util/Types'
 import Images from './Images'
 
+export enum SelectionStatus {
+  Selectable,
+  Selected
+}
 
 type Props = {
   type: MeepleType
   indexInHand?: number
   draggable?: boolean
-  isSelected?: boolean
+  selectionStatus?: SelectionStatus
   onSelect?: () => void
 } & HTMLAttributes<HTMLDivElement>
 
 
-export default function Meeple({ type, indexInHand, draggable, isSelected, onSelect, ...props }:Props) {
+export default function Meeple({ type, indexInHand, draggable, selectionStatus, onSelect, ...props }:Props) {
   const { t } = useTranslation()
+  const selectionStyle = (selectionStatus === SelectionStatus.Selected) ? selectedMeepleStyle : ((selectionStatus === SelectionStatus.Selectable) ? selectableMeepleStyle : meepleStyle)
 
   if (draggable === true) {
     return (
       <Draggable
         {...props}
-        css={(isSelected === true) ? selectedMeepleStyle : meepleStyle}
+        css={selectionStyle}
         type={MEEPLE_DRAG_TYPE}
         item={{ indexInHand: indexInHand }}
         draggable={true}
@@ -37,7 +42,7 @@ export default function Meeple({ type, indexInHand, draggable, isSelected, onSel
       </Draggable>
     )
   } else {
-    return <Picture {...props} onClick={onSelect} css={(isSelected === true) ? selectedMeepleStyle : meepleStyle} src={getMeepleImage(type)} alt={t(getMeepleName(type))} />
+    return <Picture {...props} onClick={onSelect} css={selectionStyle} src={getMeepleImage(type)} alt={t(getMeepleName(type))} />
   }
 }
 
@@ -79,7 +84,11 @@ const meepleStyle = css`
   filter: drop-shadow(0 0 0.2em white);
 `
 
+const selectableMeepleStyle = css`
+  filter: drop-shadow(0 0 0.2em #29db06FF) drop-shadow(0 0 0.2em #29db06FF);
+`
+
 const selectedMeepleStyle = css`
-  filter: drop-shadow(0 0 0.2em #30FF30FF) drop-shadow(0 0 0.2em #30FF30FF) drop-shadow(0 0 0.2em #30FF30FF) drop-shadow(0 0 0.2em #30FF30FF);
+  filter: drop-shadow(0 0 0.2em #29db06FF) drop-shadow(0 0 0.2em #29db06FF) drop-shadow(0 0 0.2em #00FF00FF) drop-shadow(0 0 0.5em #00FF00FF);
 `
 

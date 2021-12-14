@@ -3,7 +3,7 @@ import { css } from '@emotion/react'
 import { Picture } from '@gamepark/react-components'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
-import { marqueeHeight, marqueeWidth } from '../util/Metrics'
+import { marqueeSelecterHeight, marqueeSelecterWidth } from '../util/Metrics'
 import { fullSizeStyle, getSize, hideWhenHoverStyle, showWhenHoverStyle } from '../util/Styles'
 import Images from './Images'
 
@@ -22,7 +22,7 @@ export default function MarqueeSelecter({ flip, selected, ...props }: Props) {
   };
 
   return (
-    <div {...props} css={[getMarqueeSelecterStyle(flip), getSize(marqueeWidth, marqueeHeight)]} onClick={onSelectMarquee} >
+    <div {...props} css={[getMarqueeSelecterStyle(flip), getSize(marqueeSelecterWidth, marqueeSelecterHeight)]} onClick={onSelectMarquee} >
       <Picture src={Images.marqueeSelecter} css={[fullSizeStyle, hideWhenHoverStyle]} alt={t("SelectThisMarqueePlace")} />
       <Picture src={Images.marqueeSelecterHover} css={[fullSizeStyle, showWhenHoverStyle] } alt={t("SelectThisMarqueePlace")} />
     </div>
