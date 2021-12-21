@@ -23,8 +23,8 @@ import MiningBag from './material/MiningBag'
 import PlayerInfo, { getMarqueePositionInPlayerInfo } from './material/PlayerInfo'
 import PlayerSelecter from './material/PlayerSelecter'
 import StoneCube from './material/StoneCube'
-import { letterBoxHeight, letterBoxWidth, marqueesPosition, miningBagHeight, miningBagLeft, miningBagTop, miningBagWidth, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
-import { getTranslationAnimationStyle } from './util/Styles'
+import { letterBoxHeight, letterBoxWidth, marqueesPosition, miningBagLeft, miningBagTop, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
+import { getPosition, getTranslationAnimationStyle } from './util/Styles'
 import YesNoSelecter from './util/YesNoSelecter'
 
 type Props = {
@@ -72,7 +72,7 @@ export default function GameDisplay({ game }: Props) {
 
   return (
     <Letterbox id="letterbox" css={letterBoxStyle} width={letterBoxWidth} height={letterBoxHeight} top={0}>
-      <MiningBag gold={game.goldCubesInMiningBag} stone={game.stoneCubesInMiningBag} dynamite={game.dynamitesInMiningBag} css={miningBagMetrics} />
+      <MiningBag gold={game.goldCubesInMiningBag} stone={game.stoneCubesInMiningBag} dynamite={game.dynamitesInMiningBag} css={getPosition([miningBagLeft, miningBagTop])} />
       <>
         {game.players.map((playerState, index) =>
           <PlayerInfo css={getPlayerInfoMetrics(index)} playerState={playerState} gameState={game} key={index} buildingMarqueeAnimation={buildingMarqueeOwner === playerState.color} />
@@ -124,14 +124,6 @@ const fadeIn = keyframes`
 
 const letterBoxStyle = css`
   animation: ${fadeIn} 3s ease-in forwards;
-`
-
-const miningBagMetrics = css`
-position: absolute;
-left: ${miningBagLeft}em;
-top: ${miningBagTop}em;
-width: ${miningBagWidth}em;
-height: ${miningBagHeight}em;
 `
 
 const getPlayerInfoMetrics = (index: number) => css`

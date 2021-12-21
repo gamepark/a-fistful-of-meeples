@@ -13,6 +13,7 @@ export const boardLeft = 0
 export const boardTop = 7
 
 export const miningBagRatio = 784 / 764
+export const miningBagAreaWidth = 25
 export const miningBagWidth = 15
 export const miningBagHeight = miningBagWidth / miningBagRatio
 export const miningBagLeft = boardWidth + 1

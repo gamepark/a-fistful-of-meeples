@@ -1,7 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
-import { HTMLAttributes } from 'react'
+import { Picture } from '@gamepark/react-components'
+import { HTMLAttributes, useState } from 'react'
+import { miningBagWidth, miningBagHeight, miningBagAreaWidth } from '../util/Metrics'
+import { getSize } from '../util/Styles'
+import Dynamite from './Dynamite'
+import GoldCube from './GoldCube'
 import Images from './Images'
+import StoneCube from './StoneCube'
 
 
 type Props = {
@@ -11,41 +17,48 @@ type Props = {
 } & HTMLAttributes<HTMLDivElement>
 
 
-export default function MiningBag(props: Props) {
+export default function MiningBag({ gold, stone, dynamite, ...props }: Props) {
+  const [showContent, setShowContent] = useState<boolean>(false)
+
   return (
-    <div css={miningBagStyle} {...props} >
-      <div css={goldAmountStyle}>{props.gold}</div>
-      <div css={stoneAmountStyle}>{props.stone}</div>
-      <div css={dynamiteAmountStyle}>{props.dynamite}</div>
+    <div onClick={() => setShowContent(!showContent)} css={[mainStyle, getSize(miningBagAreaWidth, miningBagHeight)]} {...props} >
+      <Picture src={Images.miningBag} onClick={() => setShowContent(!showContent)} css={[getSize(miningBagWidth, miningBagHeight), miningBagStyle]} />
+      <div css={getPanelStyle(showContent)} >
+        <div css={itemStyle}><GoldCube css={[marginStyle, getSize(1.5, 1.5)]} />{gold}</div>
+        <div css={itemStyle}><StoneCube css={[marginStyle, getSize(1.5, 1.5)]}/>{stone}</div>
+        <div css={itemStyle}><Dynamite css={[marginStyle, getSize(1.5, 1.5)]}/>{dynamite}</div>
+      </div>
     </div>
   )
 }
 
+const mainStyle = css`
+  display: flex;
+`
 
 const miningBagStyle = css`
-  background-image: url(${Images.miningBag});
-  background-color: #00000000;
-  background-size: cover;
-  color: white;
+  filter: drop-shadow(0 0 0.4em white);
 `
 
-const goldAmountStyle = css`
-  position: absolute;
-  left: 55%;
-  top: 22%;
-  font-size: 1rem;
+function getPanelStyle(isOpen: boolean) {
+  return css`
+  transition: transform 1s;
+  transform: scaleX(${isOpen ? 1 : 0});
+  transform-origin: left;
+  display: flex;
+  flex-direction: column;
+`
+}
+
+const itemStyle = css`
+  display: flex;
+  flex-direction: row;
+  justify-content: 
+  align-items: center;
+  font-size: 1.5rem;
 `
 
-const stoneAmountStyle = css`
-  position: absolute;
-  left: 60%;
-  top: 47%;
-  font-size: 1rem;
-`
-
-const dynamiteAmountStyle = css`
-  position: absolute;
-  left: 65%;
-  top: 72%;
-  font-size: 1rem;
+const marginStyle = css`
+  margin-left: 0.5em;
+  margin-right: 0.5em;
 `

@@ -76,3 +76,10 @@ export const selecterStyle = css`
   &:hover { background-color: #29db0680; }
 `
 
+export const darkOutlineStyle = css`
+  filter: drop-shadow(0 0 0.02em black) drop-shadow(0 0 0.02em black);
+`
+
+export const lightOutlineStyle = css`
+  filter: drop-shadow(0 0 0.02em white) drop-shadow(0 0 0.02em white);
+`

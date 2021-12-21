@@ -16,6 +16,7 @@ import { goldBarRatio } from '../util/Metrics'
 import { getPlayerName } from '../../../rules/src/AFistfulOfMeeplesOptions'
 import Phase from '../../../rules/src/Phase'
 import Marquee from './Marquee'
+import { getSize } from '../util/Styles'
 
 
 type Props = {
@@ -56,11 +57,11 @@ export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnim
       </div>
 
       <div css={getItemStyle(4, 60, 90)}>
-        <StoneCube css={getStoneCubeStyle} />
+        <StoneCube css={getSize(1.3, 1.3)} />
         {playerState.stones}
-        <GoldCube css={getGoldCubeStyle} />
+        <GoldCube css={getSize(1.5, 1.5)} />
         {playerState.goldPieces}
-        <GoldBar css={getGoldBarStyle} />
+        <GoldBar css={goldBarStyle} />
         {playerState.goldBars}
       </div>
     </div>
@@ -127,17 +128,9 @@ const getItemStyle = (left: number, top: number, width: number) => css`
   align-items: center;
 `
 
-const getStoneCubeStyle = css`
-  width: 1.3em;
-  height: 1.3em;
-`
 
-const getGoldCubeStyle = css`
-  width: 1.5em;
-  height: 1.5em;
-`
 
-const getGoldBarStyle = css`
+const goldBarStyle = css`
   width: 1.5em;
   height: ${1.5 / goldBarRatio}em;
   transform: rotate(270deg);

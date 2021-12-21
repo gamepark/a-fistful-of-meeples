@@ -1,7 +1,7 @@
 //import { isSafari } from 'react-device-detect'
 import { isSafari } from 'react-device-detect'
 import board from '../images/Board.jpg'
-import miningBag from '../images/MiningBagWithCubes.png'
+import miningBag from '../images/MiningBag.png'
 import goldBar from '../images/GoldBar.png'
 import goldCube from '../images/GoldCube.png'
 import stoneCube from '../images/StoneCube.png'
