@@ -83,7 +83,7 @@ function getPlayerInfoStyle(isActive: boolean, playerColor: PlayerColor) {
   return css`
   background-color: #${color.toString(16) + (isActive ? 'D0' : '60')};
   border-radius: 4em;
-  border: 0.3em solid #${color.toString(16)};
+  border: ${isActive ? 0.5 : 0.3}em solid #${(isActive ? 0xffd700 : color).toString(16)};
 `
 }
 
@@ -131,13 +131,13 @@ const infosStyle = css`
 
 const resourceStyle = css`
   display: flex;
-  align-items: center;
+  align-content: center;
 `
 
 const goldBarStyle = css`
   width: 1.5em;
   height: ${1.5 / goldBarRatio}em;
-  transform: rotate(270deg);
+  transform: translate(0, -0.6em) rotate(270deg);
 `
 
 const spacingStyle = css`
