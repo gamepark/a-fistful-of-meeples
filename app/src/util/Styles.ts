@@ -66,6 +66,7 @@ export const dialogStyle = css`
 
 export const dialogTitleStyle = css`
   font-size: 4em;
+  text-shadow: 0 0 0.3em black;
 `
 
 

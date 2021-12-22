@@ -30,7 +30,7 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
       case MoveType.RerollShowdownDice:
         return 0
       case MoveType.DrawFromBag:
-        return 1
+        return 2
       case MoveType.SendExtraMeeplesToSaloon:
         return 0    // TODO
       case MoveType.DynamiteExplosion:
@@ -43,9 +43,9 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
       case MoveType.ResolveShowdown:
         return 0    // TODO
       case MoveType.RollShowdownDice:
-        return 3
+        return 2.5
       case MoveType.ConvertGoldBar:
-        return 3
+        return 2.5
       default:
         return move
     }

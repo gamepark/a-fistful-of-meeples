@@ -24,7 +24,7 @@ import PlayerInfo, { getMarqueePositionInPlayerInfo } from './material/PlayerInf
 import PlayerSelecter from './material/PlayerSelecter'
 import StoneCube from './material/StoneCube'
 import { letterBoxHeight, letterBoxWidth, marqueesPosition, miningBagLeft, miningBagTop, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
-import { getPosition, getTranslationAnimationStyle } from './util/Styles'
+import { getPosition } from './util/Styles'
 import YesNoSelecter from './util/YesNoSelecter'
 
 type Props = {
@@ -83,16 +83,16 @@ export default function GameDisplay({ game }: Props) {
       <>
         {animation && drawFromBagAnimation && drawFromBagAnimation.content.map((cube, index) => {
           const playerIndex = game.players.findIndex(state => state.color === drawFromBagAnimation.playerId)
-          const startPosition = [miningBagLeft + 1 + index * 4, miningBagTop]
+          const startPosition = [miningBagLeft + 3 + index, miningBagTop + 6]
           const endPosition = playerInfoPositions[playerIndex]
           const getStyle = (endX: number, endY: number) => getCubeStyle(startPosition, [endX, endY], animation.duration)
           switch (cube) {
             case MiningBagContent.Dynamite:
               return <Dynamite key={100 + index} css={getStyle(72.8, 51.2)} />
             case MiningBagContent.Gold:
-              return <GoldCube key={100 + index} css={getStyle(endPosition[0] + 11.5, endPosition[1] + 10.6)} />
+              return <GoldCube key={100 + index} css={getStyle(endPosition[0] + 12.4, endPosition[1] + 12.4)} />
             case MiningBagContent.Stone:
-              return <StoneCube key={100 + index} css={getStyle(endPosition[0] + 1.7, endPosition[1] + 10.5)} />
+              return <StoneCube key={100 + index} css={getStyle(endPosition[0] + 1.6, endPosition[1] + 12.4)} />
           }
           return undefined
         })}
@@ -134,14 +134,21 @@ const getPlayerInfoMetrics = (index: number) => css`
   height: ${playerInfoHeight}em;
 `
 
+const transformFromBag = (startPosition: number[], endPosition: number[]) => keyframes`
+	0%	{ transform: translate(${startPosition[0] - (miningBagLeft + 4)}em, 0) scale(0.2, 0.2); }
+	40%	{ transform: translate(0, -6em); }
+	100%	{ transform: translate(${endPosition[0] - startPosition[0]}em, ${endPosition[1] - startPosition[1]}em); }
+`
+
 const getCubeStyle = (startPosition: number[], endPosition: number[], animation_duration: number) =>
-  [css`
+  css`
   position: absolute;
   left: ${startPosition[0]}em;
   top: ${startPosition[1]}em;
   width: 4em; 
   height: 4em;
-`, getTranslationAnimationStyle(startPosition, endPosition, animation_duration)]
+  animation: ${transformFromBag(startPosition, endPosition)} ${animation_duration}s ease-in-out;
+`
 
 const dynamiteExplosionStyle = css`
   position: absolute;
@@ -154,7 +161,7 @@ const dynamiteExplosionStyle = css`
 
 const getMarqueeAnimation = (startPosition: number[], endPosition: number[], flip: boolean) => keyframes`
 	0%	{ transform: translate(0, 0); }
-  30% { transform: translate(0, -7.5em); }
+  30% { transform: translate(-2em, -7.5em); }
   100% { transform: translate(${endPosition[0] - startPosition[0]}em, ${endPosition[1] - startPosition[1]}em) ${flip && 'rotate(180deg)'}; }
 `
 

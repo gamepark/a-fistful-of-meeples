@@ -64,8 +64,10 @@ export default function Board({ gameState, currentGame }: Props) {
           const startPosition = goldBarPositions[index]
           const playerIndex = gameState.players.findIndex(state => state.color === gameState.activePlayer)
           let style = [getGoldBarStyle(startPosition)]
-          if ((animation && convertGoldBarAnimation && index === gameState.goldBarsInBank - 1))
-            style.push(getTransformStyle(startPosition, playerInfoPositions[playerIndex], animation.duration))
+          if ((animation && convertGoldBarAnimation && index === gameState.goldBarsInBank - 1)) {
+            const endPosition = [playerInfoPositions[playerIndex][0] + 23, playerInfoPositions[playerIndex][1] + 4]
+            style.push(getConvertGoldBarTransformStyle(startPosition, endPosition, animation.duration))
+          }
           return <GoldBar css={style} key={index} />
           })}
         </>
@@ -475,3 +477,9 @@ function getTransformStyle(startPosition: Array<number>, endPosition: Array<numb
 `
 }
 
+function getConvertGoldBarTransformStyle(startPosition: Array<number>, endPosition: Array<number>, duration: number) {
+  return css`
+  transform: translate(${endPosition[0] - startPosition[0]}em, ${endPosition[1] - startPosition[1]}em) rotate(-90deg);
+  transition: transform ${duration}s ease-in-out;
+`
+}

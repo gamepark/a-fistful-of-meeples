@@ -42,11 +42,17 @@ const miningBagStyle = css`
 
 function getPanelStyle(isOpen: boolean) {
   return css`
+  border: 0.4em solid #606060;
+  border-radius: 1em;
+  background: black;
+
   transition: transform 1s;
   transform: scaleX(${isOpen ? 1 : 0});
   transform-origin: left;
   display: flex;
   flex-direction: column;
+  padding: 0.5em 1em 0.5em 1em;
+  margin-left: 0.5em;
 `
 }
 
@@ -55,10 +61,11 @@ const itemStyle = css`
   flex-direction: row;
   justify-content: 
   align-items: center;
-  font-size: 1.5rem;
+  font-size: 2.6em;
+  font-weight: bold;
+  text-shadow: 0 0 0.3em black;
 `
 
 const marginStyle = css`
-  margin-left: 0.5em;
-  margin-right: 0.5em;
+  margin: 0 0.5em 0 0;
 `

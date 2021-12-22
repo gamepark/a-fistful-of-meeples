@@ -59,7 +59,7 @@ export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnim
       <div css={getItemStyle(4, 60, 90)}>
         <StoneCube css={getSize(1.3, 1.3)} />
         {playerState.stones}
-        <GoldCube css={getSize(1.5, 1.5)} />
+        <GoldCube css={getSize(1.3, 1.3)} />
         {playerState.goldPieces}
         <GoldBar css={goldBarStyle} />
         {playerState.goldBars}
@@ -123,6 +123,7 @@ const getItemStyle = (left: number, top: number, width: number) => css`
   width: ${width}%;
   font-size: 3em;
   font-weight: bold;
+  text-shadow: 0 0 0.3em black;
   display: flex;
   justify-content: space-between;
   align-items: center;
