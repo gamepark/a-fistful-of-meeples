@@ -47,7 +47,7 @@ export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnim
         <Picture alt={t('Player avatar')} src={Images.avatar} css={[avatarStyle, fallbackAvatarStyle(playerState.color)]} />
       }
 
-      <div css={getItemStyle(2, 46, 90)}>
+      <div css={[getItemStyle(2, 46, 90), infosStyle]}>
         <div>{playerInfo?.name ?? getPlayerName(playerState.color, t)}</div>
         <div>
           {playerInfo?.time?.playing && <PlayerTimer playerId={playerState.color} />}
@@ -56,13 +56,10 @@ export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnim
         </div>
       </div>
 
-      <div css={getItemStyle(4, 60, 90)}>
-        <StoneCube css={getSize(1.3, 1.3)} />
-        {playerState.stones}
-        <GoldCube css={getSize(1.3, 1.3)} />
-        {playerState.goldPieces}
-        <GoldBar css={goldBarStyle} />
-        {playerState.goldBars}
+      <div css={[getItemStyle(-2, 70, 90), resourceStyle]}>
+        {(playerState.stones > 0) && <div css={resourceStyle}><StoneCube css={[spacingStyle, getSize(1.3, 1.3)]} />{playerState.stones}</div>}
+        {(playerState.goldPieces > 0) && <div css={resourceStyle}><GoldCube css={[spacingStyle, getSize(1.3, 1.3)]} />{playerState.goldPieces}</div>}
+        {(playerState.goldBars > 0) && <div css={resourceStyle}><GoldBar css={[spacingStyle, goldBarStyle]} />{playerState.goldBars}</div>}
       </div>
     </div>
   )
@@ -124,12 +121,18 @@ const getItemStyle = (left: number, top: number, width: number) => css`
   font-size: 3em;
   font-weight: bold;
   text-shadow: 0 0 0.3em black;
+`
+
+const infosStyle = css`
   display: flex;
   justify-content: space-between;
   align-items: center;
 `
 
-
+const resourceStyle = css`
+  display: flex;
+  align-items: center;
+`
 
 const goldBarStyle = css`
   width: 1.5em;
@@ -137,3 +140,7 @@ const goldBarStyle = css`
   transform: rotate(270deg);
 `
 
+const spacingStyle = css`
+  margin-left: 1em;
+  margin-right: 0.5em;
+`
