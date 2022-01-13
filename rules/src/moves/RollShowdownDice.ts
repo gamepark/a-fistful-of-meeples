@@ -9,6 +9,10 @@ type RollShowdownDice = {
 
 export default RollShowdownDice
 
+export function getRollShowdownDiceMove(value: number, location: number): RollShowdownDice {
+  return { type: MoveType.RollShowdownDice, value: value, location: location }
+}
+
 export function rollShowdownDice(state: GameState, move: RollShowdownDice) {
   switch (move.location) {
     case Location_Showdown0:
@@ -20,4 +24,7 @@ export function rollShowdownDice(state: GameState, move: RollShowdownDice) {
     default:
       return console.error('Invalid location ', move.location, ' for rolling showdown dice')
   }
+
+  if (state.tutorial !== undefined)
+    state.tutorial++
 }

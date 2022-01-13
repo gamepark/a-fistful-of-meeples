@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import {css, keyframes} from '@emotion/react'
 import GameState, { getPlayerRemainingMarquees } from '@gamepark/a-fistful-of-meeples/GameState'
-import { useAnimation, usePlay, usePlayerId } from '@gamepark/react-client'
+import { useAnimation, usePlay, usePlayerId, useTutorial } from '@gamepark/react-client'
 import {Letterbox, Picture} from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
 import AFistfulOfMeeples from '../../rules/src/AFistfulOfMeeples'
@@ -23,6 +23,7 @@ import MiningBag from './material/MiningBag'
 import PlayerInfo, { getMarqueePositionInPlayerInfo } from './material/PlayerInfo'
 import PlayerSelecter from './material/PlayerSelecter'
 import StoneCube from './material/StoneCube'
+import TutorialPopup from './tutorial/TutorialPopup'
 import { letterBoxHeight, letterBoxWidth, marqueesPosition, miningBagLeft, miningBagTop, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
 import { getPosition } from './util/Styles'
 import YesNoSelecter from './util/YesNoSelecter'
@@ -36,6 +37,7 @@ export default function GameDisplay({ game }: Props) {
   const play = usePlay()
   const playerColor = usePlayerId<PlayerColor>()
   const currentGame = new AFistfulOfMeeples(game)
+  const tutorial = useTutorial()
   const animation = useAnimation<DrawFromBag | DynamiteExplosion | BuildOrUpgradeMarquee | PlaceInitialMarqueeTile>(animation => animation?.action.cancelled ?? true)
   const drawFromBagAnimation = animation && !animation.action.cancelled && isDrawFromBagMove(animation.move) ? animation.move : undefined
   const dynamiteExplosionAnimation = animation && !animation.action.cancelled && isDynamiteExplosion(animation.move) ? animation.move : undefined
@@ -106,6 +108,8 @@ export default function GameDisplay({ game }: Props) {
 
         {popup}
       </>
+
+      {tutorial && <TutorialPopup game={game} tutorial={tutorial} />}
 
     </Letterbox>
   )

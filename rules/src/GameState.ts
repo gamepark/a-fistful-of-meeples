@@ -97,13 +97,16 @@ type GameState = {
   previousMeepleLocation?: number // Space where previous meeple was placed (or location where meeples where taken from)
 
   pendingEffects: PendingEffect[] // effects which must be resolved before going on with the game. 
+
+  tutorial?: number // used to draw specific 'random' values in tutorial
 }
 
 export default GameState
 
-export function initialiseGameState(options: AFistfulOfMeeplesOptions): GameState {
-  let gameState: GameState = {
-    players: options.players.map(player => initialisePlayerState(player)),
+export function createEmptyGameState(): GameState {
+  // creates an intial GameState without players, startingPlayer, activePlayer nor meeples
+  return {
+    players: [],
 
     goldBarsInBank: 6,
     dynamitesInJail: 3,
@@ -114,12 +117,12 @@ export function initialiseGameState(options: AFistfulOfMeeplesOptions): GameStat
     jail: [],
     graveyard: [],
     buildings: new Array<MeepleType[]>(12),
-    doorways: new Array<(MeepleType|null)>(12).fill(null),
+    doorways: new Array<(MeepleType | null)>(12).fill(null),
     showdowns: [{ meeple: undefined, owner: undefined, dice: 0 }, { meeple: undefined, owner: undefined, dice: 0 }],
     marquees: new Array<Marquee>(12).fill({ owner: undefined, upgraded: false }, 0, 12),
 
-    startingPlayer: options.players[0].id,
-    activePlayer: options.players[options.players.length - 1].id,
+    startingPlayer: 0,
+    activePlayer: 0,
     currentPhase: Phase.PlaceInitialMarqueeTiles,
     meeplesInHand: [],
     meeplePlacingDirection: undefined,
@@ -127,7 +130,16 @@ export function initialiseGameState(options: AFistfulOfMeeplesOptions): GameStat
 
     pendingEffects: [],
   }
+}
 
+export function initialiseGameState(options: AFistfulOfMeeplesOptions): GameState {
+  let gameState: GameState = createEmptyGameState()
+
+  gameState.players = options.players.map(player => initialisePlayerState(player.id))
+  gameState.startingPlayer = options.players[0].id
+  gameState.activePlayer = options.players[options.players.length - 1].id
+
+ 
   let meeples: MeepleType[] = shuffle(new Array<MeepleType>(36).fill(MeepleType.Deputy, 0, 4).fill(MeepleType.Robber, 4, 9).fill(MeepleType.Miner, 9, 15).fill(MeepleType.Builder, 15, 36));
   let i: number;
   for (i = 0; i < 12; ++i) {

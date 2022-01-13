@@ -1,5 +1,4 @@
 import PlayerColor from './PlayerColor'
-import { AFistfulOfMeeplesPlayerOptions } from './AFistfulOfMeeplesOptions'
 
 type PlayerState = {
   color: PlayerColor
@@ -8,9 +7,9 @@ type PlayerState = {
   stones: number
 }
 
-export function initialisePlayerState(playerOptions: AFistfulOfMeeplesPlayerOptions): PlayerState {
+export function initialisePlayerState(color: PlayerColor): PlayerState {
   return {
-    color: playerOptions.id,
+    color: color,
     goldBars: 0,
     goldPieces: 0,
     stones: 0

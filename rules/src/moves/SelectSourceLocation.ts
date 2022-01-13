@@ -10,6 +10,11 @@ type SelectSourceLocation = {
 
 export default SelectSourceLocation
 
+export function getSelectSourceLocationMove(player: PlayerColor, location: number): SelectSourceLocation {
+  return { type: MoveType.SelectSourceLocation, playerId: player, location: location }
+}
+
+
 export function selectSourceLocation(state: GameState, move: SelectSourceLocation) {
   if (state.players.find(player => player.color === move.playerId) === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
   if (!((move.location >= 0 && move.location < 12) || move.location == Location_Saloon || move.location == Location_Jail)) return console.error('Invalid location ', move.location, ' for taking meeples')

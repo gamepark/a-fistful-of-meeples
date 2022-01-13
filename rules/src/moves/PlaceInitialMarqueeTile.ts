@@ -10,6 +10,10 @@ type PlaceInitialMarqueeTile = {
 
 export default PlaceInitialMarqueeTile
 
+export function getPlaceInitialMarqueeTileMove(player: PlayerColor, location: number): PlaceInitialMarqueeTile {
+  return { type: MoveType.PlaceInitialMarqueeTile, playerId: player, location: location }
+}
+
 export function placeInitialMarqueeTile(state: GameState, move: PlaceInitialMarqueeTile) {
   if (state.players.find(player => player.color === move.playerId) === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
   if (![0, 5, 6, 11].includes(move.location)) return console.error('Invalid location ', move.location, ' for initial marquee tile')

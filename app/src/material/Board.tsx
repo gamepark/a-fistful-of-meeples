@@ -96,7 +96,7 @@ export default function Board({ gameState, currentGame }: Props) {
               return undefined
             return [
               <Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={false} css={getMarqueeStyle(marqueesPosition[index], index)} key={index} />,
-              <Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={true} css={[getMarqueeStyle(marqueesPosition[index], index), getFadeInStyle(animation!.duration)]} key={index} />
+              <Marquee owner={buildOrUpgradeMarqueeAnimation.playerId} upgraded={true} css={[getMarqueeStyle(marqueesPosition[index], index), getFadeInStyle(animation!.duration)]} key='animatedMarquee' />
             ]
           } else if (placeInitialMarqueeTileAnimation && placeInitialMarqueeTileAnimation.location === index) {
             return undefined

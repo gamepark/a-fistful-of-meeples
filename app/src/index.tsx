@@ -9,6 +9,7 @@ import AFistfulOfMeeplesView from './AFistfulOfMeeplesView'
 import AFistfulOfMeeplesAnimations from './Animations'
 import App from './App'
 import translations from './translations.json'
+import AFistfulOfMeeplesTutorial from './tutorial/Tutorial'
 
 setupTranslation(translations, {debug: false})
 
@@ -61,8 +62,13 @@ const style = css`
 
 ReactDOM.render(
   <StrictMode>
-    <GameProvider game="a-fistful-of-meeples" Rules={AFistfulOfMeeples} RulesView={AFistfulOfMeeplesView} optionsSpec={AFistfulOfMeeplesOptionsSpec}
-                  animations={AFistfulOfMeeplesAnimations}>
+    <GameProvider
+      game="a-fistful-of-meeples"
+      Rules={AFistfulOfMeeples}
+      RulesView={AFistfulOfMeeplesView}
+      optionsSpec={AFistfulOfMeeplesOptionsSpec}
+      tutorial={AFistfulOfMeeplesTutorial}
+      animations={AFistfulOfMeeplesAnimations}>
       <App/>
     </GameProvider>
     <Global styles={style}/>

@@ -14,6 +14,10 @@ type ResolveMeeple = {
 
 export default ResolveMeeple
 
+export function getResolveMeepleMove(player: PlayerColor, space: number): ResolveMeeple {
+  return { type: MoveType.ResolveMeeple, playerId: player, space: space }
+}
+
 export function resolveMeeple(state: GameState, move: ResolveMeeple) {
   const player = state.players.find(player => player.color === move.playerId)
   if (player === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')

@@ -11,15 +11,15 @@ import { getPlaceMeepleMove, isValidSpaceToPlaceMeeple, placeMeeple } from './mo
 import { chooseAnotherPlayerToPlaceShowdownToken, getChooseAnotherPlayerShowdownTokenMove } from './moves/ChooseAnotherPlayerShowdownToken'
 import { resolveMeeple } from './moves/ResolveMeeple'
 import { buildOrUpgradeMarquee, getBuildOrUpgradeMarqueeMove } from './moves/BuildOrUpgradeMarquee'
-import { drawFromBag } from './moves/DrawFromBag'
+import { drawFromBag, getDrawFromBagMove } from './moves/DrawFromBag'
 import { sendExtraMeeplesToSaloon } from './moves/SendExtraMeeplesToSaloon'
 import { dynamiteExplosion } from './moves/DynamiteExplosion'
 import { moveMeeples } from './moves/MoveMeeples'
 import { resolveShowdown } from './moves/ResolveShowdown'
 import { getRerollShowdownDiceMove, rerollShowdownDice } from './moves/RerollShowdownDice'
 import { canTradeGoldBar } from './moves/ConvertGoldBar'
-import { drawCubesFromBag } from './MiningBag'
-import { rollShowdownDice } from './moves/RollShowdownDice'
+import MiningBagContent, { drawCubesFromBag } from './MiningBag'
+import { getRollShowdownDiceMove, rollShowdownDice } from './moves/RollShowdownDice'
 import { changeCurrentPhase, getChangeCurrentPhaseMove } from './moves/ChangeCurrentPhase'
 import { convertGoldBar } from './moves/ConvertGoldBar'
 
@@ -231,12 +231,38 @@ export function getPredictableMove(state: GameState, serverSide: boolean): void 
     const effect = state.pendingEffects[0]
     switch (effect.type) {
       case PendingEffectType.DrawFromBag:
-        if (serverSide)
-          return { type: MoveType.DrawFromBag, playerId: effect.player, content: drawCubesFromBag(state, effect.amount) }
+        if (serverSide) {
+          switch (state.tutorial) {
+            case 1:
+              return getDrawFromBagMove(effect.player, [MiningBagContent.Gold, MiningBagContent.Stone])
+            case 5:
+              return getDrawFromBagMove(effect.player, [MiningBagContent.Gold, MiningBagContent.Gold, MiningBagContent.Stone])
+            case 6:
+              return getDrawFromBagMove(effect.player, [MiningBagContent.Gold, MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Stone])
+            case 7:
+              return getDrawFromBagMove(effect.player, [MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Gold, MiningBagContent.Stone])
+            case 8:
+              return getDrawFromBagMove(effect.player, [MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Gold])
+            case 9:
+              return getDrawFromBagMove(effect.player, [MiningBagContent.Gold, MiningBagContent.Dynamite])
+            default:
+              return getDrawFromBagMove(effect.player, drawCubesFromBag(state, effect.amount))
+          }
+        }
         return  // if we are on client side, don't draw cubes. It will be done on server side only
       case PendingEffectType.RollShowdownDice:
-        if (serverSide)
-          return { type: MoveType.RollShowdownDice, location: effect.location, value: Math.floor(Math.random() * 6) + 1 }
+        if (serverSide) {
+          switch (state.tutorial) {
+            case 2:
+              return getRollShowdownDiceMove(1, effect.location)
+            case 3:
+              return getRollShowdownDiceMove(4, effect.location)
+            case 4:
+              return getRollShowdownDiceMove(6, effect.location)
+            default:
+              return getRollShowdownDiceMove(Math.floor(Math.random() * 6) + 1, effect.location)
+          }
+        }
         return  // if we are on client side, don't roll dice. It will be done on server side only
       case PendingEffectType.DynamiteExplosion:
         return { type: MoveType.DynamiteExplosion }

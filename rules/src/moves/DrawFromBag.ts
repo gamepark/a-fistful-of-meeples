@@ -11,6 +11,10 @@ type DrawFromBag = {
 
 export default DrawFromBag
 
+export function getDrawFromBagMove(playerId: PlayerColor, content: MiningBagContent[]): DrawFromBag {
+  return { type: MoveType.DrawFromBag, playerId: playerId, content: content }
+}
+
 export function drawFromBag(state: GameState, move: DrawFromBag) {
   const player = state.players.find(player => player.color === move.playerId)
   if (player === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
@@ -31,6 +35,9 @@ export function drawFromBag(state: GameState, move: DrawFromBag) {
         break
     }
   })
+
+  if (state.tutorial !== undefined)
+    state.tutorial++
 }
 
 export function getDrawFromBagPendingEffect(player: PlayerColor, amount: number): PendingEffect {

@@ -47,6 +47,7 @@ import rollingDice from '../images/RollingDice.gif'
 import dynamiteExplosion from '../images/DynamiteExplosion.gif'
 import buttonYes from '../images/ButtonYes.png'
 import buttonNo from '../images/ButtonNo.png'
+import tutorial_arrow from '../images/tutorial-arrow.png'
 
 const Images = {
   board,
@@ -95,7 +96,8 @@ const Images = {
   rollingDice,
   dynamiteExplosion,
   buttonYes,
-  buttonNo
+  buttonNo,
+  tutorial_arrow
 }
 
 if (!isSafari) {
