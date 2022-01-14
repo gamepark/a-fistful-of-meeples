@@ -1,11 +1,13 @@
 /** @jsxImportSource @emotion/react */
 import GameState, { getPlayerScore, PendingEffectType } from '@gamepark/a-fistful-of-meeples/GameState'
-import { Player as PlayerInfo, useAnimation, usePlayers, Animation } from '@gamepark/react-client'
+import { Player as PlayerInfo, useAnimation, usePlayers, Animation, useTutorial, useActions } from '@gamepark/react-client'
 import {TFunction, useTranslation} from 'react-i18next'
 import AFistfulOfMeeples from '../../rules/src/AFistfulOfMeeples'
 import { getPlayerName } from '../../rules/src/AFistfulOfMeeplesOptions'
 import ConvertGoldBar, { getNextGoldBarPrice } from '../../rules/src/moves/ConvertGoldBar'
+import Move from '../../rules/src/moves/Move'
 import MoveType from '../../rules/src/moves/MoveType'
+import PlaceInitialMarqueeTile from '../../rules/src/moves/PlaceInitialMarqueeTile'
 import Phase from '../../rules/src/Phase'
 import PlayerColor from '../../rules/src/PlayerColor'
 import PlayerState from '../../rules/src/PlayerState'
@@ -19,21 +21,34 @@ type Props = {
 export default function HeaderText({loading, game, player}: Props) {
   const { t } = useTranslation()
   const players = usePlayers<PlayerColor>()
-  const animation = useAnimation<ConvertGoldBar>(animation => animation?.action.cancelled ?? true)
+  const animation = useAnimation<ConvertGoldBar | PlaceInitialMarqueeTile>(animation => animation?.action.cancelled ?? true)
+  const tutorial = useTutorial()
+  const actions = useActions<Move, PlayerColor>()
+  const nActions = actions !== undefined ? actions.filter(action => !action.delayed).length : 0
+
 
   if (loading) return <>{t('Game loading...')}</>
   if (!game || !player) return null
 
+  if (tutorial && !animation && player === PlayerColor.Orange) {
+    const tutorialText = getTutorialText(t, game, nActions)
+    if (tutorialText) {
+      return <>{tutorialText}</>
+    }
+  }
+
   return <>{getText(t, game!, player!, players!, animation)}</>
 }
 
-function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[], animation?: Animation<ConvertGoldBar, any>): string {
+function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[], animation?: Animation<any, any>): string {
   const getName = (playerId: PlayerColor) => players.find(p => p.id === playerId)?.name || getPlayerName(playerId, t)
   const currentGame = new AFistfulOfMeeples(game)
   const isActivePlayer: boolean = player === currentGame.getActivePlayer()
 
   if (animation !== undefined) {
     switch (animation.move.type) {
+      case MoveType.PlaceInitialMarqueeTile:
+        return isActivePlayer ? t('You are building a marquee') : t('{ player } is building a Marquee', { player: getName(game.activePlayer!) })
       case MoveType.ConvertGoldBar:
         return t('Trading {amount} gold cubes for a gold bar', { amount: getNextGoldBarPrice(game) })
     }
@@ -141,3 +156,70 @@ function getEndOfGameText(t: TFunction, playersInfo: PlayerInfo<PlayerColor>[], 
   }
   return ''
 }
+
+function getTutorialText(t: TFunction, _game: GameState, nActions: number): string {
+  switch (nActions) {
+    case 0 :
+      return t('tuto.t0.0')
+    case 1:
+      return t('tuto.hdr.1')
+    case 2:
+      return t('tuto.hdr.2')
+    case 3:
+      return t('tuto.hdr.3')
+    case 4:
+      return t('tuto.hdr.4')
+    case 5:
+      return t('tuto.hdr.5')
+    case 6:
+      return t('tuto.hdr.6')
+    case 7:
+      return t('tuto.hdr.7')
+    case 8:
+      return t('tuto.hdr.8')
+    case 14:
+      return t('tuto.hdr.14')
+    case 15:
+      return t('tuto.hdr.15')
+    case 16:
+      return t('tuto.hdr.16')
+    case 17:
+      return t('tuto.hdr.17')
+    case 18:
+      return t('tuto.hdr.18')
+    case 19:
+      return t('tuto.hdr.19')
+    case 20:
+      return t('tuto.hdr.20')
+    case 21:
+      return t('tuto.hdr.21')
+    case 22:
+      return t('tuto.hdr.22')
+    case 23:
+      return t('tuto.hdr.23')
+    case 24:
+      return t('tuto.hdr.24')
+    case 25:
+      return t('tuto.hdr.25')
+    case 26:
+      return t('tuto.hdr.26')
+    case 27:
+      return t('tuto.hdr.27')
+    case 30:
+      return t('tuto.hdr.30')
+    case 31:
+      return t('tuto.hdr.31')
+    case 32:
+      return t('tuto.hdr.32')
+    case 33:
+      return t('tuto.hdr.33')
+    case 34:
+      return t('tuto.hdr.34')
+    case 35:
+      return t('tuto.hdr.35')
+    case 36:
+      return t('tuto.hdr.36')
+  }
+  return ''
+}
+
