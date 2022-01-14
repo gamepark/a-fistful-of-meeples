@@ -1,6 +1,6 @@
 {
   "name": "@gamepark/a-fistful-of-meeples",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A Fistful of Meeples - rules for Game Park",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
