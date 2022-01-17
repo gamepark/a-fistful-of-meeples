@@ -44,7 +44,7 @@ export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnim
 
       {playerInfo?.avatar ?
         <Avatar playerId={playerState.color} css={avatarStyle} speechBubbleProps={{ direction: SpeechBubbleDirection.BOTTOM_LEFT }} /> :
-        <Picture alt={t('Player avatar')} src={Images.avatar} css={[avatarStyle, fallbackAvatarStyle(playerState.color)]} />
+        <Picture alt={t('FallbackAvatar')} src={Images.avatar} css={[avatarStyle, fallbackAvatarStyle(playerState.color)]} />
       }
 
       <div css={[getItemStyle(2, 46, 90), infosStyle]}>

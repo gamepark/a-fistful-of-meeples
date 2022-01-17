@@ -4,8 +4,10 @@ import { Player as PlayerInfo, useAnimation, usePlayers, Animation, useTutorial,
 import {TFunction, useTranslation} from 'react-i18next'
 import AFistfulOfMeeples from '../../rules/src/AFistfulOfMeeples'
 import { getPlayerName } from '../../rules/src/AFistfulOfMeeplesOptions'
+import BuildOrUpgradeMarquee from '../../rules/src/moves/BuildOrUpgradeMarquee'
 import ConvertGoldBar, { getNextGoldBarPrice } from '../../rules/src/moves/ConvertGoldBar'
 import Move from '../../rules/src/moves/Move'
+import MoveMeeples from '../../rules/src/moves/MoveMeeples'
 import MoveType from '../../rules/src/moves/MoveType'
 import PlaceInitialMarqueeTile from '../../rules/src/moves/PlaceInitialMarqueeTile'
 import Phase from '../../rules/src/Phase'
@@ -21,7 +23,7 @@ type Props = {
 export default function HeaderText({loading, game, player}: Props) {
   const { t } = useTranslation()
   const players = usePlayers<PlayerColor>()
-  const animation = useAnimation<ConvertGoldBar | PlaceInitialMarqueeTile>(animation => animation?.action.cancelled ?? true)
+  const animation = useAnimation<ConvertGoldBar | PlaceInitialMarqueeTile | MoveMeeples | BuildOrUpgradeMarquee>(animation => animation?.action.cancelled ?? true)
   const tutorial = useTutorial()
   const actions = useActions<Move, PlayerColor>()
   const nActions = actions !== undefined ? actions.filter(action => !action.delayed).length : 0
@@ -48,30 +50,36 @@ function getText(t: TFunction, game: GameState, player: PlayerColor, players: Pl
   if (animation !== undefined) {
     switch (animation.move.type) {
       case MoveType.PlaceInitialMarqueeTile:
-        return isActivePlayer ? t('You are building a marquee') : t('{ player } is building a Marquee', { player: getName(game.activePlayer!) })
+        return isActivePlayer ? t('PlayerBuildingMarquee') : t('OtherPlayerBuildingMarquee', { player: getName(game.activePlayer!) })
       case MoveType.ConvertGoldBar:
-        return t('Trading {amount} gold cubes for a gold bar', { amount: getNextGoldBarPrice(game) })
+        return t('TradingGoldCubesForGoldBar', { amount: getNextGoldBarPrice(game) })
+      case MoveType.MoveMeeples:
+        return t('MovingMeeples')
+      case MoveType.BuildOrUpgradeMarquee:
+        return (game.marquees[(animation.move as BuildOrUpgradeMarquee).space].owner === undefined) ? t('BuildingMarquee') : t('UpgradingMarquee')
     }
   }
 
   if (game.pendingEffects.length > 0) {
     switch (game.pendingEffects[0].type) {
       case PendingEffectType.BuildOrUpgradeMarquee:
-        return isActivePlayer ? t('Choose if you want to build or upgrade a marquee') : t('{player} has to choose whether if wants to build or upgrade a marquee', { player: getName(game.activePlayer!) })
+        if (game.marquees[game.pendingEffects[0].location].owner === undefined)
+          return isActivePlayer ? t('ChooseBuildMarquee') : t('OtherChooseBuildMarquee', { player: getName(game.activePlayer!) })
+        return isActivePlayer ? t('ChooseUpgradeMarquee') : t('OtherChooseUpgradeMarquee', { player: getName(game.activePlayer!) })
       case PendingEffectType.ChooseAnotherPlayerShowdownToken:
-        return isActivePlayer ? t('Choose another player to place his Showdown token') : t('{player} has to choose another player to place his Showdown token', { player: getName(game.activePlayer!) })
+        return isActivePlayer ? t('ChooseAnotherPlayerShowdownToken') : t('OtherChooseAnotherPlayerShowdownToken', { player: getName(game.activePlayer!) })
       case PendingEffectType.ChooseToRerollShowdownDice:
-        return isActivePlayer ? t('You may choose to reroll your Showdown dice') : t('{player} has to choose whether to reroll his showdown dice', { player: getName(game.activePlayer!) })
+        return isActivePlayer ? t('ChooseToRerollShowdownDice') : t('OtherChooseToRerollShowdownDice', { player: getName(game.activePlayer!) })
       case PendingEffectType.DrawFromBag:
-        return t('Drawing pieces from the Mining Bag...')
+        return t('DrawingPiecesFromBag')
       case PendingEffectType.DynamiteExplosion:
-        return t('Dynamite explosion !')
+        return t('DynamiteExplosion')
       case PendingEffectType.MoveMeeples:
-        return t('Moving meeples...')
+        return t('')
       case PendingEffectType.ResolveShowdown:
-        return t('Resolving Showdown...')
+        return t('')
       case PendingEffectType.RollShowdownDice:
-        return t('Rolling dices...')
+        return t('RollingDices')
       default:
         return game.pendingEffects[0]
     }
@@ -79,15 +87,15 @@ function getText(t: TFunction, game: GameState, player: PlayerColor, players: Pl
   
   switch (game.currentPhase) {
     case Phase.PlaceInitialMarqueeTiles:
-      return isActivePlayer ? t('Select a building to place your initial marquee tile') : t('{player} has to select a building to place his initial marquee tile', { player: getName(game.activePlayer!) })
+      return isActivePlayer ? t('SelectInitialMarqueePlace') : t('OtherSelectInitialMarqueePlace', { player: getName(game.activePlayer!) })
     case Phase.SelectSourceLocation:
-      return isActivePlayer ? t('Select a location from which to take meeples') : t('{player} has to select a building for their initial marquee tile', { player: getName(game.activePlayer!) })
+      return isActivePlayer ? t('SelectSourceLocation') : t('OtherSelectSourceLocation', { player: getName(game.activePlayer!) })
     case Phase.PlaceMeeples:
-      return isActivePlayer ? t('Select a meeple and a location to put it on') : t('{player} has to select a meeple and a location to put it on', { player: getName(game.activePlayer!) })
+      return isActivePlayer ? t('PlaceMeeple') : t('OtherPlaceMeeple', { player: getName(game.activePlayer!) })
     case Phase.ResolveMeeples:
-      return isActivePlayer ? t('Select a meeple to resolve') : t('{player} has to select a meeple to resolve', { player: getName(game.activePlayer!) })
+      return isActivePlayer ? t('ResolveMeeple') : t('OtherResolveMeeple', { player: getName(game.activePlayer!) })
     case Phase.CheckGoldBars:
-      return t('Checking for gold bars')
+      return ''
     case Phase.GameOver:
       return getEndOfGameText(t, players, game, player)
     default:
@@ -111,9 +119,9 @@ function getEndOfGameText(t: TFunction, playersInfo: PlayerInfo<PlayerColor>[], 
   }
   if (playersWithHighestScore.length === 1) {
     return (player === playersWithHighestScore[0]) ?
-      t('Victory! You win the game with {score} points', { score: highestScore })
+      t('VictoryPoints', { score: highestScore })
       :
-      t('{player} wins the game with {score} points', { player: getName(playersWithHighestScore[0].color), score: highestScore })
+      t('OtherVictoryPoints', { player: getName(playersWithHighestScore[0].color), score: highestScore })
   }
 
   let highestCubes = -1
@@ -129,26 +137,26 @@ function getEndOfGameText(t: TFunction, playersInfo: PlayerInfo<PlayerColor>[], 
 
   if (playersWithMostCubes.length === 1) {
     if (player === playersWithMostCubes[0]) {
-      return t('Victory! You win the game with {score} points and {cubes} remaining gold and stones',
+      return t('VictoryPointsCubes',
         { score: highestScore, cubes: highestCubes })
     } else {
-      return t('{player} wins the game with {score} points and {cubes} remaining gold and stones',
+      return t('OtherVictoryPointsCubes',
         { player: getName(playersWithMostCubes[0].color), score: highestScore, cubes: highestCubes })
     }
   }
 
   switch (playersWithMostCubes.length) {
     case game.players.length:
-      return t('Perfect tie! All players each have {score} points and {cubes} remaining gold and stones',
+      return t('TieAll',
         { score: highestScore, cubes: highestCubes })
     case 2:
-      return t('Perfect tie! {player1} and {player2} each have {score} points and {cubes} remaining gold and stones',
+      return t('Tie2',
         {
           player1: getName(playersWithMostCubes[0].color), player2: getName(playersWithMostCubes[1].color),
           score: highestScore, cubes: highestCubes
         })
     case 3:
-      return t('Perfect tie! {player1}, {player2} and {player3} each have {score} points and {cubes} remaining gold and stones',
+      return t('Tie3',
         {
           player1: getName(playersWithMostCubes[0].color), player2: getName(playersWithMostCubes[1].color),
           player3: getName(playersWithMostCubes[2].color), score: highestScore, cubes: highestCubes

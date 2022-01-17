@@ -1,5 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { Picture } from '@gamepark/react-components'
+import { TFunction } from 'i18next'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import PlayerColor from '../../../rules/src/PlayerColor'
@@ -15,20 +16,20 @@ export default function ShowdownToken(props: Props) {
   const { t } = useTranslation()
 
   return (
-    <Picture src={getShowdownTokenImage(props.playercolor)} alt={t(getShowdownTokenName(props.playercolor))} {...props} />
+    <Picture src={getShowdownTokenImage(props.playercolor)} alt={getShowdownTokenName(props.playercolor, t)} {...props} />
   )
 }
 
-const getShowdownTokenName = (color: PlayerColor) => {
+const getShowdownTokenName = (color: PlayerColor, t: TFunction):string => {
   switch (color) {
     case PlayerColor.Black:
-      return 'BlackShowdownToken'
+      return t('BlackShowdownToken')
     case PlayerColor.Green:
-      return 'GreenShowdownToken'
+      return t('GreenShowdownToken')
     case PlayerColor.Orange:
-      return 'OrangeShowdownToken'
+      return t('OrangeShowdownToken')
     case PlayerColor.Grey:
-      return 'GreyShowdownToken'
+      return t('GreyShowdownToken')
     default:
       return ''
   }

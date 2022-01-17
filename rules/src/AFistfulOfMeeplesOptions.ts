@@ -14,7 +14,7 @@ export function isGameOptions(arg: GameState | AFistfulOfMeeplesOptions): arg is
 export const AFistfulOfMeeplesOptionsSpec: OptionsSpec<AFistfulOfMeeplesOptions> = {
   players: {
     id: {
-      label: (t: TFunction) => t('Color'),
+      label: (t: TFunction) => t('PlayerColors'),
       values: playerColors,
       valueSpec: color => ({ label: t => getPlayerName(color, t) })
     }

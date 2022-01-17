@@ -1,6 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react'
 import { Picture } from '@gamepark/react-components'
+import { TFunction } from 'i18next'
 import { HTMLAttributes } from 'react'
 import { useTranslation } from 'react-i18next'
 import PlayerColor from '../../../rules/src/PlayerColor'
@@ -19,20 +20,20 @@ export default function Marquee({ owner, upgraded, ...props }: Props) {
   const { t } = useTranslation()
 
   return (
-    <Picture {...props} css={[getSize(marqueeWidth, marqueeHeight), marqueeOutlineStyle]} src={getMarqueeImage(owner, upgraded)} alt={t(getMarqueeName(owner, upgraded))} />
+    <Picture {...props} css={[getSize(marqueeWidth, marqueeHeight), marqueeOutlineStyle]} src={getMarqueeImage(owner, upgraded)} alt={getMarqueeName(owner, upgraded, t)} />
   )
 }
 
-const getMarqueeName = (owner: PlayerColor, upgraded: boolean) => {
+const getMarqueeName = (owner: PlayerColor, upgraded: boolean, t: TFunction): string => {
   switch (owner) {
     case PlayerColor.Black:
-      return upgraded ? 'UpgradedBlackMarquee' : 'BasicBlackMarquee'
+      return upgraded ? t('UpgradedBlackMarquee') : t('BasicBlackMarquee')
     case PlayerColor.Green:
-      return upgraded ? 'UpgradedGreenMarquee' : 'BasicGreenMarquee'
+      return upgraded ? t('UpgradedGreenMarquee') : t('BasicGreenMarquee')
     case PlayerColor.Orange:
-      return upgraded ? 'UpgradedOrangeMarquee' : 'BasicOrangeMarquee'
+      return upgraded ? t('UpgradedOrangeMarquee') : t('BasicOrangeMarquee')
     case PlayerColor.Grey:
-      return upgraded ? 'UpgradedGreyMarquee' : 'BasicGreyMarquee'
+      return upgraded ? t('UpgradedGreyMarquee') : t('BasicGreyMarquee')
     default:
       return ''
   }

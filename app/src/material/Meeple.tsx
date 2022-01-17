@@ -2,7 +2,7 @@
 import { css } from '@emotion/react'
 import { Draggable, Picture } from '@gamepark/react-components'
 import { HTMLAttributes } from 'react'
-import { useTranslation } from 'react-i18next'
+import { TFunction, useTranslation } from 'react-i18next'
 import MeepleType from '../../../rules/src/MeepleType'
 import { fullSizeStyle } from '../util/Styles'
 import { MEEPLE_DRAG_TYPE } from '../util/Types'
@@ -38,26 +38,26 @@ export default function Meeple({ type, indexInHand, draggable, selectionStatus, 
         onDragStart={onSelect}
       >
 
-        <Picture src={getMeepleImage(type)} onClick={onSelect} draggable={false} css={fullSizeStyle} alt={t(getMeepleName(type))} />
+        <Picture src={getMeepleImage(type)} onClick={onSelect} draggable={false} css={fullSizeStyle} alt={getMeepleName(type, t)} />
       </Draggable>
     )
   } else {
-    return <Picture {...props} onClick={onSelect} css={selectionStyle} src={getMeepleImage(type)} alt={t(getMeepleName(type))} />
+    return <Picture {...props} onClick={onSelect} css={selectionStyle} src={getMeepleImage(type)} alt={getMeepleName(type, t)} />
   }
 }
 
-const getMeepleName = (type: MeepleType) => {
+const getMeepleName = (type: MeepleType, t: TFunction): string => {
   switch (type) {
     case MeepleType.Builder:
-      return 'Builder'
+      return t('Builder')
     case MeepleType.Miner:
-      return 'Miner'
+      return t('Miner')
     case MeepleType.Robber:
-      return 'Robber'
+      return t('Robber')
     case MeepleType.Deputy:
-      return 'Deputy'
+      return t('Deputy')
     case MeepleType.Madame:
-      return 'Madame'
+      return t('Madame')
     default:
       return ''
   }
