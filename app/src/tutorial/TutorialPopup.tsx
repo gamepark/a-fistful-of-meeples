@@ -32,11 +32,14 @@ export default function TutorialPopup({ game, tutorial }: Props) {
   const moveTutorial = (deltaMessage: number) => {
     let currentStep = actionsNumber;
     if (tutorialDescription[currentStep] && tutorialDescription[currentStep][tutorialIndex] && tutorialDescription[currentStep][tutorialIndex].opponentActions) {
-      console.log("playing %d actions", tutorialDescription[currentStep][tutorialIndex].opponentActions)
       tutorial.playNextMoves(tutorialDescription[currentStep][tutorialIndex].opponentActions)
     }
-    console.log("Moving tutorial to %d, %d", currentStep, tutorialIndex)
+    if (currentStep === tutorialDescription.length - 1 && tutorialIndex === tutorialDescription[currentStep].length - 1) {
+      console.log("oppponnents playing")
+      tutorial.setOpponentsPlayAutomatically(true)
+    }
     setTutorialIndex(tutorialIndex + deltaMessage)
+    console.log("tutorial : %d, %d", currentStep, tutorialIndex)
     setTutorialDisplay(true)
   }
 
@@ -61,12 +64,6 @@ export default function TutorialPopup({ game, tutorial }: Props) {
     }
     previousActionNumber.current = actionsNumber
   }, [actionsNumber])
-
-  useEffect(() => {
-    if (actionsNumber >= tutorialDescription.length) {
-      tutorial.setOpponentsPlayAutomatically(true)
-    }
-  }, [actionsNumber, tutorial])
 
   useEffect(() => {
     if (failures.length) {
