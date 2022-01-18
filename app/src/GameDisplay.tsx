@@ -109,7 +109,7 @@ export default function GameDisplay({ game }: Props) {
         {popup}
       </>
 
-      {tutorial && <TutorialPopup game={game} tutorial={tutorial} />}
+      {tutorial && <TutorialPopup tutorial={tutorial} />}
 
     </Letterbox>
   )

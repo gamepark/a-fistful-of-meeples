@@ -169,7 +169,7 @@ function getEndOfGameText(t: TFunction, playersInfo: PlayerInfo<PlayerColor>[], 
 function getTutorialText(t: TFunction, _game: GameState, nActions: number): string {
   switch (nActions) {
     case 0 :
-      return t('tuto.t0.0')
+      return t('tuto.t0.0') + ' ' + t('Name')
     case 1:
       return t('tuto.hdr.1')
     case 2:

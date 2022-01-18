@@ -7,7 +7,6 @@ import { Picture } from "@gamepark/react-components"
 import { TFunction } from "i18next"
 import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
-import GameState from "../../../rules/src/GameState"
 import MeepleType from "../../../rules/src/MeepleType"
 import Move from "../../../rules/src/moves/Move"
 import PlayerColor from "../../../rules/src/PlayerColor"
@@ -16,12 +15,11 @@ import Meeple from "../material/Meeple"
 import { getSize } from "../util/Styles"
 
 type Props = {
-  game: GameState
   tutorial: Tutorial
 }
 
 
-export default function TutorialPopup({ game, tutorial }: Props) {
+export default function TutorialPopup({ tutorial }: Props) {
   const { t } = useTranslation()
   const [failures] = useFailures()
   const actions = useActions<Move, PlayerColor>()
@@ -102,8 +100,6 @@ export default function TutorialPopup({ game, tutorial }: Props) {
         <Picture alt="Arrow pointing toward current tutorial interest" src={Images.tutorial_arrow}
           css={[arrowStyle(currentMessage.arrow.angle, currentMessage.arrow.size ?? 1), displayPopup ? showArrowStyle(currentMessage.arrow.top, currentMessage.arrow.left) : hideArrowStyle]} />
       }
-
-      <div>{game.dynamitesInJail}</div>
     </>
   )
 }
@@ -339,7 +335,7 @@ const tutorialDescription: TutorialStepDescription[][] = [
     },
     {
       title: (t: TFunction) => t('tuto.t0.6'),
-      text: (t: TFunction) => <>{t('tuto.t0.6.0.txt')}<Meeple css={[meepleStyle, getSize(1.5, 1.5)]} type={MeepleType.Builder} />{t('tuto.t0.6.1.txt')}</>,
+      text: (t: TFunction) => <>{t('tuto.t0.6.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Builder} />{t('tuto.t0.6.1.txt')}</>,
       boxTop: 41,
       boxLeft: 30,
       boxWidth: 60,
@@ -351,7 +347,7 @@ const tutorialDescription: TutorialStepDescription[][] = [
     },
     {
       title: (t: TFunction) => t('tuto.t0.7'),
-      text: (t: TFunction) => <>{t('tuto.t0.7.0.txt')}<Meeple css={[meepleStyle, getSize(1.5, 1.5)]} type={MeepleType.Miner} />{t('tuto.t0.7.1.txt')}</>,
+      text: (t: TFunction) => <>{t('tuto.t0.7.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Miner} />{t('tuto.t0.7.1.txt')}</>,
       boxTop: 41,
       boxLeft: 30,
       boxWidth: 60,
@@ -363,7 +359,7 @@ const tutorialDescription: TutorialStepDescription[][] = [
     },
     {
       title: (t: TFunction) => t('tuto.t0.8'),
-      text: (t: TFunction) => <>{t('tuto.t0.8.0.txt')}<Meeple css={[meepleStyle, getSize(1.5, 1.5)]} type={MeepleType.Robber} />{t('tuto.t0.8.1.txt')}</>,
+      text: (t: TFunction) => <>{t('tuto.t0.8.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Robber} />{t('tuto.t0.8.1.txt')}</>,
       boxTop: 41,
       boxLeft: 35,
       boxWidth: 60,
@@ -375,7 +371,7 @@ const tutorialDescription: TutorialStepDescription[][] = [
     },
     {
       title: (t: TFunction) => t('tuto.t0.9'),
-      text: (t: TFunction) => <>{t('tuto.t0.9.0.txt')}<Meeple css={[meepleStyle, getSize(1.5, 1.5)]} type={MeepleType.Deputy} />{t('tuto.t0.9.1.txt')}</>,
+      text: (t: TFunction) => <>{t('tuto.t0.9.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Deputy} />{t('tuto.t0.9.1.txt')}</>,
       boxTop: 41,
       boxLeft: 35,
       boxWidth: 60,
@@ -487,28 +483,29 @@ const tutorialDescription: TutorialStepDescription[][] = [
   [
     {
       title: (t: TFunction) => t('tuto.t1.2'),
-      text: (t: TFunction) => t('tuto.t1.2.txt'),
-      boxTop: 53,
-      boxLeft: 54.5,
-      boxWidth: 50,
+      text: (t: TFunction) => <>{t('tuto.t1.2.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Miner} />{t('tuto.t1.2.1.txt')}</>,
+      boxTop: 40,
+      boxLeft: 49.5,
+      boxWidth: 60,
       arrow: {
         angle: 270,
-        top: 47,
-        left: 18
+        top: 36,
+        left: 8.5
       }
     },
   ],  // player places Miner in 0
   [
     {
       title: (t: TFunction) => t('tuto.t1.3'),
-      text: (t: TFunction) => t('tuto.t1.3.txt'),
-      boxTop: 53,
-      boxLeft: 59.5,
-      boxWidth: 50,
+      text: (t: TFunction) => <>{t('tuto.t1.3.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Deputy} />{t('tuto.t1.3.1.txt')}</>,
+      boxTop: 50,
+      boxLeft: 46.5,
+      boxWidth: 65,
       arrow: {
-        angle: 270,
-        top: 47,
-        left: 23
+        angle: 180,
+        top: 30,
+        left: 2,
+        size: 0.5
       }
     },
   ],  // player places Deputy in showdown 0
@@ -516,13 +513,14 @@ const tutorialDescription: TutorialStepDescription[][] = [
     {
       title: (t: TFunction) => t('tuto.t1.4'),
       text: (t: TFunction) => t('tuto.t1.4.txt'),
-      boxTop: 50,
-      boxLeft: 55,
+      boxTop: 60,
+      boxLeft: 46.5,
       boxWidth: 60,
       arrow: {
         angle: 270,
-        top: 47,
-        left: 14
+        top: 56,
+        left: 7,
+        size: 0.5
       }
     },
   ], // player places Builder in 11
