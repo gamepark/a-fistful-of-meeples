@@ -71,7 +71,7 @@ export function placeMeeple(state: GameState, move: PlaceMeeple) {
   state.meeplesInHand[move.indexInHand] = null
 
   // update gamestate
-  if (state.meeplePlacingDirection === undefined) {
+  if (state.meeplePlacingDirection === undefined && (state.previousMeepleLocation !== Location_Saloon && state.previousMeepleLocation !== Location_Jail)) {
     if (getNextEmptySpace(state.previousMeepleLocation!, state) === move.space) {
       state.meeplePlacingDirection = Direction.Clockwise
     } else if (getPreviousEmptySpace(state.previousMeepleLocation!, state) === move.space) {

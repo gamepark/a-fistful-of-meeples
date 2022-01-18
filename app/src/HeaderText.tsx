@@ -45,12 +45,13 @@ export default function HeaderText({loading, game, player}: Props) {
 function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[], animation?: Animation<any, any>): string {
   const getName = (playerId: PlayerColor) => players.find(p => p.id === playerId)?.name || getPlayerName(playerId, t)
   const currentGame = new AFistfulOfMeeples(game)
-  const isActivePlayer: boolean = player === currentGame.getActivePlayer()
+  const activePlayer = currentGame.getActivePlayer()
+  const isActivePlayer: boolean = player === activePlayer
 
   if (animation !== undefined) {
     switch (animation.move.type) {
       case MoveType.PlaceInitialMarqueeTile:
-        return isActivePlayer ? t('PlayerBuildingMarquee') : t('OtherPlayerBuildingMarquee', { player: getName(game.activePlayer!) })
+        return isActivePlayer ? t('PlayerBuildingMarquee') : t('OtherPlayerBuildingMarquee', { player: getName(activePlayer!) })
       case MoveType.ConvertGoldBar:
         return t('TradingGoldCubesForGoldBar', { amount: getNextGoldBarPrice(game) })
       case MoveType.MoveMeeples:
@@ -64,12 +65,12 @@ function getText(t: TFunction, game: GameState, player: PlayerColor, players: Pl
     switch (game.pendingEffects[0].type) {
       case PendingEffectType.BuildOrUpgradeMarquee:
         if (game.marquees[game.pendingEffects[0].location].owner === undefined)
-          return isActivePlayer ? t('ChooseBuildMarquee') : t('OtherChooseBuildMarquee', { player: getName(game.activePlayer!) })
-        return isActivePlayer ? t('ChooseUpgradeMarquee') : t('OtherChooseUpgradeMarquee', { player: getName(game.activePlayer!) })
+          return isActivePlayer ? t('ChooseBuildMarquee') : t('OtherChooseBuildMarquee', { player: getName(activePlayer!) })
+        return isActivePlayer ? t('ChooseUpgradeMarquee') : t('OtherChooseUpgradeMarquee', { player: getName(activePlayer!) })
       case PendingEffectType.ChooseAnotherPlayerShowdownToken:
-        return isActivePlayer ? t('ChooseAnotherPlayerShowdownToken') : t('OtherChooseAnotherPlayerShowdownToken', { player: getName(game.activePlayer!) })
+        return isActivePlayer ? t('ChooseAnotherPlayerShowdownToken') : t('OtherChooseAnotherPlayerShowdownToken', { player: getName(activePlayer!) })
       case PendingEffectType.ChooseToRerollShowdownDice:
-        return isActivePlayer ? t('ChooseToRerollShowdownDice') : t('OtherChooseToRerollShowdownDice', { player: getName(game.activePlayer!) })
+        return isActivePlayer ? t('ChooseToRerollShowdownDice') : t('OtherChooseToRerollShowdownDice', { player: getName(activePlayer!) })
       case PendingEffectType.DrawFromBag:
         return t('DrawingPiecesFromBag')
       case PendingEffectType.DynamiteExplosion:
@@ -87,13 +88,13 @@ function getText(t: TFunction, game: GameState, player: PlayerColor, players: Pl
   
   switch (game.currentPhase) {
     case Phase.PlaceInitialMarqueeTiles:
-      return isActivePlayer ? t('SelectInitialMarqueePlace') : t('OtherSelectInitialMarqueePlace', { player: getName(game.activePlayer!) })
+      return isActivePlayer ? t('SelectInitialMarqueePlace') : t('OtherSelectInitialMarqueePlace', { player: getName(activePlayer!) })
     case Phase.SelectSourceLocation:
-      return isActivePlayer ? t('SelectSourceLocation') : t('OtherSelectSourceLocation', { player: getName(game.activePlayer!) })
+      return isActivePlayer ? t('SelectSourceLocation') : t('OtherSelectSourceLocation', { player: getName(activePlayer!) })
     case Phase.PlaceMeeples:
-      return isActivePlayer ? t('PlaceMeeple') : t('OtherPlaceMeeple', { player: getName(game.activePlayer!) })
+      return isActivePlayer ? t('PlaceMeeple') : t('OtherPlaceMeeple', { player: getName(activePlayer!) })
     case Phase.ResolveMeeples:
-      return isActivePlayer ? t('ResolveMeeple') : t('OtherResolveMeeple', { player: getName(game.activePlayer!) })
+      return isActivePlayer ? t('ResolveMeeple') : t('OtherResolveMeeple', { player: getName(activePlayer!) })
     case Phase.CheckGoldBars:
       return ''
     case Phase.GameOver:

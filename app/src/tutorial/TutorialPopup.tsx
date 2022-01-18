@@ -8,9 +8,12 @@ import { TFunction } from "i18next"
 import { useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import GameState from "../../../rules/src/GameState"
+import MeepleType from "../../../rules/src/MeepleType"
 import Move from "../../../rules/src/moves/Move"
 import PlayerColor from "../../../rules/src/PlayerColor"
 import Images from "../material/Images"
+import Meeple from "../material/Meeple"
+import { getSize } from "../util/Styles"
 
 type Props = {
   game: GameState
@@ -28,18 +31,15 @@ export default function TutorialPopup({ game, tutorial }: Props) {
   const previousActionNumber = useRef(actionsNumber)
   const [tutorialIndex, setTutorialIndex] = useState(0)
   const [tutorialDisplay, setTutorialDisplay] = useState(tutorialDescription.length > actionsNumber)
-
   const moveTutorial = (deltaMessage: number) => {
     let currentStep = actionsNumber;
     if (tutorialDescription[currentStep] && tutorialDescription[currentStep][tutorialIndex] && tutorialDescription[currentStep][tutorialIndex].opponentActions) {
       tutorial.playNextMoves(tutorialDescription[currentStep][tutorialIndex].opponentActions)
     }
     if (currentStep === tutorialDescription.length - 1 && tutorialIndex === tutorialDescription[currentStep].length - 1) {
-      console.log("oppponnents playing")
       tutorial.setOpponentsPlayAutomatically(true)
     }
     setTutorialIndex(tutorialIndex + deltaMessage)
-    console.log("tutorial : %d, %d", currentStep, tutorialIndex)
     setTutorialDisplay(true)
   }
 
@@ -50,6 +50,8 @@ export default function TutorialPopup({ game, tutorial }: Props) {
 
   const tutorialMessage = (index: number) => {
     let currentStep = actionsNumber
+    if (currentStep >= tutorialDescription.length)
+      return undefined
     while (!tutorialDescription[currentStep]) {
       currentStep--
     }
@@ -74,6 +76,9 @@ export default function TutorialPopup({ game, tutorial }: Props) {
 
   const currentMessage = tutorialMessage(tutorialIndex)
   const displayPopup = tutorialDisplay && !animation && currentMessage && !failures.length
+
+  if (actionsNumber >= tutorialDescription.length)
+    tutorial.setOpponentsPlayAutomatically(true)
 
   return (
     <>
@@ -146,7 +151,7 @@ export const popupStyle = css`
   outline: none;
   box-shadow: 1em 2em 2.5em -1.5em hsla(0, 0%, 0%, 0.2);
   border-radius: 40em 3em 40em 3em/3em 40em 3em 40em;
-  font-family: 'Brush Script MT', cursive;
+  font-family: Georgia, serif;
 
   &:hover {
     box-shadow: 2em 4em 5em -3em hsla(0, 0%, 0%, .5);
@@ -205,6 +210,11 @@ const buttonStyle = css`
   margin-right: 1em;
 `
 
+const meepleStyle = css`
+  margin: 0.2em;
+  vertical-align: -0.5em;
+`
+
 const arrowStyle = (angle: number, scale: number) => css`
   position: absolute;
   transform: rotate(${angle}deg) scale(${scale}, ${scale});
@@ -243,7 +253,7 @@ const closePopupStyle = css`
 
 
 type TutorialStepDescription = {
-  title: (t: TFunction) => string,
+  title: (t: TFunction) => string | EmotionJSX.Element,
   text: (t: TFunction) => string | EmotionJSX.Element,
   opponentActions?: number,
   boxTop: number
@@ -260,7 +270,7 @@ type TutorialStepDescription = {
 const tutorialDescription: TutorialStepDescription[][] = [
   [
     {
-      title: (t: TFunction) => t('tuto.t0.0'),
+      title: (t: TFunction) => <>{t('tuto.t0.0')}<br />{t('Name')}</>,
       text: (t: TFunction) => t('tuto.t0.0.txt'),
       boxTop: 50,
       boxLeft: 45,
@@ -329,7 +339,7 @@ const tutorialDescription: TutorialStepDescription[][] = [
     },
     {
       title: (t: TFunction) => t('tuto.t0.6'),
-      text: (t: TFunction) => t('tuto.t0.6.txt'),
+      text: (t: TFunction) => <>{t('tuto.t0.6.0.txt')}<Meeple css={[meepleStyle, getSize(1.5, 1.5)]} type={MeepleType.Builder} />{t('tuto.t0.6.1.txt')}</>,
       boxTop: 41,
       boxLeft: 30,
       boxWidth: 60,
@@ -341,7 +351,7 @@ const tutorialDescription: TutorialStepDescription[][] = [
     },
     {
       title: (t: TFunction) => t('tuto.t0.7'),
-      text: (t: TFunction) => t('tuto.t0.7.txt'),
+      text: (t: TFunction) => <>{t('tuto.t0.7.0.txt')}<Meeple css={[meepleStyle, getSize(1.5, 1.5)]} type={MeepleType.Miner} />{t('tuto.t0.7.1.txt')}</>,
       boxTop: 41,
       boxLeft: 30,
       boxWidth: 60,
@@ -353,7 +363,7 @@ const tutorialDescription: TutorialStepDescription[][] = [
     },
     {
       title: (t: TFunction) => t('tuto.t0.8'),
-      text: (t: TFunction) => t('tuto.t0.8.txt'),
+      text: (t: TFunction) => <>{t('tuto.t0.8.0.txt')}<Meeple css={[meepleStyle, getSize(1.5, 1.5)]} type={MeepleType.Robber} />{t('tuto.t0.8.1.txt')}</>,
       boxTop: 41,
       boxLeft: 35,
       boxWidth: 60,
@@ -365,14 +375,14 @@ const tutorialDescription: TutorialStepDescription[][] = [
     },
     {
       title: (t: TFunction) => t('tuto.t0.9'),
-      text: (t: TFunction) => t('tuto.t0.9.txt'),
+      text: (t: TFunction) => <>{t('tuto.t0.9.0.txt')}<Meeple css={[meepleStyle, getSize(1.5, 1.5)]} type={MeepleType.Deputy} />{t('tuto.t0.9.1.txt')}</>,
       boxTop: 41,
       boxLeft: 35,
       boxWidth: 60,
       arrow: {
         angle: 0,
         top: 27.5,
-        left: 17.3
+        left: 43
       }
     },
     {
@@ -735,9 +745,15 @@ const tutorialDescription: TutorialStepDescription[][] = [
     {
       title: (t: TFunction) => t('tuto.t3.8'),
       text: (t: TFunction) => t('tuto.t3.8.txt'),
-      boxTop: 50,
+      boxTop: 28,
       boxLeft: 40,
       boxWidth: 50,
+      arrow: {
+        angle: 0,
+        top: 17.5,
+        left: 35.5,
+        size: 0.5
+      }
     },  // player builds marquee in 3
   ], 
   [

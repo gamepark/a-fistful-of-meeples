@@ -81,7 +81,6 @@ const getMeepleImage = (type: MeepleType) => {
 }
 
 const meepleStyle = css`
-  filter: drop-shadow(0 0 0.2em white);
 `
 
 const selectableMeepleStyle = css`
