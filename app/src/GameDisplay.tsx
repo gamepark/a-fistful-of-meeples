@@ -24,7 +24,8 @@ import PlayerInfo, { getMarqueePositionInPlayerInfo } from './material/PlayerInf
 import PlayerSelecter from './material/PlayerSelecter'
 import StoneCube from './material/StoneCube'
 import TutorialPopup from './tutorial/TutorialPopup'
-import { letterBoxHeight, letterBoxWidth, marqueesPosition, miningBagLeft, miningBagTop, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
+import Help from './util/Help'
+import { helpButtonRight, helpButtonTop, letterBoxHeight, letterBoxWidth, marqueesPosition, miningBagLeft, miningBagTop, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
 import { getPosition } from './util/Styles'
 import YesNoSelecter from './util/YesNoSelecter'
 
@@ -71,10 +72,10 @@ export default function GameDisplay({ game }: Props) {
     }
   }
 
-
   return (
     <Letterbox id="letterbox" css={letterBoxStyle} width={letterBoxWidth} height={letterBoxHeight} top={0}>
       <MiningBag gold={game.goldCubesInMiningBag} stone={game.stoneCubesInMiningBag} dynamite={game.dynamitesInMiningBag} css={getPosition([miningBagLeft, miningBagTop])} />
+      <Help css={helpButtonStyle} />
       <>
         {game.players.map((playerState, index) =>
           <PlayerInfo css={getPlayerInfoMetrics(index)} playerState={playerState} gameState={game} key={index} buildingMarqueeAnimation={buildingMarqueeOwner === playerState.color} />
@@ -160,6 +161,12 @@ const dynamiteExplosionStyle = css`
   top: 47.5em;
   width: 12em;
   height: 12em;
+`
+
+const helpButtonStyle = css`
+  position: absolute;
+  right: ${helpButtonRight}em;
+  top: ${helpButtonTop}em;
 `
 
 

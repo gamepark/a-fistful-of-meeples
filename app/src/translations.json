@@ -6,6 +6,7 @@
       "Green player": "Green player",
       "Grey player": "Grey player",
       "Black player": "Black player",
+      "Show Tutorial": "Show Tutorial",
       "Dynamite": "Dynamite",
       "GoldBar": "Gold Bar",
       "GoldCube": "Stone piece",
@@ -128,11 +129,12 @@
   },
   "fr": {
     "translation": {
-      "Name": "A Fistful of Meeples",
+      "Name": "Pour une poignée de Meeples",
       "Orange player": "Joueur Orange",
       "Green player": "Joueur Vert",
       "Grey player": "Joueur Gris",
       "Black player": "Joueur Noir",
+      "Show Tutorial": "Afficher le Tutoriel",
       "tuto.t0.0": "Bienvenue dans le tutoriel de ",
       "tuto.t0.0.txt": "Choisissez et placez judicieusement vos Meeples, récupérez de l'Or et construisez des Chapiteaux. A la fin de la partie, le joueur avec le plus de points sera le vainqueur !",
       "tuto.t0.1": "Votre plateau",
@@ -228,7 +230,7 @@
       "tuto.t4.0": "Tour de l'adversaire",
       "tuto.t4.0.txt": "Vous pouvez choisir des Meeples dans un Bâtiment de la rue principale mais aussi dans le Saloon ou la Prison. Votre adversaire a pris les Meeples se trouvant dans le Saloon.",
       "tuto.t4.1": "Résolution : Madame",
-      "tuto.t4.1.txt": "Votre adversaire résoud l'action de Madame : il pioche 1 Cube dans le Sac de Minage pour chaque Ouvrier dans le Bâtiment, puis envoie tous les Ouvriers du Bâtiment au Saloon.",
+      "tuto.t4.1.txt": "Votre adversaire résout l'action de Madame : il pioche 1 Cube dans le Sac de Minage pour chaque Ouvrier dans le Bâtiment, puis envoie tous les Ouvriers du Bâtiment au Saloon.",
       "tuto.t5.0": "Sélection des Meeples",
       "tuto.t5.0.txt": "Il est temps d'aller dévaliser les Mineurs. Sélectionnez la prison où se trouvent 2 bandits.",
       "tuto.t5.1": "Evasion",
@@ -345,6 +347,14 @@
       "TieAll": "Egalité parfaite ! Tous les joueurs ont {score} points et {cubes} Cubes d'Or et de Pierre",
       "Tie2": "Egalité parfaite ! {player1} et {player2} ont chacun {score} points et {cubes} Cubes d'Or et de Pierre",
       "Tie3": "Egalité parfaite ! {player1}, {player2} et {player3} ont chacun {score} points et {cubes} Cubes d'Or et de Pierre",
+      "help_title": "Aide de jeu",
+      "help_builder": "Les Ouvriers permettent de construire et d'améliorer les Chapiteaux pour le coût indiqué sur le Bâtiment correspondant (3 Cubes de ressources).",
+      "help_miner": "Lorsque vous résolvez l'action d'un Mineur sur un Bâtiment qui a une Tuile Chapiteau, le propriétaire de la Tuile pioche des Cubes dans le Sac de Minage.",
+      "help_robber": "Les Bandits font piocher 2 Cubes par Mineur présent dans le Bâtiment.",
+      "help_deputy": "Les Adjoints font piocher 2 Cubes par Bandit présent dans le Bâtiment, puis ils envoient les Bandits en Prison.",
+      "help_madame": "Madame permet de piocher 1 Cube par Ouvrier présent dans le Bâtiment, puis les Ouvriers sont envoyés au Saloon.",
+      "help_points": "Chaque joueur marque 1 point par Cube d'Or, 10 points par Barre d'Or, et 5 ou 10 points pour chaque Chapiteau.",
+      "help_end": "La partie se termine quand il n'y a plus de Barre d'Or à la Banque, plus de tombe libre au Cimetière, ou quand les 3 Cubes de Dynamite ont été piochés dans le Sac de Minage.",
       "Menu": "Menu",
       "OK": "OK",
       "Validate": "Valider",
@@ -407,6 +417,7 @@
   },
   "de": {
     "translation": {
+      "Show Tutorial": "Tutorial zeigen",
       "Menu": "Menü",
       "OK": "OK",
       "Validate": "Bestätigen",
@@ -468,6 +479,7 @@
   },
   "ru": {
     "translation": {
+      "Show Tutorial": "Показать обучение",
       "Menu": "Меню",
       "OK": "ОК",
       "Validate": "Подтвердить",

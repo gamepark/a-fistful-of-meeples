@@ -19,6 +19,11 @@ export const miningBagHeight = miningBagWidth / miningBagRatio
 export const miningBagLeft = boardWidth + 1
 export const miningBagTop = boardTop + 1
 
+export const helpButtonWidth = 8
+export const helpButtonHeight = 8
+export const helpButtonRight = 1
+export const helpButtonTop = miningBagTop + miningBagHeight - helpButtonHeight
+
 export const playerInfoWidth = 34
 export const playerInfoHeight = 18
 export const playerInfoPositions = [

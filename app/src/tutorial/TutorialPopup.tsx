@@ -132,7 +132,7 @@ const hidePopupOverlayStyle = (boxTop: number, boxLeft: number) => css`
   overflow: hidden;
 `
 
-export const popupStyle = css`
+const popupStyle = css`
   position: absolute;
   text-align: center;
   max-height: 70%;
