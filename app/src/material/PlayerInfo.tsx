@@ -16,7 +16,7 @@ import { goldBarRatio } from '../util/Metrics'
 import { getPlayerName } from '../../../rules/src/AFistfulOfMeeplesOptions'
 import Phase from '../../../rules/src/Phase'
 import Marquee from './Marquee'
-import { getSize } from '../util/Styles'
+import { getPosition, getSize } from '../util/Styles'
 
 
 type Props = {
@@ -37,7 +37,7 @@ export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnim
       {marquees > 0 &&
         <>
         {[...Array(marquees)].map((_, index) =>
-          <Marquee owner={playerState.color} upgraded={false} css={getMarqueeStyle(index)} key={index} />
+          <Marquee owner={playerState.color} upgraded={false} css={getPosition(getMarqueePositionInPlayerInfo(index))} key={index} />
           )}
         </>
       }
@@ -102,15 +102,6 @@ const fallbackAvatarStyle = (playerColor: PlayerColor) => css`
 
 export function getMarqueePositionInPlayerInfo(index: number) {
   return [(10 + (index * 0.3)), 1.2 - index * 0.1]
-}
-
-function getMarqueeStyle(index: number) {
-  const position = getMarqueePositionInPlayerInfo(index)
-  return css`
-  position: absolute;
-  left: ${position[0]}em;
-  top: ${position[1]}em;
-`
 }
 
 const getItemStyle = (left: number, top: number, width: number) => css`

@@ -12,6 +12,7 @@ import Move from "../../../rules/src/moves/Move"
 import PlayerColor from "../../../rules/src/PlayerColor"
 import Images from "../material/Images"
 import Meeple from "../material/Meeple"
+import { marqueeRatio } from "../util/Metrics"
 import { getSize } from "../util/Styles"
 
 type Props = {
@@ -93,7 +94,7 @@ export default function TutorialPopup({ tutorial }: Props) {
       </div>
       {
         !displayPopup && tutorialDescription.length > actionsNumber &&
-        <button css={resetStyle} onClick={() => resetTutorialDisplay()}>{t('Show Tutorial')}</button>
+        <button css={resetStyle} onClick={() => setTutorialDisplay(true)}>{t('Show Tutorial')}</button>
       }
       {
         currentMessage && currentMessage.arrow &&
@@ -273,44 +274,134 @@ const tutorialDescription: TutorialStepDescription[][] = [
       boxWidth: 60
     },
     {
-      title: (t: TFunction) => t('tuto.t0.1'),
-      text: (t: TFunction) => t('tuto.t0.1.txt'),
-      boxTop: 34,
-      boxLeft: 41.5,
-      boxWidth: 60,
-      arrow: {
-        angle: 90,
-        top: 25,
-        left: 67
-      }
-    },
-    {
-      title: (t: TFunction) => t('tuto.t0.2'),
-      text: (t: TFunction) => t('tuto.t0.2.txt'),
-      boxTop: 53,
-      boxLeft: 46.5,
-      boxWidth: 50,
-      arrow: {
-        angle: 90,
-        top: 44,
-        left: 67
-      }
-    },
-    {
-      title: (t: TFunction) => t('tuto.t0.3'),
-      text: (t: TFunction) => t('tuto.t0.3.txt'),
-      boxTop: 34,
-      boxLeft: 65,
+      title: (t: TFunction) => t('tuto.t0.builder'),
+      text: (t: TFunction) => <>
+        {t('tuto.t0.builder.0.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Builder} />
+        {t('tuto.t0.builder.1.txt')}
+        <Picture css={getSize(1.5 * marqueeRatio, 1.5)} src={Images.basicOrangeMarquee} />
+        {t('tuto.t0.builder.2.txt')}
+      </>,
+      boxTop: 41,
+      boxLeft: 30,
       boxWidth: 60,
       arrow: {
         angle: 0,
-        top: 21,
-        left: 76
+        top: 27.5,
+        left: 4
       }
     },
     {
-      title: (t: TFunction) => t('tuto.t0.4'),
-      text: (t: TFunction) => t('tuto.t0.4.txt'),
+      title: (t: TFunction) => t('tuto.t0.miner'),
+      text: (t: TFunction) => <>
+        {t('tuto.t0.miner.0.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Miner} />
+        {t('tuto.t0.miner.1.txt')}
+        <Picture css={getSize(1.5 * marqueeRatio, 1.5)} src={Images.upgradedBlackMarquee} />
+        {t('tuto.t0.miner.2.txt')}
+      </>,
+      boxTop: 41,
+      boxLeft: 30,
+      boxWidth: 60,
+      arrow: {
+        angle: 0,
+        top: 27.5,
+        left: 14.5
+      }
+    },
+    {
+      title: (t: TFunction) => t('tuto.t0.robber'),
+      text: (t: TFunction) => <>
+        {t('tuto.t0.robber.0.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Robber} />
+        {t('tuto.t0.robber.1.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Miner} />
+        {t('tuto.t0.robber.2.txt')}
+      </>,
+      boxTop: 41,
+      boxLeft: 35,
+      boxWidth: 60,
+      arrow: {
+        angle: 0,
+        top: 27.5,
+        left: 28
+      }
+    },
+    {
+      title: (t: TFunction) => t('tuto.t0.deputy'),
+      text: (t: TFunction) => <>
+        {t('tuto.t0.deputy.0.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Deputy} />
+        {t('tuto.t0.deputy.1.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Robber} />
+        {t('tuto.t0.deputy.2.txt')}
+      </>,
+      boxTop: 41,
+      boxLeft: 35,
+      boxWidth: 60,
+      arrow: {
+        angle: 0,
+        top: 27.5,
+        left: 43
+      }
+    },
+    {
+      title: (t: TFunction) => t('tuto.t0.madame'),
+      text: (t: TFunction) => <>
+        {t('tuto.t0.madame.0.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Madame} />
+        {t('tuto.t0.madame.1.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Builder} />
+        {t('tuto.t0.madame.2.txt')}
+      </>,
+      boxTop: 33,
+      boxLeft: 60,
+      boxWidth: 60,
+      arrow: {
+        angle: 0,
+        top: 20,
+        left: 64
+      }
+    },
+    {
+      title: (t: TFunction) => t('tuto.t0.jail'),
+      text: (t: TFunction) => t('tuto.t0.jail.txt'),
+      boxTop: 28,
+      boxLeft: 42.5,
+      boxWidth: 60,
+      arrow: {
+        angle: 270,
+        top: 20,
+        left: 1.5
+      }
+    },
+    {
+      title: (t: TFunction) => t('tuto.t0.saloon'),
+      text: (t: TFunction) => t('tuto.t0.saloon.txt'),
+      boxTop: 28,
+      boxLeft: 34,
+      boxWidth: 60,
+      arrow: {
+        angle: 90,
+        top: 20,
+        left: 59
+      }
+    },
+    {
+      title: (t: TFunction) => t('tuto.t0.building'),
+      text: (t: TFunction) => t('tuto.t0.building.txt'),
+      boxTop: 57.5,
+      boxLeft: 40,
+      boxWidth: 60,
+      arrow: {
+        angle: 0,
+        top: 44.5,
+        left: 35.8
+      }
+    },
+    {
+      title: (t: TFunction) => t('tuto.t0.bank'),
+      text: (t: TFunction) => t('tuto.t0.bank.txt'),
       boxTop: 75,
       boxLeft: 34,
       boxWidth: 60,
@@ -321,8 +412,8 @@ const tutorialDescription: TutorialStepDescription[][] = [
       }
     },
     {
-      title: (t: TFunction) => t('tuto.t0.5'),
-      text: (t: TFunction) => t('tuto.t0.5.txt'),
+      title: (t: TFunction) => t('tuto.t0.graveyard'),
+      text: (t: TFunction) => t('tuto.t0.graveyard.txt'),
       boxTop: 80,
       boxLeft: 38,
       boxWidth: 48,
@@ -334,111 +425,70 @@ const tutorialDescription: TutorialStepDescription[][] = [
       }
     },
     {
-      title: (t: TFunction) => t('tuto.t0.6'),
-      text: (t: TFunction) => <>{t('tuto.t0.6.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Builder} />{t('tuto.t0.6.1.txt')}</>,
-      boxTop: 41,
-      boxLeft: 30,
-      boxWidth: 60,
-      arrow: {
-        angle: 0,
-        top: 27.5,
-        left: 4
-      }
-    },
-    {
-      title: (t: TFunction) => t('tuto.t0.7'),
-      text: (t: TFunction) => <>{t('tuto.t0.7.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Miner} />{t('tuto.t0.7.1.txt')}</>,
-      boxTop: 41,
-      boxLeft: 30,
-      boxWidth: 60,
-      arrow: {
-        angle: 0,
-        top: 27.5,
-        left: 14.5
-      }
-    },
-    {
-      title: (t: TFunction) => t('tuto.t0.8'),
-      text: (t: TFunction) => <>{t('tuto.t0.8.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Robber} />{t('tuto.t0.8.1.txt')}</>,
-      boxTop: 41,
-      boxLeft: 35,
-      boxWidth: 60,
-      arrow: {
-        angle: 0,
-        top: 27.5,
-        left: 28
-      }
-    },
-    {
-      title: (t: TFunction) => t('tuto.t0.9'),
-      text: (t: TFunction) => <>{t('tuto.t0.9.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Deputy} />{t('tuto.t0.9.1.txt')}</>,
-      boxTop: 41,
-      boxLeft: 35,
-      boxWidth: 60,
-      arrow: {
-        angle: 0,
-        top: 27.5,
-        left: 43
-      }
-    },
-    {
-      title: (t: TFunction) => t('tuto.t0.10'),
-      text: (t: TFunction) => t('tuto.t0.10.txt'),
-      boxTop: 33,
-      boxLeft: 60,
-      boxWidth: 60,
-      arrow: {
-        angle: 0,
-        top: 20,
-        left: 64
-      }
-    },
-    {
-      title: (t: TFunction) => t('tuto.t0.11'),
-      text: (t: TFunction) => t('tuto.t0.11.txt'),
-      boxTop: 51,
+      title: (t: TFunction) => t('tuto.t0.player'),
+      text: (t: TFunction) => t('tuto.t0.player.txt'),
+      boxTop: 34,
       boxLeft: 41.5,
       boxWidth: 60,
       arrow: {
-        angle: 0,
-        top: 38,
-        left: 36
+        angle: 90,
+        top: 25,
+        left: 67
       }
     },
     {
-      title: (t: TFunction) => t('tuto.t0.12'),
-      text: (t: TFunction) => t('tuto.t0.12.txt'),
-      boxTop: 28,
-      boxLeft: 42.5,
-      boxWidth: 60,
-      arrow: {
-        angle: 270,
-        top: 20,
-        left: 1.5
-      }
-    },
-    {
-      title: (t: TFunction) => t('tuto.t0.13'),
-      text: (t: TFunction) => t('tuto.t0.13.txt'),
-      boxTop: 28,
-      boxLeft: 34,
+      title: (t: TFunction) => t('tuto.t0.marquee'),
+      text: (t: TFunction) => t('tuto.t0.marquee.txt'),
+      boxTop: 35,
+      boxLeft: 51,
       boxWidth: 60,
       arrow: {
         angle: 90,
-        top: 20,
-        left: 59
+        top: 21,
+        left: 74.5,
+        size: 0.5
       }
     },
     {
-      title: (t: TFunction) => t('tuto.t0.14'),
-      text: (t: TFunction) => t('tuto.t0.14.txt'),
-      boxTop: 50,
-      boxLeft: 45,
-      boxWidth: 60
+      title: (t: TFunction) => t('tuto.t0.opponent'),
+      text: (t: TFunction) => t('tuto.t0.opponent.txt'),
+      boxTop: 53,
+      boxLeft: 46.5,
+      boxWidth: 50,
+      arrow: {
+        angle: 90,
+        top: 44,
+        left: 67
+      }
     },
     {
-      title: (t: TFunction) => t('tuto.t0.15'),
-      text: (t: TFunction) => t('tuto.t0.15.txt'),
+      title: (t: TFunction) => t('tuto.t0.bag'),
+      text: (t: TFunction) => t('tuto.t0.bag.txt'),
+      boxTop: 34,
+      boxLeft: 65,
+      boxWidth: 60,
+      arrow: {
+        angle: 0,
+        top: 21,
+        left: 76
+      }
+    },
+    {
+      title: (t: TFunction) => t('tuto.t0.help'),
+      text: (t: TFunction) => t('tuto.t0.help.txt'),
+      boxTop: 22,
+      boxLeft: 59,
+      boxWidth: 60,
+      arrow: {
+        angle: 90,
+        top: 11.5,
+        left: 83,
+        size: 0.5
+      }
+    },
+    {
+      title: (t: TFunction) => t('tuto.t0.1'),
+      text: (t: TFunction) => t('tuto.t0.1.txt'),
       opponentActions: 1,
       boxTop: 50,
       boxLeft: 45,
@@ -447,8 +497,8 @@ const tutorialDescription: TutorialStepDescription[][] = [
   ],  // opponent places his initial marquee in 5
   [
     {
-      title: (t: TFunction) => t('tuto.t0.16'),
-      text: (t: TFunction) => t('tuto.t0.16.txt'),
+      title: (t: TFunction) => t('tuto.t0.2'),
+      text: (t: TFunction) => t('tuto.t0.2.txt'),
       boxTop: 33,
       boxLeft: 30,
       boxWidth: 60,
@@ -818,7 +868,7 @@ const tutorialDescription: TutorialStepDescription[][] = [
         left: 0,
         size: 0.5
       },
-    },  // player takes Meeples in Prison
+    },  // player takes Meeples in Jail
   ],
   [
     {
@@ -894,7 +944,7 @@ const tutorialDescription: TutorialStepDescription[][] = [
     {
       title: (t: TFunction) => t('tuto.t5.7'),
       text: (t: TFunction) => t('tuto.t5.7.txt'),
-      boxTop: 71,
+      boxTop: 77,
       boxLeft: 30,
       boxWidth: 68,
       arrow: {
