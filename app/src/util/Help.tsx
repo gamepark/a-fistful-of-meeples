@@ -22,32 +22,36 @@ export default function Help(props: HTMLAttributes<HTMLImageElement>) {
       <Picture {...props} src={Images.buttonHelp} onClick={toggle} css={[helpButtonStyle, getSize(helpButtonWidth, helpButtonHeight)]} />
       {showContent && <div css={popupStyle}>
         <table css={tableStyle} >
-          <tr>
-            <th colSpan={2}>{t('help_title')}</th>
-            <th><button onClick={toggle} css={closeButtonStyle}>X</button></th>
-          </tr>
-          <tr>
-            <td><Meeple type={MeepleType.Builder} css={getSize(2.5, 3)} /></td>
-            <td>{t('help_builder')}</td>
-          </tr>
-          <tr>
-            <td><Meeple type={MeepleType.Miner} css={getSize(2.5, 3)} /></td>
-            <td>{t('help_miner')}</td>
-          </tr>
-          <tr>
-            <td><Meeple type={MeepleType.Robber} css={getSize(2.5, 3)} /></td>
-            <td>{t('help_robber')}</td>
-          </tr>
-          <tr>
-            <td><Meeple type={MeepleType.Deputy} css={getSize(2.5, 3)} /></td>
-            <td>{t('help_deputy')}</td>
-          </tr>
-          <tr>
-            <td><Meeple type={MeepleType.Madame} css={getSize(2.5, 3)} /></td>
-            <td>{t('help_madame')}</td>
-          </tr>
-          <tr><td colSpan={2}>{t('help_end')}</td></tr>
-          <tr><td colSpan={2}>{t('help_points')}</td></tr>
+          <thead>
+            <tr>
+              <th colSpan={2}>{t('help_title')}</th>
+              <th><button onClick={toggle} css={closeButtonStyle}>X</button></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><Meeple type={MeepleType.Builder} css={getSize(2.5, 3)} /></td>
+              <td>{t('help_builder')}</td>
+            </tr>
+            <tr>
+              <td><Meeple type={MeepleType.Miner} css={getSize(2.5, 3)} /></td>
+              <td>{t('help_miner')}</td>
+            </tr>
+            <tr>
+              <td><Meeple type={MeepleType.Robber} css={getSize(2.5, 3)} /></td>
+              <td>{t('help_robber')}</td>
+            </tr>
+            <tr>
+              <td><Meeple type={MeepleType.Deputy} css={getSize(2.5, 3)} /></td>
+              <td>{t('help_deputy')}</td>
+            </tr>
+            <tr>
+              <td><Meeple type={MeepleType.Madame} css={getSize(2.5, 3)} /></td>
+              <td>{t('help_madame')}</td>
+            </tr>
+            <tr><td colSpan={2}>{t('help_end')}</td></tr>
+            <tr><td colSpan={2}>{t('help_points')}</td></tr>
+          </tbody>
         </table>
       </div>}
     </>

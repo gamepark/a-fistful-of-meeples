@@ -47,6 +47,13 @@ export default function TutorialPopup({ tutorial }: Props) {
     setTutorialDisplay(true)
   }
 
+  const showTutorial = () => {
+    if (tutorialDescription[actionsNumber] && !tutorialDescription[actionsNumber][tutorialIndex]) {
+      setTutorialIndex(0)
+    }
+    setTutorialDisplay(true)
+  }
+
   const tutorialMessage = (index: number) => {
     let currentStep = actionsNumber
     if (currentStep >= tutorialDescription.length)
@@ -88,13 +95,13 @@ export default function TutorialPopup({ tutorial }: Props) {
           <div css={closePopupStyle} onClick={() => setTutorialDisplay(false)}>X</div>
           {currentMessage && <h2>{currentMessage.title(t)}</h2>}
           {currentMessage && <p css={textStyle}> { currentMessage.text(t) }</p>}
-          {tutorialIndex > 0 && <button css={buttonStyle} onClick={() => moveTutorial(-1)}>{'<<'}</button>}
-          <button onClick={() => moveTutorial(1)}>{t('OK')}</button>
+          {tutorialIndex > 0 && <button css={[buttonStyle, backButtonStyle]} onClick={() => moveTutorial(-1)}>{'<<'}</button>}
+          <button css={[buttonStyle, getSize(4, 1.6)]} onClick={() => moveTutorial(1)}>{t('OK')}</button>
         </div>
       </div>
       {
         !displayPopup && tutorialDescription.length > actionsNumber &&
-        <button css={resetStyle} onClick={() => setTutorialDisplay(true)}>{t('Show Tutorial')}</button>
+        <button css={[buttonStyle, resetStyle]} onClick={showTutorial}>{t('Show Tutorial')}</button>
       }
       {
         currentMessage && currentMessage.arrow &&
@@ -202,8 +209,19 @@ const textStyle = css`
   text-align: justify;
 `
 
-
 const buttonStyle = css`
+  color: #e0c060;
+  background-color: #482000;
+  border: solid 0.1em #e0c020;
+  border-radius: 0.2em;
+  padding-bottom: 0.2em;
+  &:hover {
+    filter: drop-shadow(0 0 0.02em white) drop-shadow(0 0 0.02em white);
+}
+`
+
+
+const backButtonStyle = css`
   margin-right: 1em;
 `
 
