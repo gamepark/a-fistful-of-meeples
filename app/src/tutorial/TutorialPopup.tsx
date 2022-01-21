@@ -533,7 +533,14 @@ const tutorialDescription: TutorialStepDescription[][] = [
   [
     {
       title: (t: TFunction) => t('tuto.t1.2'),
-      text: (t: TFunction) => <>{t('tuto.t1.2.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Miner} />{t('tuto.t1.2.1.txt')}</>,
+      text: (t: TFunction) => <>{t('tuto.t1.2.0.txt')}</>,
+      boxTop: 40,
+      boxLeft: 50,
+      boxWidth: 60,
+    },
+    {
+      title: (t: TFunction) => t('tuto.t1.2'),
+      text: (t: TFunction) => <>{t('tuto.t1.2.1.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Miner} />{t('tuto.t1.2.2.txt')}</>,
       boxTop: 40,
       boxLeft: 49.5,
       boxWidth: 60,
@@ -694,7 +701,11 @@ const tutorialDescription: TutorialStepDescription[][] = [
   [
     {
       title: (t: TFunction) => t('tuto.t3.1'),
-      text: (t: TFunction) => t('tuto.t3.1.txt'),
+      text: (t: TFunction) => <>
+        {t('tuto.t3.1.0.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Builder} />
+        {t('tuto.t3.1.1.txt')}
+      </>,
       boxTop: 58,
       boxLeft: 56,
       boxWidth: 48,
@@ -708,7 +719,11 @@ const tutorialDescription: TutorialStepDescription[][] = [
   [
     {
       title: (t: TFunction) => t('tuto.t3.2'),
-      text: (t: TFunction) => t('tuto.t3.2.txt'),
+      text: (t: TFunction) => <>
+        {t('tuto.t3.2.0.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Deputy} />
+        {t('tuto.t3.2.1.txt')}
+      </>,
       boxTop: 63,
       boxLeft: 30,
       boxWidth: 48,
@@ -723,7 +738,11 @@ const tutorialDescription: TutorialStepDescription[][] = [
   [
     {
       title: (t: TFunction) => t('tuto.t3.3'),
-      text: (t: TFunction) => t('tuto.t3.3.txt'),
+      text: (t: TFunction) => <>
+        {t('tuto.t3.3.0.txt')}
+        <Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Robber} />
+        {t('tuto.t3.3.1.txt')}
+      </>,
       boxTop: 63,
       boxLeft: 30,
       boxWidth: 48,
