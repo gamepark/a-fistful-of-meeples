@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import {css, keyframes} from '@emotion/react'
-import GameState, { getPlayerRemainingMarquees } from '@gamepark/a-fistful-of-meeples/GameState'
+import GameState, { BuildingCosts, getPlayerRemainingMarquees } from '@gamepark/a-fistful-of-meeples/GameState'
 import { useAnimation, usePlay, usePlayerId, useTutorial } from '@gamepark/react-client'
 import {Letterbox, Picture} from '@gamepark/react-components'
 import { useTranslation } from 'react-i18next'
@@ -46,10 +46,17 @@ export default function GameDisplay({ game }: Props) {
   const buildOrUpgradeMarqueeAnimation = animation && !animation.action.cancelled && isBuildOrUpgradeMarqueeMove(animation.move) ? animation.move : undefined
   let buildingMarqueeOwner: PlayerColor | undefined = undefined
   let buildingMarqueeLocation: number = 0
+  let buildingCost: Array<number> = []
   if (placeInitalMarqueeTileAnimation)
     [buildingMarqueeOwner, buildingMarqueeLocation] = [placeInitalMarqueeTileAnimation.playerId, placeInitalMarqueeTileAnimation.location]
-  else if (buildOrUpgradeMarqueeAnimation && buildOrUpgradeMarqueeAnimation.build && game.marquees[buildOrUpgradeMarqueeAnimation.space].owner === undefined)
-    [buildingMarqueeOwner, buildingMarqueeLocation] = [buildOrUpgradeMarqueeAnimation.playerId, buildOrUpgradeMarqueeAnimation.space]
+  else if (buildOrUpgradeMarqueeAnimation) {
+    if (buildOrUpgradeMarqueeAnimation.build && game.marquees[buildOrUpgradeMarqueeAnimation.space].owner === undefined) {
+      [buildingMarqueeOwner, buildingMarqueeLocation] = [buildOrUpgradeMarqueeAnimation.playerId, buildOrUpgradeMarqueeAnimation.space]
+    }
+
+    const costs = BuildingCosts[buildOrUpgradeMarqueeAnimation.space]
+    buildingCost = Array<number>(costs.gold + costs.stones).fill(MiningBagContent.Stone, 0, costs.stones).fill(MiningBagContent.Gold, costs.stones)
+  }
 
   let popup = undefined
   if (animation === undefined && currentGame.getActivePlayer() === playerColor) {
@@ -72,6 +79,22 @@ export default function GameDisplay({ game }: Props) {
     }
   }
 
+  const getCubeAnimation = (cube: MiningBagContent, index: number, playerId: PlayerColor, duration: number, reverse: boolean) => {
+    const playerIndex = game.players.findIndex(state => state.color === playerId)
+    const startPosition = [miningBagLeft + 3 + index, miningBagTop + 6]
+    const endPosition = playerInfoPositions[playerIndex]
+    const getStyle = (endX: number, endY: number) => getCubeStyle(startPosition, [endX, endY], duration, reverse)
+    switch (cube) {
+      case MiningBagContent.Dynamite:
+        return <Dynamite key={100 + index} css={getStyle(72.8, 51.2)} />
+      case MiningBagContent.Gold:
+        return <GoldCube key={100 + index} css={getStyle(endPosition[0] + 12.4, endPosition[1] + 12.4)} />
+      case MiningBagContent.Stone:
+        return <StoneCube key={100 + index} css={getStyle(endPosition[0] + 1.6, endPosition[1] + 12.4)} />
+    }
+    return undefined
+  }
+
   return (
     <Letterbox id="letterbox" css={letterBoxStyle} width={letterBoxWidth} height={letterBoxHeight} top={0}>
       <MiningBag gold={game.goldCubesInMiningBag} stone={game.stoneCubesInMiningBag} dynamite={game.dynamitesInMiningBag} css={getPosition([miningBagLeft, miningBagTop])} />
@@ -84,21 +107,13 @@ export default function GameDisplay({ game }: Props) {
       <Board gameState={game} currentGame={currentGame} />
 
       <>
-        {animation && drawFromBagAnimation && drawFromBagAnimation.content.map((cube, index) => {
-          const playerIndex = game.players.findIndex(state => state.color === drawFromBagAnimation.playerId)
-          const startPosition = [miningBagLeft + 3 + index, miningBagTop + 6]
-          const endPosition = playerInfoPositions[playerIndex]
-          const getStyle = (endX: number, endY: number) => getCubeStyle(startPosition, [endX, endY], animation.duration)
-          switch (cube) {
-            case MiningBagContent.Dynamite:
-              return <Dynamite key={100 + index} css={getStyle(72.8, 51.2)} />
-            case MiningBagContent.Gold:
-              return <GoldCube key={100 + index} css={getStyle(endPosition[0] + 12.4, endPosition[1] + 12.4)} />
-            case MiningBagContent.Stone:
-              return <StoneCube key={100 + index} css={getStyle(endPosition[0] + 1.6, endPosition[1] + 12.4)} />
-          }
-          return undefined
-        })}
+        {animation && drawFromBagAnimation && drawFromBagAnimation.content.map(
+          (cube, index) => getCubeAnimation(cube, index, drawFromBagAnimation.playerId, animation.duration, false)
+        )}
+
+        {animation && buildOrUpgradeMarqueeAnimation && buildingCost.map(
+          (cube, index) => getCubeAnimation(cube, index, buildOrUpgradeMarqueeAnimation.playerId, animation.duration, true)
+        )}
 
         {animation && dynamiteExplosionAnimation && <Picture src={Images.dynamiteExplosion} css={dynamiteExplosionStyle} />}
 
@@ -145,14 +160,14 @@ const transformFromBag = (startPosition: number[], endPosition: number[]) => key
 	100%	{ transform: translate(${endPosition[0] - startPosition[0]}em, ${endPosition[1] - startPosition[1]}em); }
 `
 
-const getCubeStyle = (startPosition: number[], endPosition: number[], animation_duration: number) =>
+const getCubeStyle = (startPosition: number[], endPosition: number[], animation_duration: number, reverse: boolean) =>
   css`
   position: absolute;
   left: ${startPosition[0]}em;
   top: ${startPosition[1]}em;
   width: 4em; 
   height: 4em;
-  animation: ${transformFromBag(startPosition, endPosition)} ${animation_duration}s ease-in-out;
+  animation: ${transformFromBag(startPosition, endPosition)} ${animation_duration}s ease-in-out ${reverse ? 'reverse' : 'normal'};
 `
 
 const dynamiteExplosionStyle = css`

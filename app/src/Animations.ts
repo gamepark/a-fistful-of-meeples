@@ -1,6 +1,6 @@
 import {Animations} from '@gamepark/react-client'
-import GameState from '../../rules/src/GameState'
-import Move, { isBuildOrUpgradeMarqueeMove } from '../../rules/src/moves/Move'
+import GameState, { Location_Jail } from '../../rules/src/GameState'
+import Move, { isBuildOrUpgradeMarqueeMove, isSelectSourceLocationMove } from '../../rules/src/moves/Move'
 import MoveType from '../../rules/src/moves/MoveType'
 import PlayerColor from '../../rules/src/PlayerColor'
 
@@ -12,7 +12,7 @@ const AFistfulOfMeeplesAnimations: Animations<GameState, Move, PlayerColor> = {
       case MoveType.PlaceInitialMarqueeTile:
         return isActivePlayer ? 2 : 3
       case MoveType.SelectSourceLocation:
-        return isActivePlayer ? 0.3 : 0.5
+        return (isSelectSourceLocationMove(move) && move.location === Location_Jail) ? 2 : (isActivePlayer ? 0.3 : 0.5)
       case MoveType.PlaceMeeple:
         return isActivePlayer ? 0.1 : 0.5
       case MoveType.ChooseAnotherPlayerShowdownToken:

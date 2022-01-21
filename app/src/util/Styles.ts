@@ -12,6 +12,10 @@ export const getSize = (width: number, height: number) => css`
   height: ${height}em;
 `
 
+export const getZIndex = (index: number) => css`
+  z-index: ${index};
+`
+
 export const fullSizeStyle = css`
   position: absolute;
   left: 0;
@@ -53,6 +57,7 @@ export const dialogArea = css`
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 50;
 `
 
 export const dialogStyle = css`

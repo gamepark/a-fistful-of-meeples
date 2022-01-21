@@ -2,7 +2,7 @@
 import { css, keyframes } from '@emotion/react'
 import GameState, { isBuildingLocation, Location_Graveyard, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, playerInfoPositions, removedDynamitePositions, getMarqueeSelecterPosition } from '../util/Metrics'
+import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, playerInfoPositions, removedDynamitePositions, getMarqueeSelecterPosition, miningBagLeft, miningBagTop } from '../util/Metrics'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
 import Images from './Images'
@@ -75,9 +75,13 @@ export default function Board({ gameState, currentGame }: Props) {
 
       {gameState.dynamitesInJail > 0 &&
         <>
-        {[...Array(gameState.dynamitesInJail)].map((_, index) =>
-          <Dynamite css={getDynamiteStyle(dynamitePositions[index])} key={index} />
-          )}
+        {[...Array(gameState.dynamitesInJail)].map((_, index) => {
+          const startPosition = dynamitePositions[index]
+          let style = [getDynamiteStyle(startPosition)]
+          if ((animation && selectSourceLocationAnimation && selectSourceLocationAnimation.location === Location_Jail && index === gameState.dynamitesInJail - 1))
+            style.push(getTransformStyle(startPosition, [miningBagLeft + 4, miningBagTop], animation.duration))
+          return <Dynamite css={style} key={index} />
+        })}
         </>
       }
 
@@ -111,21 +115,21 @@ export default function Board({ gameState, currentGame }: Props) {
         {gameState.buildings.map((meeples, building) =>
           meeples.map((meeple, index) => {
             const startPosition = getPositionInBuilding(building, index, gameState.buildings[building].length)
-              let style = [getMeepleStyle(startPosition)]
-              if ((animation && selectSourceLocationAnimation && selectSourceLocationAnimation.location === building))
-                style.push(getTransformStyle(startPosition, getPositionInHand(index), animation.duration))
-              if ((animation && moveMeepleAnimation && moveMeepleAnimation.source === building && moveMeepleAnimation.meeples === meeple)) {
-                switch (moveMeepleAnimation.destination) {
-                  case Location_Jail:
-                    style.push(getTransformStyle(startPosition, getPositionInJail(gameState.jail.length), animation.duration))
-                    break
-                  case Location_Saloon:
-                    style.push(getTransformStyle(startPosition, getPositionInSaloon(gameState.saloon.length, gameState.saloon.length + 1), animation.duration))
-                    break
-                }
+            let style = [getMeepleStyle(startPosition)]
+            if ((animation && selectSourceLocationAnimation && selectSourceLocationAnimation.location === building))
+              style.push(getTransformStyle(startPosition, getPositionInHand(index), animation.duration))
+            if ((animation && moveMeepleAnimation && moveMeepleAnimation.source === building && moveMeepleAnimation.meeples === meeple)) {
+              switch (moveMeepleAnimation.destination) {
+                case Location_Jail:
+                  style.push(getTransformStyle(startPosition, getPositionInJail(gameState.jail.length), animation.duration))
+                  break
+                case Location_Saloon:
+                  style.push(getTransformStyle(startPosition, getPositionInSaloon(gameState.saloon.length, gameState.saloon.length + 1), animation.duration))
+                  break
               }
-              return <Meeple css={style} type={meeple} key={building * 12 + index} />
-            })
+            }
+            return <Meeple css={style} type={meeple} key={building * 12 + index} />
+          })
         )}
       </>
 
