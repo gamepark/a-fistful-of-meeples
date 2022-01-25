@@ -2,7 +2,7 @@
 import { css, keyframes } from '@emotion/react'
 import GameState, { isBuildingLocation, Location_Graveyard, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1 } from '@gamepark/a-fistful-of-meeples/GameState'
 import PlayerColor from '@gamepark/a-fistful-of-meeples/PlayerColor'
-import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, playerInfoPositions, removedDynamitePositions, getMarqueeSelecterPosition, miningBagLeft, miningBagTop } from '../util/Metrics'
+import { boardHeight, boardLeft, boardTop, boardWidth, goldBarPositions, buildingsPosition, meepleHeight, meepleWidth, dynamitePositions, saloonPosition, graveyardPositions, jailPosition, doorwaysPosition, showdownMeeplePositions, showdownTokenPositions, marqueesPosition, goldBarWidth, goldBarHeight, showdownSelecterPositions, saloonSelecterPosition, jailSelecterPosition, dicePositions, diceWidth, diceHeight, showdownTokenHeight, showdownTokenWidth, meeplesInHandPosition, dynamiteWidth, dynamiteHeight, buildingSelecterDeltaX, buildingSelecterDeltaY, buildingWidth, buildingHeight, doorwayWidth, doorwayHeight, doorwaySelecterDeltaX, doorwaySelecterDeltaY, saloonSelecterWidth, saloonSelecterHeight, jailSelecterHeight, jailSelecterWidth, playerInfoPositions, removedDynamitePositions, getMarqueeSelecterPosition, miningBagLeft, miningBagTop, goldCubeWidth, goldCubeHeight, translate } from '../util/Metrics'
 import Dynamite from './Dynamite'
 import GoldBar from './GoldBar'
 import Images from './Images'
@@ -26,9 +26,10 @@ import GenericSelecter from './GenericSelecter'
 import MoveMeeples from '../../../rules/src/moves/MoveMeeples'
 import RollShowdownDice from '../../../rules/src/moves/RollShowdownDice'
 import { Picture } from '@gamepark/react-components'
-import ConvertGoldBar from '../../../rules/src/moves/ConvertGoldBar'
-import { getPosition, getTranslationAnimationStyle } from '../util/Styles'
+import ConvertGoldBar, { getNextGoldBarPrice } from '../../../rules/src/moves/ConvertGoldBar'
+import { getPosition, getSize, getTranslateAnimationStyle } from '../util/Styles'
 import { useState } from 'react'
+import GoldCube from './GoldCube'
 
 
 type Props = {
@@ -55,20 +56,32 @@ export default function Board({ gameState, currentGame }: Props) {
   const convertGoldBarAnimation = animation && !animation.action.cancelled && isConvertGoldBar(animation.move) ? animation.move : undefined
 
   const removedDynamites: number = 3 - gameState.dynamitesInJail - gameState.dynamitesInMiningBag
+  let playerInfoPosition: number[] = []
+  if (animation && convertGoldBarAnimation) {
+    playerInfoPosition = playerInfoPositions[gameState.players.findIndex(state => state.color === gameState.activePlayer)]
+  }
 
   return (
     <div css={style}>
-      {gameState.goldBarsInBank > 0 &&
+      {gameState.goldBarsInBank > 0 &&  // display gold bars in bank and animate to player panel when converting
         <>
         {[...Array(gameState.goldBarsInBank)].map((_, index) => {
           const startPosition = goldBarPositions[index]
-          const playerIndex = gameState.players.findIndex(state => state.color === gameState.activePlayer)
           let style = [getGoldBarStyle(startPosition)]
           if ((animation && convertGoldBarAnimation && index === gameState.goldBarsInBank - 1)) {
-            const endPosition = [playerInfoPositions[playerIndex][0] + 23, playerInfoPositions[playerIndex][1] + 4]
+            const endPosition = [playerInfoPosition[0] + 23, playerInfoPosition[1] + 4]
             style.push(getConvertGoldBarTransformStyle(startPosition, endPosition, animation.duration))
           }
           return <GoldBar css={style} key={index} />
+          })}
+        </>
+      }
+
+      {animation && convertGoldBarAnimation && // animate gold cubes from player panel to bank
+        <>
+        {[...Array(getNextGoldBarPrice(gameState))].map((_, index) => {
+          return <GoldCube key={index} css={[getSize(goldCubeWidth, goldCubeHeight),
+            getTranslateAnimationStyle(translate(playerInfoPosition, 5 + index * 2, 5), goldBarPositions[0], animation.duration)]} />
           })}
         </>
       }
@@ -178,12 +191,14 @@ export default function Board({ gameState, currentGame }: Props) {
             if ((animation && moveMeepleAnimation && moveMeepleAnimation.source === ((index === 0) ? Location_Showdown0 : Location_Showdown1))) {
               switch (moveMeepleAnimation.destination) {
                 case Location_Graveyard:
-                  style.push(getTranslationAnimationStyle(startPosition, getPositionInGraveyard(gameState.graveyard.length), animation.duration))
+                  style.push(getTranslateAnimationStyle(startPosition, getPositionInGraveyard(gameState.graveyard.length), animation.duration))
                   break
                 case Location_Saloon:
-                  style.push(getTranslationAnimationStyle(startPosition, getPositionInSaloon(gameState.saloon.length, gameState.saloon.length + 1), animation.duration))
+                  style.push(getTranslateAnimationStyle(startPosition, getPositionInSaloon(gameState.saloon.length, gameState.saloon.length + 1), animation.duration))
                   break
               }
+            } else {
+              style.push(getPosition(startPosition))
             }
             return <div key={index}>
               {showdown.owner !== undefined ? <ShowdownToken playercolor={showdown.owner} css={getShowdownTokenStyle(showdownTokenPositions[index])} /> : undefined}
@@ -487,3 +502,4 @@ function getConvertGoldBarTransformStyle(startPosition: Array<number>, endPositi
   transition: transform ${duration}s ease-in-out;
 `
 }
+

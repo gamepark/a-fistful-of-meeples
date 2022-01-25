@@ -1,5 +1,9 @@
 //import {css, Theme} from '@emotion/react'
 
+export function translate(position: number[], deltaX: number, deltaY: number) {
+  return [position[0] + deltaX, position[1] + deltaY]
+}
+
 export const letterBoxWidth = 185
 export const letterBoxHeight = 100
 export const letterBoxRatio = letterBoxWidth / letterBoxHeight
