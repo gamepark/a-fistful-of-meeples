@@ -174,6 +174,15 @@ export function endOfGameTriggered(state: GameState): boolean {
 export function getPlayerScore(state: GameState, player: PlayerColor): number {
   const playerState: PlayerState = state.players.find(ps => ps.color === player)!
   // compute score : gold bars, gold pieces and marquees
-  return playerState.goldPieces + 10 * playerState.goldBars + state.marquees.map<number>(marquee => marquee.owner == player ? (marquee.upgraded ? 10 : 5) : 0).reduce((previous: number, current: number) => previous + current, 0)
+  return getPlayerScorePieces(playerState) + getPlayerScoreBars(playerState) + getPlayerScoreMarquees(state, player)
+}
+export function getPlayerScorePieces(playerState: PlayerState): number {
+  return playerState.goldPieces
+}
+export function getPlayerScoreBars(playerState: PlayerState): number {
+  return 10 * playerState.goldBars
+}
+export function getPlayerScoreMarquees(state: GameState, player: PlayerColor): number {
+  return state.marquees.map<number>(marquee => marquee.owner == player ? (marquee.upgraded ? 10 : 5) : 0).reduce((previous: number, current: number) => previous + current, 0)
 }
 

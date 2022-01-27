@@ -66,7 +66,6 @@ export const dialogArea = css`
 `
 
 export const dialogStyle = css`
-  border-color: lightgreen;
   border: 0.4em solid #29db06FF;
   border-radius: 2em;
   background: black;

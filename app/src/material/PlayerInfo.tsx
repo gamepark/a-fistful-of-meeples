@@ -8,10 +8,10 @@ import StoneCube from './StoneCube'
 import GoldCube from './GoldCube'
 import GameState, { getPlayerRemainingMarquees, getPlayerScore } from '../../../rules/src/GameState'
 import { HTMLAttributes } from 'react'
-import { Avatar, GamePoints, PlayerTimer, usePlayer } from '@gamepark/react-client'
+import { Avatar, GamePoints, Player, PlayerTimer, usePlayer } from '@gamepark/react-client'
 import { SpeechBubbleDirection } from '@gamepark/react-client/dist/Avatar'
 import { Picture } from '@gamepark/react-components'
-import { useTranslation } from 'react-i18next'
+import { TFunction, useTranslation } from 'react-i18next'
 import { goldBarRatio } from '../util/Metrics'
 import { getPlayerName } from '../../../rules/src/AFistfulOfMeeplesOptions'
 import Phase from '../../../rules/src/Phase'
@@ -48,7 +48,7 @@ export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnim
       }
 
       <div css={[getItemStyle(2, 46, 90), infosStyle]}>
-        <div>{playerInfo?.name ?? getPlayerName(playerState.color, t)}</div>
+        <div>{getNameForPlayer(playerInfo, playerState.color, t)}</div>
         <div>
           {playerInfo?.time?.playing && <PlayerTimer playerId={playerState.color} />}
           {gameState.currentPhase === Phase.GameOver && getPlayerScore(gameState, playerState.color)}
@@ -65,7 +65,7 @@ export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnim
   )
 }
 
-function getPlayerColor(playerColor: PlayerColor): number {
+export function getPlayerColor(playerColor: PlayerColor): number {
   switch (playerColor) {
     case PlayerColor.Black:
       return 0x353437
@@ -76,6 +76,10 @@ function getPlayerColor(playerColor: PlayerColor): number {
     case PlayerColor.Orange:
       return 0xe1822d
   }
+}
+
+export function getNameForPlayer(player: Player<PlayerColor> | undefined, playerColor: PlayerColor, t: TFunction): string {
+  return player?.name ?? getPlayerName(playerColor, t)
 }
 
 function getPlayerInfoStyle(isActive: boolean, playerColor: PlayerColor) {

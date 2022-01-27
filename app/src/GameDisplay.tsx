@@ -13,6 +13,7 @@ import DynamiteExplosion from '../../rules/src/moves/DynamiteExplosion'
 import { isBuildOrUpgradeMarqueeMove, isChooseAnotherPlayerShowdownTokenMove, isDrawFromBagMove, isDynamiteExplosion, isPlaceInitialMarqueeTileMove, isRerollShowdownDiceMove } from '../../rules/src/moves/Move'
 import PlaceInitialMarqueeTile from '../../rules/src/moves/PlaceInitialMarqueeTile'
 import { getRerollShowdownDiceMove } from '../../rules/src/moves/RerollShowdownDice'
+import Phase from '../../rules/src/Phase'
 import PlayerColor from '../../rules/src/PlayerColor'
 import Board from './material/Board'
 import Dynamite from './material/Dynamite'
@@ -22,6 +23,7 @@ import Marquee from './material/Marquee'
 import MiningBag from './material/MiningBag'
 import PlayerInfo, { getMarqueePositionInPlayerInfo } from './material/PlayerInfo'
 import PlayerSelecter from './material/PlayerSelecter'
+import Scores from './material/Scores'
 import StoneCube from './material/StoneCube'
 import TutorialPopup from './tutorial/TutorialPopup'
 import Help from './util/Help'
@@ -105,6 +107,7 @@ export default function GameDisplay({ game }: Props) {
         )}
       </>
       <Board gameState={game} currentGame={currentGame} />
+      {game.currentPhase === Phase.GameOver && <Scores gameState={game}/>}
 
       <>
         {animation && drawFromBagAnimation && drawFromBagAnimation.content.map(

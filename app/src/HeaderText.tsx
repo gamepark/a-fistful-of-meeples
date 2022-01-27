@@ -3,7 +3,6 @@ import GameState, { getPlayerScore, PendingEffectType } from '@gamepark/a-fistfu
 import { Player as PlayerInfo, useAnimation, usePlayers, Animation, useTutorial, useActions } from '@gamepark/react-client'
 import {TFunction, useTranslation} from 'react-i18next'
 import AFistfulOfMeeples from '../../rules/src/AFistfulOfMeeples'
-import { getPlayerName } from '../../rules/src/AFistfulOfMeeplesOptions'
 import BuildOrUpgradeMarquee from '../../rules/src/moves/BuildOrUpgradeMarquee'
 import ConvertGoldBar, { getNextGoldBarPrice } from '../../rules/src/moves/ConvertGoldBar'
 import Move from '../../rules/src/moves/Move'
@@ -13,6 +12,7 @@ import PlaceInitialMarqueeTile from '../../rules/src/moves/PlaceInitialMarqueeTi
 import Phase from '../../rules/src/Phase'
 import PlayerColor from '../../rules/src/PlayerColor'
 import PlayerState from '../../rules/src/PlayerState'
+import { getNameForPlayer } from './material/PlayerInfo'
 
 type Props = {
   loading: boolean
@@ -43,7 +43,7 @@ export default function HeaderText({loading, game, player}: Props) {
 }
 
 function getText(t: TFunction, game: GameState, player: PlayerColor, players: PlayerInfo<PlayerColor>[], animation?: Animation<any, any>): string {
-  const getName = (playerId: PlayerColor) => players.find(p => p.id === playerId)?.name || getPlayerName(playerId, t)
+  const getName = (playerId: PlayerColor) => getNameForPlayer(players.find(p => p.id === playerId), playerId, t)
   const currentGame = new AFistfulOfMeeples(game)
   const activePlayer = currentGame.getActivePlayer()
   const isActivePlayer: boolean = player === activePlayer
@@ -104,9 +104,9 @@ function getText(t: TFunction, game: GameState, player: PlayerColor, players: Pl
   }
 }
 
-function getEndOfGameText(t: TFunction, playersInfo: PlayerInfo<PlayerColor>[], game: GameState, playerColor?: PlayerColor) {
+export function getEndOfGameText(t: TFunction, playersInfo: PlayerInfo<PlayerColor>[], game: GameState, playerColor?: PlayerColor) {
   const player = game.players.find(player => player.color === playerColor)
-  const getName = (color: PlayerColor) => playersInfo.find(p => p.id === color)?.name || getPlayerName(color, t)
+  const getName = (playerId: PlayerColor) => getNameForPlayer(playersInfo.find(p => p.id === playerId), playerId, t)
   let highestScore = -1
   let playersWithHighestScore: PlayerState[] = []
   for (const player of game.players) {
