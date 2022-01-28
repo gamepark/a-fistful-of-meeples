@@ -179,6 +179,7 @@ const dynamiteExplosionStyle = css`
   top: 47.5em;
   width: 12em;
   height: 12em;
+  z-index: 55;
 `
 
 const helpButtonStyle = css`
