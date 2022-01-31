@@ -1,5 +1,5 @@
-import { Action, SequentialGame, Undo } from '@gamepark/rules-api'
-import GameState, { initialiseGameState, Location_Saloon, Location_Jail, PendingEffectType, Location_Showdown0, Location_Showdown1, getNextPlayer, endOfGameTriggered } from './GameState'
+import { Action, Competitive, SequentialGame, TimeLimit, Undo } from '@gamepark/rules-api'
+import GameState, { initialiseGameState, Location_Saloon, Location_Jail, PendingEffectType, Location_Showdown0, Location_Showdown1, getNextPlayer, endOfGameTriggered, getPlayerScore } from './GameState'
 import Move, { isDrawFromBagMove, isRollShowdownDiceMove } from './moves/Move'
 import MoveType from './moves/MoveType'
 import PlayerColor from './PlayerColor'
@@ -22,8 +22,10 @@ import MiningBagContent, { drawCubesFromBag } from './MiningBag'
 import { getRollShowdownDiceMove, rollShowdownDice } from './moves/RollShowdownDice'
 import { changeCurrentPhase, getChangeCurrentPhaseMove } from './moves/ChangeCurrentPhase'
 import { convertGoldBar } from './moves/ConvertGoldBar'
+import PlayerState from './PlayerState'
 
-export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, PlayerColor> implements Undo<GameState, Move, PlayerColor> {
+export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, PlayerColor>
+  implements Undo<GameState, Move, PlayerColor>, TimeLimit<GameState, Move, PlayerColor>, Competitive<GameState, Move, PlayerColor> {
   /**
    * This constructor is called when the game "restarts" from a previously saved state.
    * @param state The state of the game
@@ -196,21 +198,50 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
     return getCanUndo(action, consecutiveActions)
   }
 
-  /**
-   * Here you can return the moves that should be automatically played when the game is in a specific state.
-   * Here is an example from monopoly: you roll a dice, then move you pawn accordingly.
-   * A first solution would be to do both state updates at once, in a "complex move" (RollDiceAndMovePawn).
-   * However, this first solution won't allow you to animate step by step what happened: the roll, then the pawn movement.
-   * "getAutomaticMove" is the solution to trigger multiple moves in a single action, and still allow for step by step animations.
-   * => in that case, "RollDice" could set "pawnMovement = x" somewhere in the game state. Then getAutomaticMove will return "MovePawn" when
-   * "pawnMovement" is defined in the state.
-   * Of course, you must return nothing once all the consequences triggered by a decision are completed.
-   * VERY IMPORTANT: you should never change the game state in here. Indeed, getAutomaticMove will never be called in replays, for example.
-   *
-   * @return The next automatic consequence that should be played in current game state.
-   */
   getAutomaticMove(): void | Move {
     return getPredictableMove(this.state, true)
+  }
+
+  giveTime(_playerId: PlayerColor): number {
+    if (this.state.pendingEffects.length > 0) {
+      let effect = this.state.pendingEffects[0]
+      switch (effect.type) {
+        case PendingEffectType.BuildOrUpgradeMarquee:
+        case PendingEffectType.ChooseToRerollShowdownDice:
+          return 15
+      }
+    }
+
+    switch (this.state.currentPhase) {
+      case Phase.PlaceInitialMarqueeTiles:
+        return 15
+      case Phase.SelectSourceLocation:
+        return 90
+    }
+
+    return 0
+  }
+
+  getPlayer(playerId: PlayerColor): PlayerState {
+    const result = this.state.players.find(player => player.color === playerId)
+    if (!result) throw new Error(`${playerId} is expected on ${this.state}`)
+    return result
+  }
+
+  rankPlayers(playerA: PlayerColor, playerB: PlayerColor): number {
+    const scoreA = getPlayerScore(this.state, playerA)
+    const scoreB = getPlayerScore(this.state, playerB)
+
+    if (scoreA !== scoreB)
+      return scoreB - scoreA
+
+    const pA = this.getPlayer(playerA)
+    const pB = this.getPlayer(playerB)
+    return pB.goldPieces + pB.stones - pA.goldPieces - pA.stones
+  }
+
+  getScore(playerId: PlayerColor): number {
+    return getPlayerScore(this.state, playerId)
   }
 }
 
