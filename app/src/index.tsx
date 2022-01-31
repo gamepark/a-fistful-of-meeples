@@ -28,7 +28,7 @@ const style = css`
 
   body {
     margin: 0;
-    font-family: 'Oswald', "Roboto Light", serif;
+    font-family: 'Bree Serif', "Roboto Light", serif;
     font-size: 1vh;
     @media (max-aspect-ratio: 185/100) {
       font-size: ${100 / 185}vw;

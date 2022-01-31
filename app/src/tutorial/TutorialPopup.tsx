@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 
-import { css } from "@emotion/react"
+import { css, keyframes } from "@emotion/react"
 import { EmotionJSX } from "@emotion/react/types/jsx-namespace"
 import { Tutorial, useActions, useAnimation, useFailures } from "@gamepark/react-client"
 import { Picture } from "@gamepark/react-components"
@@ -156,14 +156,15 @@ const popupStyle = css`
   outline: none;
   box-shadow: 1em 2em 2.5em -1.5em hsla(0, 0%, 0%, 0.2);
   border-radius: 40em 3em 40em 3em/3em 40em 3em 40em;
-  font-family: Georgia, serif;
 
   &:hover {
     box-shadow: 2em 4em 5em -3em hsla(0, 0%, 0%, .5);
   }
 
   & > h2 {
+    font-family: 'Rye', "Roboto Light", serif;
     font-size: 5em;
+    font-weight: normal;
     margin: 0;
   }
 
@@ -173,6 +174,7 @@ const popupStyle = css`
   }
 
   & > button {
+    font-family: 'Rye', "Roboto Light", serif;
     font-size: 4em;
   }
 `
@@ -203,7 +205,7 @@ const resetStyle = css`
   text-align: center;
   bottom: 10%;
   right: 1%;
-  font-size: 3.5em;
+  font-size: 3em;
 `
 
 const textStyle = css`
@@ -216,6 +218,8 @@ const buttonStyle = css`
   border: solid 0.1em #e0c020;
   border-radius: 0.2em;
   padding-bottom: 0.2em;
+  font-family: 'Rye', "Roboto Light", serif;
+  font-weight: normal;
   &:hover {
     filter: drop-shadow(0 0 0.02em white) drop-shadow(0 0 0.02em white);
 }
@@ -235,6 +239,12 @@ const cubeStyle = css`
   vertical-align: -0.2em;
 `
 
+const arrowAnimation = keyframes`
+  0% { filter: none; }
+  50% { filter: drop-shadow(0 0 1em white) drop-shadow(0 0 1em black) drop-shadow(0 0 1em white);
+  100% { filter: none; }
+`
+
 const arrowStyle = (angle: number, scale: number) => css`
   position: absolute;
   transform: rotate(${angle}deg) scale(${scale}, ${scale});
@@ -243,6 +253,7 @@ const arrowStyle = (angle: number, scale: number) => css`
   transition-property: top, left, transform;
   transition-duration: 0.5s;
   transition-timing-function: ease;
+  animation: ${arrowAnimation} 3s linear infinite forwards;
 `
 
 const showArrowStyle = (top: number, left: number) => css`
@@ -264,6 +275,7 @@ const closePopupStyle = css`
   margin-top: -2%;
   margin-right: -0%;
   font-size: 4em;
+  font-family: 'Rye', "Roboto Light", serif;
 
   &:hover {
     cursor: pointer;

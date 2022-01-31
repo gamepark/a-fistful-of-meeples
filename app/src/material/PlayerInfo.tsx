@@ -47,8 +47,8 @@ export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnim
         <Picture alt={t('FallbackAvatar')} src={Images.avatar} css={[avatarStyle, fallbackAvatarStyle(playerState.color)]} />
       }
 
-      <div css={[getItemStyle(2, 46, 90), infosStyle]}>
-        <div>{getNameForPlayer(playerInfo, playerState.color, t)}</div>
+      <div css={[getItemStyle(2, 50, 90), infosStyle]}>
+        <div css={playerNameStyle}>{getNameForPlayer(playerInfo, playerState.color, t)}</div>
         <div>
           {playerInfo?.time?.playing && <PlayerTimer playerId={playerState.color} />}
           {gameState.currentPhase === Phase.GameOver && getPlayerScore(gameState, playerState.color)}
@@ -87,7 +87,7 @@ function getPlayerInfoStyle(isActive: boolean, playerColor: PlayerColor) {
   return css`
   background-color: #${color.toString(16) + (isActive ? 'D0' : '60')};
   border-radius: 4em;
-  border: ${isActive ? 0.5 : 0.3}em solid #${(isActive ? 0xffd700 : color).toString(16)};
+  border: ${isActive ? 0.6 : 0.3}em solid #${(isActive ? 0xffd700 : color).toString(16)};
 `
 }
 
@@ -97,6 +97,12 @@ const avatarStyle = css`
   height: 8em;
   top: 0.5em;
   left: 0.5em;
+`
+
+const playerNameStyle = css`
+  font-family: 'Rye', "Roboto Light", serif;
+  font-weight: normal;
+  font-size: 0.8em;
 `
 
 const fallbackAvatarStyle = (playerColor: PlayerColor) => css`

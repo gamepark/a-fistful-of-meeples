@@ -384,6 +384,7 @@ function getDynamiteStyle(position: Array<number>) {
   top: ${position[1]}em;
   width: ${dynamiteWidth}em;
   height: ${dynamiteHeight}em;
+  z-index: 5;
 `
 }
 
@@ -394,6 +395,7 @@ function getMeepleStyle(position: Array<number>) {
   top: ${position[1]}em;
   width: ${meepleWidth}em;
   height: ${meepleHeight}em;
+  z-index: 10;
 `
 }
 
@@ -457,6 +459,7 @@ const getBuildingSelecterStyle = (position: Array<number>) => css`
   width: ${buildingWidth}em;
   height: ${buildingHeight}em;
   cursor: pointer;
+  z-index: 20;
 `
 
 const getDoorwaySelecterStyle = (position: Array<number>) => css`
@@ -465,6 +468,7 @@ const getDoorwaySelecterStyle = (position: Array<number>) => css`
   top: ${position[1] + doorwaySelecterDeltaY}em;
   width: ${doorwayWidth}em;
   height: ${doorwayHeight}em;
+  z-index: 20;
 `
 
 const getSaloonSelecterStyle = (position: Array<number>) => css`
@@ -473,6 +477,7 @@ const getSaloonSelecterStyle = (position: Array<number>) => css`
   top: ${position[1]}em;
   width: ${saloonSelecterWidth}em;
   height: ${saloonSelecterHeight}em;
+  z-index: 20;
 `
 
 const getJailSelecterStyle = (position: Array<number>) => css`
@@ -481,12 +486,14 @@ const getJailSelecterStyle = (position: Array<number>) => css`
   top: ${position[1]}em;
   width: ${jailSelecterWidth}em;
   height: ${jailSelecterHeight}em;
+  z-index: 20;
 `
 
 const getShowdownSelecterStyle = (position: Array<number>) => css`
   position: absolute;
   left: ${position[0]}em;
   top: ${position[1]}em;
+  z-index: 20;
 `
 
 function getTransformStyle(startPosition: Array<number>, endPosition: Array<number>, duration: number) {
