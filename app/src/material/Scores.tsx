@@ -62,6 +62,7 @@ export default function Scores({ gameState }: Props) {
 }
 
 const avatarStyle = css`
+  position: relative;
   width: 3em;
   height: 3em;
 `
@@ -90,7 +91,7 @@ const headerStyle = css`
 `
 
 const playerStyle = css`
-  padding: 0.3em 0.3em 0 0.3em;
+  padding: 0.3em;
 `
 
 const cellStyle = css`

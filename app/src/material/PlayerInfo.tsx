@@ -97,6 +97,7 @@ const avatarStyle = css`
   height: 8em;
   top: 0.5em;
   left: 0.5em;
+  color: black;
 `
 
 const playerNameStyle = css`

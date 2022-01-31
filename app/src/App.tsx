@@ -1,4 +1,5 @@
 /** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react'
 import GameState from '@gamepark/a-fistful-of-meeples/GameState'
 import {FailuresDialog, FullscreenDialog, Menu, useGame, usePlayer} from '@gamepark/react-client'
 import {Header, ImagesLoader, LoadingScreen} from '@gamepark/react-components'
@@ -21,8 +22,8 @@ export default function App() {
   const loading = !game || imagesLoading || isJustDisplayed
   return (
     <DndProvider options={HTML5ToTouch}>
-      {game && <GameDisplay game={game}/>}
-      <LoadingScreen display={loading} author="Jonathan “Jonny Pac” Cantin" artist="Mihajlo Dimitrievski – The Mico" publisher="Final Frontier Games" developer="Jagrin" />
+      {game && <GameDisplay game={game} />}
+      <LoadingScreen css={loadingScreenStyle} display={loading} author="Jonathan “Jonny Pac” Cantin" artist="Mihajlo Dimitrievski – The Mico" publisher="Final Frontier Games" developer="Jagrin" />
       <Header><HeaderText loading={loading} game={game} player={player?.id} /></Header>
       <Menu/>
       <FailuresDialog/>
@@ -32,3 +33,7 @@ export default function App() {
   )
 }
 
+const loadingScreenStyle = css`
+  font-family: 'Rye', "Roboto Light", serif;
+  font-weight: normal;
+`
