@@ -387,9 +387,9 @@ const tutorialDescription: TutorialStepDescription[][] = [
     {
       title: (t: TFunction) => t('tuto.t1.placeminer'),
       text: (t: TFunction) => <>{t('tuto.t1.placeminer.0.txt')}<Meeple css={[meepleStyle, getSize(1.25, 1.5)]} type={MeepleType.Miner} />{t('tuto.t1.placeminer.1.txt')}</>,
-      boxTop: 40,
-      boxLeft: 49.5,
-      boxWidth: 60,
+      boxTop: 42,
+      boxLeft: 45,
+      boxWidth: 50,
       arrow: {
         angle: 270,
         top: 36,
