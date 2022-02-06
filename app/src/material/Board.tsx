@@ -77,11 +77,11 @@ export default function Board({ gameState, currentGame }: Props) {
         </>
       }
 
-      {animation && convertGoldBarAnimation && // animate gold cubes from player panel to bank
+      {animation && convertGoldBarAnimation && // animate gold cubes from player panel to mining bag
         <>
         {[...Array(getNextGoldBarPrice(gameState))].map((_, index) => {
           return <GoldCube key={index} css={[getSize(goldCubeWidth, goldCubeHeight),
-            getTranslateAnimationStyle(translate(playerInfoPosition, 5 + index * 2, 5), goldBarPositions[0], animation.duration)]} />
+            getTranslateAnimationStyle(translate(playerInfoPosition, 5 + index * 2, 5), [miningBagLeft + 3 + index, miningBagTop], animation.duration)]} />
           })}
         </>
       }
@@ -235,7 +235,9 @@ export default function Board({ gameState, currentGame }: Props) {
             }
             style.push(getTransformStyle(startPosition, endPosition, animation.duration))
           }
-          return <Meeple css={style} type={meeple} indexInHand={index} draggable={true} key={index} selectionStatus={(index === selectedMeepleIndex) ? SelectionStatus.Selected : SelectionStatus.Selectable} onSelect={() => setSelectedMeepleIndex(index)} />
+          if (currentGame.getActivePlayer() === playerColor)
+            return <Meeple css={style} type={meeple} indexInHand={index} draggable={true} key={index} selectionStatus={(index === selectedMeepleIndex) ? SelectionStatus.Selected : SelectionStatus.Selectable} onSelect={() => setSelectedMeepleIndex(index)} />
+          return <Meeple css={style} type={meeple} indexInHand={index} key={index} />
         })}
       </>
 

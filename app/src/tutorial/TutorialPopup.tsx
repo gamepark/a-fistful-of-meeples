@@ -239,21 +239,20 @@ const cubeStyle = css`
   vertical-align: -0.2em;
 `
 
-const arrowAnimation = keyframes`
-  0% { filter: none; }
-  50% { filter: drop-shadow(0 0 1em white) drop-shadow(0 0 1em black) drop-shadow(0 0 1em white);
-  100% { filter: none; }
+const arrowAnimation = (angle: number, scale: number) => keyframes`
+  0% { filter: none; transform: rotate(${angle}deg) scale(${scale}, ${scale}); }
+  50% { filter: drop-shadow(0 0 1em white) drop-shadow(0 0 1em black) drop-shadow(0 0 1em white); transform: rotate(${angle}deg) scale(${scale * 1.05}, ${scale * 1.05}); }
+  100% { filter: none; transform: rotate(${angle}deg) scale(${scale}, ${scale}); }
 `
 
 const arrowStyle = (angle: number, scale: number) => css`
   position: absolute;
-  transform: rotate(${angle}deg) scale(${scale}, ${scale});
   will-change: transform;
   z-index: 102;
   transition-property: top, left, transform;
   transition-duration: 0.5s;
   transition-timing-function: ease;
-  animation: ${arrowAnimation} 3s linear infinite forwards;
+  animation: ${arrowAnimation(angle, scale)} 3s linear infinite forwards;
 `
 
 const showArrowStyle = (top: number, left: number) => css`
@@ -740,8 +739,8 @@ const tutorialDescription: TutorialStepDescription[][] = [
         {t('tuto.t3.resolverobber.1.txt')}
       </>,
       boxTop: 52,
-      boxLeft: 35,
-      boxWidth: 60,
+      boxLeft: 40,
+      boxWidth: 80,
       arrow: {
         angle: 0,
         top: 42,
@@ -883,8 +882,8 @@ const tutorialDescription: TutorialStepDescription[][] = [
       title: (t: TFunction) => t('tuto.t5.escape'),
       text: (t: TFunction) => t('tuto.t5.escape.txt'),
       boxTop: 33,
-      boxLeft: 35,
-      boxWidth: 50,
+      boxLeft: 40,
+      boxWidth: 60,
       arrow: {
         angle: 270,
         top: 9,
@@ -896,8 +895,8 @@ const tutorialDescription: TutorialStepDescription[][] = [
       title: (t: TFunction) => t('tuto.t5.placerobber1'),
       text: (t: TFunction) => t('tuto.t5.placerobber1.txt'),
       boxTop: 55,
-      boxLeft: 45,
-      boxWidth: 60,
+      boxLeft: 40,
+      boxWidth: 70,
       arrow: {
         angle: 180,
         top: 54,
@@ -971,7 +970,7 @@ const tutorialDescription: TutorialStepDescription[][] = [
     {
       title: (t: TFunction) => t('tuto.t5.goldbar'),
       text: (t: TFunction) => t('tuto.t5.goldbar.txt'),
-      boxTop: 77,
+      boxTop: 74,
       boxLeft: 30,
       boxWidth: 68,
       arrow: {
