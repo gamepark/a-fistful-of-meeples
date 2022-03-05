@@ -10,22 +10,29 @@ import PlayerColor from '../../rules/src/PlayerColor'
 import GameDisplay from './GameDisplay'
 import HeaderText from './HeaderText'
 import Images from './material/Images'
+import { SoundLoader } from './sounds/SoundLoader'
+import { AudioLoader } from './sounds/AudioLoader'
+import { AllAFistfulOfMeeplesSoundsSounds } from './sounds/AFistfulOfMeeplesSounds'
 
 export default function App() {
   const game = useGame<GameState>()
   const player = usePlayer<PlayerColor>()
   const [isJustDisplayed, setJustDisplayed] = useState(true)
   const [imagesLoading, setImagesLoading] = useState(true)
+  const [audioLoader, setAudioLoader] = useState<AudioLoader>()
+  const [isSoundsLoading, setSoundLoading] = useState(true)
+
   useEffect(() => {
     setTimeout(() => setJustDisplayed(false), 2000)
   }, [])
-  const loading = !game || imagesLoading || isJustDisplayed
+  const loading = !game || imagesLoading || isJustDisplayed || isSoundsLoading
   return (
     <DndProvider options={HTML5ToTouch}>
-      {game && <GameDisplay game={game} />}
+      {!loading && game && audioLoader && <GameDisplay game={game} audioLoader={audioLoader}/>}
       <LoadingScreen css={loadingScreenStyle} display={loading} author="Jonathan “Jonny Pac” Cantin" artist="Mihajlo Dimitrievski – The Mico" publisher="Final Frontier Games" developer="Jagrin" />
       <Header><HeaderText loading={loading} game={game} player={player?.id} /></Header>
-      <Menu/>
+      <SoundLoader sounds={AllAFistfulOfMeeplesSoundsSounds} onSoundLoad={() => setSoundLoading(false)} onSoundsPrepared={(audioLoader) => setAudioLoader(audioLoader)} />
+      <Menu />
       <FailuresDialog/>
       <FullscreenDialog />
       <ImagesLoader images={Object.values(Images)} onImagesLoad={() => setImagesLoading(false)} />

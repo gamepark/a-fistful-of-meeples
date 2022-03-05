@@ -25,6 +25,8 @@ import PlayerInfo, { getMarqueePositionInPlayerInfo } from './material/PlayerInf
 import PlayerSelecter from './material/PlayerSelecter'
 import Scores from './material/Scores'
 import StoneCube from './material/StoneCube'
+import AFistfulOfMeeplesSounds from './sounds/AFistfulOfMeeplesSounds'
+import { AudioLoader } from './sounds/AudioLoader'
 import TutorialPopup from './tutorial/TutorialPopup'
 import Help from './util/Help'
 import { helpButtonRight, helpButtonTop, letterBoxHeight, letterBoxWidth, marqueesPosition, miningBagLeft, miningBagTop, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
@@ -32,10 +34,11 @@ import { getPosition } from './util/Styles'
 import YesNoSelecter from './util/YesNoSelecter'
 
 type Props = {
-  game: GameState
+  game: GameState,
+  audioLoader: AudioLoader
 }
 
-export default function GameDisplay({ game }: Props) {
+export default function GameDisplay({ game, audioLoader }: Props) {
   const { t } = useTranslation()
   const play = usePlay()
   const playerColor = usePlayerId<PlayerColor>()
@@ -129,6 +132,8 @@ export default function GameDisplay({ game }: Props) {
       </>
 
       {tutorial && <TutorialPopup tutorial={tutorial} />}
+
+      <AFistfulOfMeeplesSounds audioLoader={audioLoader} />
 
     </Letterbox>
   )
