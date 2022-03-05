@@ -2,9 +2,11 @@ import { useAnimation } from "@gamepark/react-client"
 import { FC, useEffect } from "react"
 import { Location_Jail, Location_Showdown0, Location_Showdown1 } from "../../../rules/src/GameState"
 import BuildOrUpgradeMarquee from "../../../rules/src/moves/BuildOrUpgradeMarquee"
-import { isBuildOrUpgradeMarqueeMove, isDrawFromBagMove, isMoveMeeplesMove, isPlaceInitialMarqueeTileMove, isResolveMeepleMove, isSelectSourceLocationMove } from "../../../rules/src/moves/Move"
+import { isBuildOrUpgradeMarqueeMove, isDrawFromBagMove, isDynamiteExplosion, isMoveMeeplesMove, isPlaceInitialMarqueeTileMove, isResolveMeepleMove, isSelectSourceLocationMove } from "../../../rules/src/moves/Move"
 import PlaceInitialMarqueeTile from "../../../rules/src/moves/PlaceInitialMarqueeTile"
 import ResolveMeeple from "../../../rules/src/moves/ResolveMeeple"
+import DrawFromBag from "../../../rules/src/moves/DrawFromBag"
+import MoveMeeples from "../../../rules/src/moves/MoveMeeples"
 import SelectSourceLocation from "../../../rules/src/moves/SelectSourceLocation"
 import { AudioLoader } from "./AudioLoader"
 import duelSound from "./Duel.ogg"
@@ -14,14 +16,14 @@ import resolveMeepleSound from "./ResolveMeeple.ogg"
 import drawFromBagSound from "./DrawFromBag.ogg" // don't call this one Miner
 import robberSound from "./Robber.ogg"
 import jailSound from "./Jail.ogg"
-import DrawFromBag from "../../../rules/src/moves/DrawFromBag"
-import MoveMeeples from "../../../rules/src/moves/MoveMeeples"
+import explosionSound from "./Explosion.ogg"
+import DynamiteExplosion from "../../../rules/src/moves/DynamiteExplosion"
 
 type Props = {
   audioLoader: AudioLoader
 }
 
-export const AllAFistfulOfMeeplesSoundsSounds = [duelSound, marqueeSound, takeMeeplesSound, resolveMeepleSound, drawFromBagSound, robberSound, jailSound]
+export const AllAFistfulOfMeeplesSoundsSounds = [duelSound, marqueeSound, takeMeeplesSound, resolveMeepleSound, drawFromBagSound, robberSound, jailSound, explosionSound]
 
 const AFistfulOfMeeplesSounds: FC<Props> = ({ audioLoader }) => {
 
@@ -30,6 +32,7 @@ const AFistfulOfMeeplesSounds: FC<Props> = ({ audioLoader }) => {
   const marqueeAnimation = useAnimation<PlaceInitialMarqueeTile | BuildOrUpgradeMarquee>(animation => isPlaceInitialMarqueeTileMove(animation.move) || isBuildOrUpgradeMarqueeMove(animation.move))
   const drawFromBagAnimation = useAnimation<DrawFromBag>(animation => isDrawFromBagMove(animation.move))
   const moveMeeplesAnimation = useAnimation<MoveMeeples>(animation => isMoveMeeplesMove(animation.move))
+  const dynamiteExplosionAnimation = useAnimation<DynamiteExplosion>(animation => isDynamiteExplosion(animation.move))
 
   useEffect(() => {
     if (resolveMeepleAnimation) {
@@ -67,6 +70,12 @@ const AFistfulOfMeeplesSounds: FC<Props> = ({ audioLoader }) => {
         audioLoader.play(jailSound)
     }
   }, [audioLoader, moveMeeplesAnimation?.move])
+
+  useEffect(() => {
+    if (dynamiteExplosionAnimation) {
+      audioLoader.play(explosionSound);
+    }
+  }, [audioLoader, dynamiteExplosionAnimation?.move])
 
   return null
 }
