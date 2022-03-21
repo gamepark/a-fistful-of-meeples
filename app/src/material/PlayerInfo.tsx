@@ -47,7 +47,7 @@ export default function PlayerInfo({ playerState, gameState, buildingMarqueeAnim
         <Picture alt={t('FallbackAvatar')} src={Images.avatar} css={[avatarStyle, fallbackAvatarStyle(playerState.color)]} />
       }
 
-      <div css={[getItemStyle(2, 50, 90), infosStyle]}>
+      <div css={[getItemStyle(2, 49, 90), infosStyle]}>
         <div css={playerNameStyle}>{getNameForPlayer(playerInfo, playerState.color, t)}</div>
         <div>
           {playerInfo?.time?.playing && <PlayerTimer playerId={playerState.color} />}
