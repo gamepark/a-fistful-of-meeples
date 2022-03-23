@@ -9,14 +9,14 @@ import DrawFromBag from "../../../rules/src/moves/DrawFromBag"
 import MoveMeeples from "../../../rules/src/moves/MoveMeeples"
 import SelectSourceLocation from "../../../rules/src/moves/SelectSourceLocation"
 import { AudioLoader } from "./AudioLoader"
-import duelSound from "./Duel.ogg"
-import marqueeSound from "./Marquee.ogg"
-import takeMeeplesSound from "./TakeMeeples.ogg"
-import resolveMeepleSound from "./ResolveMeeple.ogg"
-import drawFromBagSound from "./DrawFromBag.ogg" // don't call this one Miner
-import robberSound from "./Robber.ogg"
-import jailSound from "./Jail.ogg"
-import explosionSound from "./Explosion.ogg"
+import duelSound from "./Duel.mp3"
+import marqueeSound from "./Marquee.mp3"
+import takeMeeplesSound from "./TakeMeeples.mp3"
+import resolveMeepleSound from "./ResolveMeeple.mp3"
+import drawFromBagSound from "./DrawFromBag.mp3" // don't call this one Miner
+import robberSound from "./Robber.mp3"
+import jailSound from "./Jail.mp3"
+import explosionSound from "./Explosion.mp3"
 import DynamiteExplosion from "../../../rules/src/moves/DynamiteExplosion"
 
 type Props = {
