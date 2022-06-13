@@ -35,7 +35,7 @@ export default function Meeple({ type, indexInHand, draggable, selectionStatus, 
         item={{ indexInHand: indexInHand }}
         draggable={true}
         canDrag={true}
-        onDragStart={onSelect}
+        draggingChange={dragging => dragging && onSelect && onSelect()}
       >
 
         <Picture src={getMeepleImage(type)} onClick={onSelect} draggable={false} css={fullSizeStyle} alt={getMeepleName(type, t)} />
