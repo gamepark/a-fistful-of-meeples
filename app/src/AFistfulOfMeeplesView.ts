@@ -1,6 +1,8 @@
-import { Game, Undo, Action } from '@gamepark/rules-api'
+import MoveRandomized from '@gamepark/a-fistful-of-meeples/moves/MoveRandomized'
+import MoveType from '@gamepark/a-fistful-of-meeples/moves/MoveType'
+import {Action, Game, Undo} from '@gamepark/rules-api'
+import {getCanUndo, getAutomaticMove, playMove} from '../../rules/src/AFistfulOfMeeples'
 import GameState from '../../rules/src/GameState'
-import { getCanUndo, getPredictableMove, playMove } from '../../rules/src/AFistfulOfMeeples'
 import Move from '../../rules/src/moves/Move'
 import PlayerColor from '../../rules/src/PlayerColor'
 
@@ -11,7 +13,7 @@ import PlayerColor from '../../rules/src/PlayerColor'
  * If the game contains information that some players know, but the other players does not, it must implement "SecretInformation" instead.
  * Later on, you can also implement "Competitive", "Undo", "TimeLimit" and "Eliminations" to add further features to the game.
  */
-export default class AFistfulOfMeeplesView implements Game<GameState, Move>, Undo<GameState, Move, PlayerColor> {
+export default class AFistfulOfMeeplesView implements Game<GameState, MoveRandomized>, Undo<GameState, MoveRandomized, PlayerColor> {
   state: GameState
   /**
    * This constructor is called when the game "restarts" from a previously saved state.
@@ -26,7 +28,7 @@ export default class AFistfulOfMeeplesView implements Game<GameState, Move>, Und
    *
    * @param move The move that should be applied to current state.
    */
-  play(move: Move): void {
+  play(move: MoveRandomized): void {
     playMove(this.state, move)
   }
 
@@ -34,21 +36,10 @@ export default class AFistfulOfMeeplesView implements Game<GameState, Move>, Und
     return getCanUndo(action, consecutiveActions)
   }
 
-
-  /**
-   * Here you can return the moves that should be automatically played when the game is in a specific state.
-   * Here is an example from monopoly: you roll a dice, then move you pawn accordingly.
-   * A first solution would be to do both state updates at once, in a "complex move" (RollDiceAndMovePawn).
-   * However, this first solution won't allow you to animate step by step what happened: the roll, then the pawn movement.
-   * "getAutomaticMove" is the solution to trigger multiple moves in a single action, and still allow for step by step animations.
-   * => in that case, "RollDice" could set "pawnMovement = x" somewhere in the game state. Then getAutomaticMove will return "MovePawn" when
-   * "pawnMovement" is defined in the state.
-   * Of course, you must return nothing once all the consequences triggered by a decision are completed.
-   * VERY IMPORTANT: you should never change the game state in here. Indeed, getAutomaticMove will never be called in replays, for example.
-   *
-   * @return The next automatic consequence that should be played in current game state.
-   */
-  getAutomaticMove(): void | Move {
-    return getPredictableMove(this.state, false)
+  getAutomaticMoves(): MoveRandomized[] {
+    const move = getAutomaticMove(this.state)
+    if (!move) return []
+    if (move.type === MoveType.RollShowdownDice || move.type === MoveType.DrawFromBag) return [] // unpredictable output
+    return [move]
   }
 }

@@ -1,18 +1,21 @@
 /** @jsxImportSource @emotion/react */
 import {css, keyframes} from '@emotion/react'
-import GameState, { BuildingCosts, getPlayerRemainingMarquees } from '@gamepark/a-fistful-of-meeples/GameState'
-import { useAnimation, usePlay, usePlayerId, useTutorial } from '@gamepark/react-client'
+import GameState, {BuildingCosts, getPlayerRemainingMarquees} from '@gamepark/a-fistful-of-meeples/GameState'
+import {useAnimation, usePlay, usePlayerId, useTutorial} from '@gamepark/react-client'
 import {Letterbox, Picture} from '@gamepark/react-components'
-import { useTranslation } from 'react-i18next'
+import {useTranslation} from 'react-i18next'
 import AFistfulOfMeeples from '../../rules/src/AFistfulOfMeeples'
 import MiningBagContent from '../../rules/src/MiningBag'
-import BuildOrUpgradeMarquee, { getBuildOrUpgradeMarqueeMove } from '../../rules/src/moves/BuildOrUpgradeMarquee'
-import ChooseAnotherPlayerShowdownToken, { getChooseAnotherPlayerShowdownTokenMove } from '../../rules/src/moves/ChooseAnotherPlayerShowdownToken'
-import DrawFromBag from '../../rules/src/moves/DrawFromBag'
+import BuildOrUpgradeMarquee, {getBuildOrUpgradeMarqueeMove} from '../../rules/src/moves/BuildOrUpgradeMarquee'
+import ChooseAnotherPlayerShowdownToken, {getChooseAnotherPlayerShowdownTokenMove} from '../../rules/src/moves/ChooseAnotherPlayerShowdownToken'
+import {DrawFromBagRandomized} from '../../rules/src/moves/DrawFromBag'
 import DynamiteExplosion from '../../rules/src/moves/DynamiteExplosion'
-import { isBuildOrUpgradeMarqueeMove, isChooseAnotherPlayerShowdownTokenMove, isDrawFromBagMove, isDynamiteExplosion, isPlaceInitialMarqueeTileMove, isRerollShowdownDiceMove } from '../../rules/src/moves/Move'
+import {
+  isBuildOrUpgradeMarqueeMove, isChooseAnotherPlayerShowdownTokenMove, isDrawFromBagMove, isDynamiteExplosion, isPlaceInitialMarqueeTileMove,
+  isRerollShowdownDiceMove
+} from '../../rules/src/moves/Move'
 import PlaceInitialMarqueeTile from '../../rules/src/moves/PlaceInitialMarqueeTile'
-import { getRerollShowdownDiceMove } from '../../rules/src/moves/RerollShowdownDice'
+import {getRerollShowdownDiceMove} from '../../rules/src/moves/RerollShowdownDice'
 import Phase from '../../rules/src/Phase'
 import PlayerColor from '../../rules/src/PlayerColor'
 import Board from './material/Board'
@@ -21,16 +24,19 @@ import GoldCube from './material/GoldCube'
 import Images from './material/Images'
 import Marquee from './material/Marquee'
 import MiningBag from './material/MiningBag'
-import PlayerInfo, { getMarqueePositionInPlayerInfo } from './material/PlayerInfo'
+import PlayerInfo, {getMarqueePositionInPlayerInfo} from './material/PlayerInfo'
 import PlayerSelecter from './material/PlayerSelecter'
 import Scores from './material/Scores'
 import StoneCube from './material/StoneCube'
 import AFistfulOfMeeplesSounds from './sounds/AFistfulOfMeeplesSounds'
-import { AudioLoader } from './sounds/AudioLoader'
+import {AudioLoader} from './sounds/AudioLoader'
 import TutorialPopup from './tutorial/TutorialPopup'
 import Help from './util/Help'
-import { helpButtonRight, helpButtonTop, letterBoxHeight, letterBoxWidth, marqueesPosition, miningBagLeft, miningBagTop, playerInfoHeight, playerInfoPositions, playerInfoWidth } from './util/Metrics'
-import { getPosition } from './util/Styles'
+import {
+  helpButtonRight, helpButtonTop, letterBoxHeight, letterBoxWidth, marqueesPosition, miningBagLeft, miningBagTop, playerInfoHeight, playerInfoPositions,
+  playerInfoWidth
+} from './util/Metrics'
+import {getPosition} from './util/Styles'
 import YesNoSelecter from './util/YesNoSelecter'
 
 type Props = {
@@ -44,7 +50,7 @@ export default function GameDisplay({ game, audioLoader }: Props) {
   const playerColor = usePlayerId<PlayerColor>()
   const currentGame = new AFistfulOfMeeples(game)
   const tutorial = useTutorial()
-  const animation = useAnimation<DrawFromBag | DynamiteExplosion | BuildOrUpgradeMarquee | PlaceInitialMarqueeTile>(animation => animation?.action.cancelled ?? true)
+  const animation = useAnimation<DrawFromBagRandomized | DynamiteExplosion | BuildOrUpgradeMarquee | PlaceInitialMarqueeTile>(animation => animation?.action.cancelled ?? true)
   const drawFromBagAnimation = animation && !animation.action.cancelled && isDrawFromBagMove(animation.move) ? animation.move : undefined
   const dynamiteExplosionAnimation = animation && !animation.action.cancelled && isDynamiteExplosion(animation.move) ? animation.move : undefined
   const placeInitalMarqueeTileAnimation = animation && !animation.action.cancelled && isPlaceInitialMarqueeTileMove(animation.move) ? animation.move : undefined

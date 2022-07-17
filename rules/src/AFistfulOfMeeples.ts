@@ -1,31 +1,35 @@
-import { Action, Competitive, SequentialGame, TimeLimit, Undo } from '@gamepark/rules-api'
-import GameState, { initialiseGameState, Location_Saloon, Location_Jail, PendingEffectType, Location_Showdown0, Location_Showdown1, getNextPlayer, endOfGameTriggered, getPlayerScore } from './GameState'
-import Move, { isDrawFromBagMove, isRollShowdownDiceMove } from './moves/Move'
+import {Action, Competitive, RandomMove, SequentialGame, TimeLimit, Undo} from '@gamepark/rules-api'
+import {AFistfulOfMeeplesOptions, isGameOptions} from './AFistfulOfMeeplesOptions'
+import GameState, {
+  endOfGameTriggered, getNextPlayer, getPlayerScore, initialiseGameState, Location_Jail, Location_Saloon, Location_Showdown0, Location_Showdown1,
+  PendingEffectType
+} from './GameState'
+import MiningBagContent, {drawCubesFromBag} from './MiningBag'
+import {buildOrUpgradeMarquee, getBuildOrUpgradeMarqueeMove} from './moves/BuildOrUpgradeMarquee'
+import {changeCurrentPhase, getChangeCurrentPhaseMove} from './moves/ChangeCurrentPhase'
+import {chooseAnotherPlayerToPlaceShowdownToken, getChooseAnotherPlayerShowdownTokenMove} from './moves/ChooseAnotherPlayerShowdownToken'
+import {canTradeGoldBar, convertGoldBar} from './moves/ConvertGoldBar'
+import {drawFromBag, getDrawFromBagMove} from './moves/DrawFromBag'
+import {dynamiteExplosion} from './moves/DynamiteExplosion'
+import Move, {isDrawFromBagMove, isRollShowdownDiceMove} from './moves/Move'
+import {moveMeeples} from './moves/MoveMeeples'
+import MoveRandomized from './moves/MoveRandomized'
 import MoveType from './moves/MoveType'
-import PlayerColor from './PlayerColor'
+import {placeInitialMarqueeTile} from './moves/PlaceInitialMarqueeTile'
+import {getPlaceMeepleMove, isValidSpaceToPlaceMeeple, placeMeeple} from './moves/PlaceMeeple'
+import {getRerollShowdownDiceMove, rerollShowdownDice} from './moves/RerollShowdownDice'
+import {resolveMeeple} from './moves/ResolveMeeple'
+import {resolveShowdown} from './moves/ResolveShowdown'
+import {getRollShowdownDiceMove, rollShowdownDice} from './moves/RollShowdownDice'
+import {selectSourceLocation} from './moves/SelectSourceLocation'
+import {sendExtraMeeplesToSaloon} from './moves/SendExtraMeeplesToSaloon'
 import Phase from './Phase'
-import { isGameOptions, AFistfulOfMeeplesOptions } from './AFistfulOfMeeplesOptions'
-import { placeInitialMarqueeTile } from './moves/PlaceInitialMarqueeTile'
-import { selectSourceLocation } from './moves/SelectSourceLocation'
-import { getPlaceMeepleMove, isValidSpaceToPlaceMeeple, placeMeeple } from './moves/PlaceMeeple'
-import { chooseAnotherPlayerToPlaceShowdownToken, getChooseAnotherPlayerShowdownTokenMove } from './moves/ChooseAnotherPlayerShowdownToken'
-import { resolveMeeple } from './moves/ResolveMeeple'
-import { buildOrUpgradeMarquee, getBuildOrUpgradeMarqueeMove } from './moves/BuildOrUpgradeMarquee'
-import { drawFromBag, getDrawFromBagMove } from './moves/DrawFromBag'
-import { sendExtraMeeplesToSaloon } from './moves/SendExtraMeeplesToSaloon'
-import { dynamiteExplosion } from './moves/DynamiteExplosion'
-import { moveMeeples } from './moves/MoveMeeples'
-import { resolveShowdown } from './moves/ResolveShowdown'
-import { getRerollShowdownDiceMove, rerollShowdownDice } from './moves/RerollShowdownDice'
-import { canTradeGoldBar } from './moves/ConvertGoldBar'
-import MiningBagContent, { drawCubesFromBag } from './MiningBag'
-import { getRollShowdownDiceMove, rollShowdownDice } from './moves/RollShowdownDice'
-import { changeCurrentPhase, getChangeCurrentPhaseMove } from './moves/ChangeCurrentPhase'
-import { convertGoldBar } from './moves/ConvertGoldBar'
+import PlayerColor from './PlayerColor'
 import PlayerState from './PlayerState'
 
 export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, PlayerColor>
-  implements Undo<GameState, Move, PlayerColor>, TimeLimit<GameState, Move, PlayerColor>, Competitive<GameState, Move, PlayerColor> {
+  implements Undo<GameState, Move, PlayerColor>, TimeLimit<GameState, Move, PlayerColor>, Competitive<GameState, Move, PlayerColor>,
+    RandomMove<GameState, Move, MoveRandomized> {
   /**
    * This constructor is called when the game "restarts" from a previously saved state.
    * @param state The state of the game
@@ -185,12 +189,40 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
     return moves
   }
 
-  /**
-   * This is the one and only place where you will update the game's state, depending on the move that has been played.
-   *
-   * @param move The move that should be applied to current state.
-   */
-  play(move: Move): void {
+  randomize(move: Move): Move & MoveRandomized {
+    if (move.type === MoveType.RollShowdownDice) {
+      switch (this.state.tutorial) {
+        case 2:
+          return {...move, value: 1}
+        case 3:
+          return {...move, value: 4}
+        case 4:
+          return {...move, value: 6}
+        default:
+          return {...move, value: Math.floor(Math.random() * 6) + 1}
+      }
+    } else if (move.type === MoveType.DrawFromBag) {
+      switch (this.state.tutorial) {
+        case 1:
+          return {...move, content: [MiningBagContent.Gold, MiningBagContent.Stone]}
+        case 5:
+          return {...move, content: [MiningBagContent.Gold, MiningBagContent.Gold, MiningBagContent.Stone]}
+        case 6:
+          return {...move, content: [MiningBagContent.Gold, MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Stone]}
+        case 7:
+          return {...move, content: [MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Gold, MiningBagContent.Stone]}
+        case 8:
+          return {...move, content: [MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Gold]}
+        case 9:
+          return {...move, content: [MiningBagContent.Gold, MiningBagContent.Dynamite]}
+        default:
+          return {...move, content: drawCubesFromBag(this.state)}
+      }
+    }
+    return move
+  }
+
+  play(move: MoveRandomized): void {
     playMove(this.state, move)
   }
 
@@ -198,8 +230,9 @@ export default class AFistfulOfMeeples extends SequentialGame<GameState, Move, P
     return getCanUndo(action, consecutiveActions)
   }
 
-  getAutomaticMove(): void | Move {
-    return getPredictableMove(this.state, true)
+  getAutomaticMoves(): Move[] {
+    const move = getAutomaticMove(this.state)
+    return move ? [move] : []
   }
 
   giveTime(_playerId: PlayerColor): number {
@@ -250,51 +283,18 @@ export function getCanUndo(action: Action < Move, PlayerColor >, consecutiveActi
   if (consecutiveActions.length > 0)
     return false
 
-  if (action.consequences.some(move => isDrawFromBagMove(move) || isRollShowdownDiceMove(move)))
-    return false;
-
-  return true
+  return !action.consequences.some(move => isDrawFromBagMove(move) || isRollShowdownDiceMove(move));
 }
 
 
-export function getPredictableMove(state: GameState, serverSide: boolean): void | Move {
+export function getAutomaticMove(state: GameState): Move | undefined {
   if (state.pendingEffects.length > 0) {
     const effect = state.pendingEffects[0]
     switch (effect.type) {
       case PendingEffectType.DrawFromBag:
-        if (serverSide) {
-          switch (state.tutorial) {
-            case 1:
-              return getDrawFromBagMove(effect.player, [MiningBagContent.Gold, MiningBagContent.Stone])
-            case 5:
-              return getDrawFromBagMove(effect.player, [MiningBagContent.Gold, MiningBagContent.Gold, MiningBagContent.Stone])
-            case 6:
-              return getDrawFromBagMove(effect.player, [MiningBagContent.Gold, MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Stone])
-            case 7:
-              return getDrawFromBagMove(effect.player, [MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Gold, MiningBagContent.Stone])
-            case 8:
-              return getDrawFromBagMove(effect.player, [MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Stone, MiningBagContent.Gold])
-            case 9:
-              return getDrawFromBagMove(effect.player, [MiningBagContent.Gold, MiningBagContent.Dynamite])
-            default:
-              return getDrawFromBagMove(effect.player, drawCubesFromBag(state, effect.amount))
-          }
-        }
-        return  // if we are on client side, don't draw cubes. It will be done on server side only
+        return getDrawFromBagMove(effect.player)
       case PendingEffectType.RollShowdownDice:
-        if (serverSide) {
-          switch (state.tutorial) {
-            case 2:
-              return getRollShowdownDiceMove(1, effect.location)
-            case 3:
-              return getRollShowdownDiceMove(4, effect.location)
-            case 4:
-              return getRollShowdownDiceMove(6, effect.location)
-            default:
-              return getRollShowdownDiceMove(Math.floor(Math.random() * 6) + 1, effect.location)
-          }
-        }
-        return  // if we are on client side, don't roll dice. It will be done on server side only
+        return getRollShowdownDiceMove(effect.location)
       case PendingEffectType.DynamiteExplosion:
         return { type: MoveType.DynamiteExplosion }
       case PendingEffectType.MoveMeeples:
@@ -340,10 +340,11 @@ export function getPredictableMove(state: GameState, serverSide: boolean): void 
     default:
       return state.currentPhase
   }
+  return
 }
 
 
-export function playMove(state: GameState, move: Move): void {
+export function playMove(state: GameState, move: MoveRandomized): void {
   switch (move.type) {
     case MoveType.PlaceInitialMarqueeTile:
       return placeInitialMarqueeTile(state, move)

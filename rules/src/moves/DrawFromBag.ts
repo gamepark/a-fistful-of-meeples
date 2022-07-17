@@ -6,16 +6,19 @@ import MoveType from './MoveType'
 type DrawFromBag = {
   type: MoveType.DrawFromBag
   playerId: PlayerColor
-  content: MiningBagContent[]
 }
 
 export default DrawFromBag
 
-export function getDrawFromBagMove(playerId: PlayerColor, content: MiningBagContent[]): DrawFromBag {
-  return { type: MoveType.DrawFromBag, playerId: playerId, content: content }
+export type DrawFromBagRandomized = DrawFromBag & {
+  content: MiningBagContent[]
 }
 
-export function drawFromBag(state: GameState, move: DrawFromBag) {
+export function getDrawFromBagMove(playerId: PlayerColor): DrawFromBag {
+  return { type: MoveType.DrawFromBag, playerId: playerId }
+}
+
+export function drawFromBag(state: GameState, move: DrawFromBagRandomized) {
   const player = state.players.find(player => player.color === move.playerId)
   if (player === undefined) return console.error('Cannot apply', move, 'on', state, ': could not find player')
 

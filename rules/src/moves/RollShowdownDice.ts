@@ -3,17 +3,20 @@ import MoveType from './MoveType'
 
 type RollShowdownDice = {
   type: MoveType.RollShowdownDice
-  value: number
   location: number
 }
 
 export default RollShowdownDice
 
-export function getRollShowdownDiceMove(value: number, location: number): RollShowdownDice {
-  return { type: MoveType.RollShowdownDice, value: value, location: location }
+export type RollShowdownDiceRandomized = RollShowdownDice & {
+  value: number
 }
 
-export function rollShowdownDice(state: GameState, move: RollShowdownDice) {
+export function getRollShowdownDiceMove(location: number): RollShowdownDice {
+  return { type: MoveType.RollShowdownDice, location: location }
+}
+
+export function rollShowdownDice(state: GameState, move: RollShowdownDiceRandomized) {
   switch (move.location) {
     case Location_Showdown0:
       state.showdowns[0].dice = move.value
